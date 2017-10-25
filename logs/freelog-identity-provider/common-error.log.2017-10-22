@@ -1,0 +1,245 @@
+2017-10-20 14:24:21,627 ERROR 23232 nodejs.TypeError: moment(...).getData is not a function
+    at UserInfoService.createUser (D:\工作\freelog-identity-provider\app\service\user_service.js:42:41)
+    at UserInfoController.create (D:\工作\freelog-identity-provider\app\controller\userinfo\v1.js:33:43)
+    at callController (D:\工作\freelog-identity-provider\node_modules\egg-core\lib\loader\mixin\controller.js:122:18)
+    at callController.next (<anonymous>)
+    at onFulfilled (D:\工作\freelog-identity-provider\node_modules\co\index.js:65:19)
+    at D:\工作\freelog-identity-provider\node_modules\co\index.js:54:5
+    at Promise (<anonymous>)
+    at co (D:\工作\freelog-identity-provider\node_modules\co\index.js:50:10)
+    at toPromise (D:\工作\freelog-identity-provider\node_modules\co\index.js:118:63)
+    at next (D:\工作\freelog-identity-provider\node_modules\co\index.js:99:29)
+    at onFulfilled (D:\工作\freelog-identity-provider\node_modules\co\index.js:69:7)
+    at D:\工作\freelog-identity-provider\node_modules\co\index.js:54:5
+    at Promise (<anonymous>)
+    at co (D:\工作\freelog-identity-provider\node_modules\co\index.js:50:10)
+    at module.exports.callFn (D:\工作\freelog-identity-provider\node_modules\egg-core\lib\utils\index.js:58:53)
+    at D:\工作\freelog-identity-provider\node_modules\egg-freelog-base\app\middleware\error_handler.js:18:15
+
+pid: 23232
+hostname: yuliang
+
+2017-10-20 14:25:01,070 ERROR 16576 nodejs.TypeError: knex.user(...).createUser is not a function
+    at UserInfoService.createUser (D:\工作\freelog-identity-provider\app\service\user_service.js:46:43)
+    at UserInfoController.create (D:\工作\freelog-identity-provider\app\controller\userinfo\v1.js:33:43)
+    at callController (D:\工作\freelog-identity-provider\node_modules\egg-core\lib\loader\mixin\controller.js:122:18)
+    at callController.next (<anonymous>)
+    at onFulfilled (D:\工作\freelog-identity-provider\node_modules\co\index.js:65:19)
+    at D:\工作\freelog-identity-provider\node_modules\co\index.js:54:5
+    at Promise (<anonymous>)
+    at co (D:\工作\freelog-identity-provider\node_modules\co\index.js:50:10)
+    at toPromise (D:\工作\freelog-identity-provider\node_modules\co\index.js:118:63)
+    at next (D:\工作\freelog-identity-provider\node_modules\co\index.js:99:29)
+    at onFulfilled (D:\工作\freelog-identity-provider\node_modules\co\index.js:69:7)
+    at D:\工作\freelog-identity-provider\node_modules\co\index.js:54:5
+    at Promise (<anonymous>)
+    at co (D:\工作\freelog-identity-provider\node_modules\co\index.js:50:10)
+    at module.exports.callFn (D:\工作\freelog-identity-provider\node_modules\egg-core\lib\utils\index.js:58:53)
+    at D:\工作\freelog-identity-provider\node_modules\egg-freelog-base\app\middleware\error_handler.js:18:15
+
+pid: 16576
+hostname: yuliang
+
+2017-10-20 14:26:07,134 ERROR 23124 nodejs.unhandledRejectionError: insert into `user_info` (`createDate`, `mobile`, `password`, `salt`, `status`, `userRole`) values ('2017-10-20 14:26:07.111', '18923803593', 'b8b18a11fd7002d325b55a2881b66cc41f7a699a', 'a081a8ae00f54104b28fa53c45565924', 1, 1) - Field 'userName' doesn't have a default value
+    at Packet.asError (D:\工作\freelog-identity-provider\node_modules\mysql2\lib\packets\packet.js:703:13)
+    at Query.Command.execute (D:\工作\freelog-identity-provider\node_modules\mysql2\lib\commands\command.js:28:22)
+    at Connection.handlePacket (D:\工作\freelog-identity-provider\node_modules\mysql2\lib\connection.js:515:28)
+    at PacketParser.onPacket (D:\工作\freelog-identity-provider\node_modules\mysql2\lib\connection.js:94:16)
+    at PacketParser.executeStart (D:\工作\freelog-identity-provider\node_modules\mysql2\lib\packet_parser.js:77:14)
+    at Socket.<anonymous> (D:\工作\freelog-identity-provider\node_modules\mysql2\lib\connection.js:102:29)
+    at emitOne (events.js:115:13)
+    at Socket.emit (events.js:210:7)
+    at addChunk (_stream_readable.js:252:12)
+    at readableAddChunk (_stream_readable.js:239:11)
+    at Socket.Readable.push (_stream_readable.js:197:10)
+    at TCP.onread (net.js:588:20)
+code: 'ER_NO_DEFAULT_FOR_FIELD'
+errno: 1364
+sqlState: '#HY000'
+name: 'unhandledRejectionError'
+pid: 23124
+hostname: yuliang
+
+2017-10-20 14:27:32,851 ERROR 4124 nodejs.unhandledRejectionError: insert into `user_info` (`createDate`, `mobile`, `password`, `salt`, `status`, `userRole`) values ('2017-10-20 14:27:32.817', '18923803593', 'f2a221275e10c7d9380eb48ba51cf5c808332a3a', '2e74118a4b164b229def85fd447a304c', 1, 1) - Field 'userName' doesn't have a default value
+    at Packet.asError (D:\工作\freelog-identity-provider\node_modules\mysql2\lib\packets\packet.js:703:13)
+    at Query.Command.execute (D:\工作\freelog-identity-provider\node_modules\mysql2\lib\commands\command.js:28:22)
+    at Connection.handlePacket (D:\工作\freelog-identity-provider\node_modules\mysql2\lib\connection.js:515:28)
+    at PacketParser.onPacket (D:\工作\freelog-identity-provider\node_modules\mysql2\lib\connection.js:94:16)
+    at PacketParser.executeStart (D:\工作\freelog-identity-provider\node_modules\mysql2\lib\packet_parser.js:77:14)
+    at Socket.<anonymous> (D:\工作\freelog-identity-provider\node_modules\mysql2\lib\connection.js:102:29)
+    at emitOne (events.js:115:13)
+    at Socket.emit (events.js:210:7)
+    at addChunk (_stream_readable.js:252:12)
+    at readableAddChunk (_stream_readable.js:239:11)
+    at Socket.Readable.push (_stream_readable.js:197:10)
+    at TCP.onread (net.js:588:20)
+code: 'ER_NO_DEFAULT_FOR_FIELD'
+errno: 1364
+sqlState: '#HY000'
+name: 'unhandledRejectionError'
+pid: 4124
+hostname: yuliang
+
+2017-10-20 14:32:16,123 ERROR 16212 nodejs.unhandledRejectionError: insert into `user_info` (`createDate`, `mobile`, `password`, `salt`, `status`, `userRole`) values ('2017-10-20 14:32:16.102', '18923803593', '22c7b18e2ee5078ac3743e7e1a490943ff35487c', '00e41f4f33e245799e7ef0b3f7f8428e', 1, 1) - Field 'nickame' doesn't have a default value
+    at Packet.asError (D:\工作\freelog-identity-provider\node_modules\mysql2\lib\packets\packet.js:703:13)
+    at Query.Command.execute (D:\工作\freelog-identity-provider\node_modules\mysql2\lib\commands\command.js:28:22)
+    at Connection.handlePacket (D:\工作\freelog-identity-provider\node_modules\mysql2\lib\connection.js:515:28)
+    at PacketParser.onPacket (D:\工作\freelog-identity-provider\node_modules\mysql2\lib\connection.js:94:16)
+    at PacketParser.executeStart (D:\工作\freelog-identity-provider\node_modules\mysql2\lib\packet_parser.js:77:14)
+    at Socket.<anonymous> (D:\工作\freelog-identity-provider\node_modules\mysql2\lib\connection.js:102:29)
+    at emitOne (events.js:115:13)
+    at Socket.emit (events.js:210:7)
+    at addChunk (_stream_readable.js:252:12)
+    at readableAddChunk (_stream_readable.js:239:11)
+    at Socket.Readable.push (_stream_readable.js:197:10)
+    at TCP.onread (net.js:588:20)
+code: 'ER_NO_DEFAULT_FOR_FIELD'
+errno: 1364
+sqlState: '#HY000'
+name: 'unhandledRejectionError'
+pid: 16212
+hostname: yuliang
+
+2017-10-20 14:32:16,890 ERROR 16212 nodejs.unhandledRejectionError: insert into `user_info` (`createDate`, `mobile`, `password`, `salt`, `status`, `userRole`) values ('2017-10-20 14:32:16.886', '18923803593', '58210fb8b06dabb994499b0bab2f39b73ab8645d', 'c5ae85f7f5bf4fe38f1b5debff7d7c39', 1, 1) - Field 'nickame' doesn't have a default value
+    at Packet.asError (D:\工作\freelog-identity-provider\node_modules\mysql2\lib\packets\packet.js:703:13)
+    at Query.Command.execute (D:\工作\freelog-identity-provider\node_modules\mysql2\lib\commands\command.js:28:22)
+    at Connection.handlePacket (D:\工作\freelog-identity-provider\node_modules\mysql2\lib\connection.js:515:28)
+    at PacketParser.onPacket (D:\工作\freelog-identity-provider\node_modules\mysql2\lib\connection.js:94:16)
+    at PacketParser.executeStart (D:\工作\freelog-identity-provider\node_modules\mysql2\lib\packet_parser.js:77:14)
+    at Socket.<anonymous> (D:\工作\freelog-identity-provider\node_modules\mysql2\lib\connection.js:102:29)
+    at emitOne (events.js:115:13)
+    at Socket.emit (events.js:210:7)
+    at addChunk (_stream_readable.js:252:12)
+    at readableAddChunk (_stream_readable.js:239:11)
+    at Socket.Readable.push (_stream_readable.js:197:10)
+    at TCP.onread (net.js:588:20)
+code: 'ER_NO_DEFAULT_FOR_FIELD'
+errno: 1364
+sqlState: '#HY000'
+name: 'unhandledRejectionError'
+pid: 16212
+hostname: yuliang
+
+2017-10-20 14:32:17,357 ERROR 16212 nodejs.unhandledRejectionError: insert into `user_info` (`createDate`, `mobile`, `password`, `salt`, `status`, `userRole`) values ('2017-10-20 14:32:17.351', '18923803593', '3d7dc904c414e8858d24c793b0add6f994b21736', '114cb069209147dfa70fd1182257874f', 1, 1) - Field 'nickame' doesn't have a default value
+    at Packet.asError (D:\工作\freelog-identity-provider\node_modules\mysql2\lib\packets\packet.js:703:13)
+    at Query.Command.execute (D:\工作\freelog-identity-provider\node_modules\mysql2\lib\commands\command.js:28:22)
+    at Connection.handlePacket (D:\工作\freelog-identity-provider\node_modules\mysql2\lib\connection.js:515:28)
+    at PacketParser.onPacket (D:\工作\freelog-identity-provider\node_modules\mysql2\lib\connection.js:94:16)
+    at PacketParser.executeStart (D:\工作\freelog-identity-provider\node_modules\mysql2\lib\packet_parser.js:77:14)
+    at Socket.<anonymous> (D:\工作\freelog-identity-provider\node_modules\mysql2\lib\connection.js:102:29)
+    at emitOne (events.js:115:13)
+    at Socket.emit (events.js:210:7)
+    at addChunk (_stream_readable.js:252:12)
+    at readableAddChunk (_stream_readable.js:239:11)
+    at Socket.Readable.push (_stream_readable.js:197:10)
+    at TCP.onread (net.js:588:20)
+code: 'ER_NO_DEFAULT_FOR_FIELD'
+errno: 1364
+sqlState: '#HY000'
+name: 'unhandledRejectionError'
+pid: 16212
+hostname: yuliang
+
+2017-10-20 14:32:17,580 ERROR 16212 nodejs.unhandledRejectionError: insert into `user_info` (`createDate`, `mobile`, `password`, `salt`, `status`, `userRole`) values ('2017-10-20 14:32:17.579', '18923803593', '7d8b992f6e9b211b29eb837279c540c7b93981c1', 'add69ab44a004c678cb88b7aeb2575b0', 1, 1) - Field 'nickame' doesn't have a default value
+    at Packet.asError (D:\工作\freelog-identity-provider\node_modules\mysql2\lib\packets\packet.js:703:13)
+    at Query.Command.execute (D:\工作\freelog-identity-provider\node_modules\mysql2\lib\commands\command.js:28:22)
+    at Connection.handlePacket (D:\工作\freelog-identity-provider\node_modules\mysql2\lib\connection.js:515:28)
+    at PacketParser.onPacket (D:\工作\freelog-identity-provider\node_modules\mysql2\lib\connection.js:94:16)
+    at PacketParser.executeStart (D:\工作\freelog-identity-provider\node_modules\mysql2\lib\packet_parser.js:77:14)
+    at Socket.<anonymous> (D:\工作\freelog-identity-provider\node_modules\mysql2\lib\connection.js:102:29)
+    at emitOne (events.js:115:13)
+    at Socket.emit (events.js:210:7)
+    at addChunk (_stream_readable.js:252:12)
+    at readableAddChunk (_stream_readable.js:239:11)
+    at Socket.Readable.push (_stream_readable.js:197:10)
+    at TCP.onread (net.js:588:20)
+code: 'ER_NO_DEFAULT_FOR_FIELD'
+errno: 1364
+sqlState: '#HY000'
+name: 'unhandledRejectionError'
+pid: 16212
+hostname: yuliang
+
+2017-10-20 14:32:17,790 ERROR 16212 nodejs.unhandledRejectionError: insert into `user_info` (`createDate`, `mobile`, `password`, `salt`, `status`, `userRole`) values ('2017-10-20 14:32:17.783', '18923803593', '6a1ee14fe57b268e381dbdaab2ac2666fc298964', '0cec450d1233458a98fa950e59698802', 1, 1) - Field 'nickame' doesn't have a default value
+    at Packet.asError (D:\工作\freelog-identity-provider\node_modules\mysql2\lib\packets\packet.js:703:13)
+    at Query.Command.execute (D:\工作\freelog-identity-provider\node_modules\mysql2\lib\commands\command.js:28:22)
+    at Connection.handlePacket (D:\工作\freelog-identity-provider\node_modules\mysql2\lib\connection.js:515:28)
+    at PacketParser.onPacket (D:\工作\freelog-identity-provider\node_modules\mysql2\lib\connection.js:94:16)
+    at PacketParser.executeStart (D:\工作\freelog-identity-provider\node_modules\mysql2\lib\packet_parser.js:77:14)
+    at Socket.<anonymous> (D:\工作\freelog-identity-provider\node_modules\mysql2\lib\connection.js:102:29)
+    at emitOne (events.js:115:13)
+    at Socket.emit (events.js:210:7)
+    at addChunk (_stream_readable.js:252:12)
+    at readableAddChunk (_stream_readable.js:239:11)
+    at Socket.Readable.push (_stream_readable.js:197:10)
+    at TCP.onread (net.js:588:20)
+code: 'ER_NO_DEFAULT_FOR_FIELD'
+errno: 1364
+sqlState: '#HY000'
+name: 'unhandledRejectionError'
+pid: 16212
+hostname: yuliang
+
+2017-10-20 17:13:45,055 ERROR 23320 nodejs.unhandledRejectionError: condition must be object
+    at UserInfoService.getUserInfo (D:\工作\freelog-identity-provider\app\service\user_service.js:22:39)
+    at UserInfoController.show (D:\工作\freelog-identity-provider\app\controller\userinfo\v1.js:18:54)
+    at callController (D:\工作\freelog-identity-provider\node_modules\egg-core\lib\loader\mixin\controller.js:122:18)
+    at callController.next (<anonymous>)
+    at onFulfilled (D:\工作\freelog-identity-provider\node_modules\co\index.js:65:19)
+    at D:\工作\freelog-identity-provider\node_modules\co\index.js:54:5
+    at Promise (<anonymous>)
+    at co (D:\工作\freelog-identity-provider\node_modules\co\index.js:50:10)
+    at toPromise (D:\工作\freelog-identity-provider\node_modules\co\index.js:118:63)
+    at next (D:\工作\freelog-identity-provider\node_modules\co\index.js:99:29)
+    at onFulfilled (D:\工作\freelog-identity-provider\node_modules\co\index.js:69:7)
+    at D:\工作\freelog-identity-provider\node_modules\co\index.js:54:5
+    at Promise (<anonymous>)
+    at co (D:\工作\freelog-identity-provider\node_modules\co\index.js:50:10)
+    at module.exports.callFn (D:\工作\freelog-identity-provider\node_modules\egg-core\lib\utils\index.js:58:53)
+    at D:\工作\freelog-identity-provider\node_modules\egg-freelog-base\app\middleware\error_handler.js:18:15
+name: 'unhandledRejectionError'
+pid: 23320
+hostname: yuliang
+
+2017-10-20 17:13:45,798 ERROR 23320 nodejs.unhandledRejectionError: condition must be object
+    at UserInfoService.getUserInfo (D:\工作\freelog-identity-provider\app\service\user_service.js:22:39)
+    at UserInfoController.show (D:\工作\freelog-identity-provider\app\controller\userinfo\v1.js:18:54)
+    at callController (D:\工作\freelog-identity-provider\node_modules\egg-core\lib\loader\mixin\controller.js:122:18)
+    at callController.next (<anonymous>)
+    at onFulfilled (D:\工作\freelog-identity-provider\node_modules\co\index.js:65:19)
+    at D:\工作\freelog-identity-provider\node_modules\co\index.js:54:5
+    at Promise (<anonymous>)
+    at co (D:\工作\freelog-identity-provider\node_modules\co\index.js:50:10)
+    at toPromise (D:\工作\freelog-identity-provider\node_modules\co\index.js:118:63)
+    at next (D:\工作\freelog-identity-provider\node_modules\co\index.js:99:29)
+    at onFulfilled (D:\工作\freelog-identity-provider\node_modules\co\index.js:69:7)
+    at D:\工作\freelog-identity-provider\node_modules\co\index.js:54:5
+    at Promise (<anonymous>)
+    at co (D:\工作\freelog-identity-provider\node_modules\co\index.js:50:10)
+    at module.exports.callFn (D:\工作\freelog-identity-provider\node_modules\egg-core\lib\utils\index.js:58:53)
+    at D:\工作\freelog-identity-provider\node_modules\egg-freelog-base\app\middleware\error_handler.js:18:15
+name: 'unhandledRejectionError'
+pid: 23320
+hostname: yuliang
+
+2017-10-20 17:13:45,964 ERROR 23320 nodejs.unhandledRejectionError: condition must be object
+    at UserInfoService.getUserInfo (D:\工作\freelog-identity-provider\app\service\user_service.js:22:39)
+    at UserInfoController.show (D:\工作\freelog-identity-provider\app\controller\userinfo\v1.js:18:54)
+    at callController (D:\工作\freelog-identity-provider\node_modules\egg-core\lib\loader\mixin\controller.js:122:18)
+    at callController.next (<anonymous>)
+    at onFulfilled (D:\工作\freelog-identity-provider\node_modules\co\index.js:65:19)
+    at D:\工作\freelog-identity-provider\node_modules\co\index.js:54:5
+    at Promise (<anonymous>)
+    at co (D:\工作\freelog-identity-provider\node_modules\co\index.js:50:10)
+    at toPromise (D:\工作\freelog-identity-provider\node_modules\co\index.js:118:63)
+    at next (D:\工作\freelog-identity-provider\node_modules\co\index.js:99:29)
+    at onFulfilled (D:\工作\freelog-identity-provider\node_modules\co\index.js:69:7)
+    at D:\工作\freelog-identity-provider\node_modules\co\index.js:54:5
+    at Promise (<anonymous>)
+    at co (D:\工作\freelog-identity-provider\node_modules\co\index.js:50:10)
+    at module.exports.callFn (D:\工作\freelog-identity-provider\node_modules\egg-core\lib\utils\index.js:58:53)
+    at D:\工作\freelog-identity-provider\node_modules\egg-freelog-base\app\middleware\error_handler.js:18:15
+name: 'unhandledRejectionError'
+pid: 23320
+hostname: yuliang
+

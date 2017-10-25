@@ -1,0 +1,471 @@
+{
+  "config": {
+    "onerror": {
+      "errorPageUrl": "",
+      "appErrorFilter": null
+    },
+    "session": {
+      "maxAge": 86400000,
+      "key": "EGG_SESS",
+      "httpOnly": true,
+      "encrypt": true
+    },
+    "i18n": {
+      "defaultLocale": "en_US",
+      "dirs": [],
+      "queryField": "locale",
+      "cookieField": "locale",
+      "cookieMaxAge": "1y"
+    },
+    "watcher": {
+      "type": "development",
+      "eventSources": {
+        "default": "D:\\工作\\freelog-identity-provider\\node_modules\\egg-watcher\\lib\\event-sources\\default",
+        "development": "D:\\工作\\freelog-identity-provider\\node_modules\\egg-watcher\\lib\\event-sources\\development"
+      }
+    },
+    "multipart": {
+      "autoFields": false,
+      "defaultCharset": "utf8",
+      "fieldNameSize": 100,
+      "fieldSize": "100kb",
+      "fields": 10,
+      "fileSize": "10mb",
+      "files": 10,
+      "fileExtensions": [],
+      "whitelist": null
+    },
+    "security": {
+      "domainWhiteList": [],
+      "protocolWhiteList": [],
+      "defaultMiddleware": "csrf,hsts,methodnoallow,noopen,nosniff,csp,xssProtection,xframe,dta",
+      "csrf": {
+        "enable": false,
+        "useSession": false,
+        "ignoreJSON": false,
+        "cookieName": "csrfToken",
+        "sessionName": "csrfToken",
+        "headerName": "x-csrf-token",
+        "bodyName": "_csrf",
+        "queryName": "_csrf"
+      },
+      "xframe": {
+        "enable": false,
+        "value": "SAMEORIGIN"
+      },
+      "hsts": {
+        "enable": false,
+        "maxAge": 31536000,
+        "includeSubdomains": false
+      },
+      "dta": {
+        "enable": true
+      },
+      "methodnoallow": {
+        "enable": true
+      },
+      "noopen": {
+        "enable": true
+      },
+      "nosniff": {
+        "enable": true
+      },
+      "xssProtection": {
+        "enable": true,
+        "value": "1; mode=block"
+      },
+      "csp": {
+        "enable": false,
+        "policy": {}
+      }
+    },
+    "helper": {
+      "shtml": {}
+    },
+    "development": {
+      "watchDirs": [],
+      "ignoreDirs": [],
+      "fastReady": true,
+      "reloadOnDebug": true
+    },
+    "logrotator": {
+      "filesRotateByHour": null,
+      "filesRotateBySize": null,
+      "maxFileSize": 52428800,
+      "maxFiles": 10,
+      "rotateDuration": 60000,
+      "maxDays": 31
+    },
+    "static": {
+      "prefix": "/public/",
+      "dir": "D:\\工作\\freelog-identity-provider\\app\\public",
+      "dynamic": true,
+      "preload": false,
+      "buffer": false,
+      "maxFiles": 1000
+    },
+    "jsonp": {
+      "limit": 50,
+      "callback": [
+        "_callback",
+        "callback"
+      ],
+      "csrf": false
+    },
+    "view": {
+      "root": "D:\\工作\\freelog-identity-provider\\app\\view",
+      "cache": false,
+      "defaultExtension": ".html",
+      "defaultViewEngine": "",
+      "mapping": {}
+    },
+    "freelogBase": {
+      "retCodeEnum": {},
+      "errCodeEnum": {}
+    },
+    "uploadConfig": {
+      "aliOss": {
+        "enable": false
+      },
+      "amzS3": {
+        "enable": false
+      }
+    },
+    "env": "local",
+    "name": "freelog-identity-provider",
+    "keys": "<String len: 44>",
+    "proxy": false,
+    "protocolHeaders": "x-forwarded-proto",
+    "ipHeaders": "x-forwarded-for",
+    "hostHeaders": "x-forwarded-host",
+    "pkg": {
+      "name": "freelog-identity-provider",
+      "version": "1.0.0",
+      "description": "飞致网络身份服务",
+      "private": true,
+      "dependencies": {
+        "bluebird": "^3.5.1",
+        "crypto": "^1.0.1",
+        "egg": "^1.9.0",
+        "egg-freelog-base": "^1.0.31",
+        "knex": "^0.13.0",
+        "lodash": "^4.17.4",
+        "moment": "^2.19.1",
+        "mysql2": "^1.4.2",
+        "node-uuid": "^1.4.8"
+      },
+      "engines": {
+        "node": ">=6.0.0"
+      },
+      "scripts": {
+        "start": "node index.js",
+        "stop": "egg-scripts stop",
+        "dev": "egg-bin dev",
+        "test": "npm run lint -- --fix && npm run test-local",
+        "test-local": "egg-bin test",
+        "cov": "egg-bin cov",
+        "lint": "eslint .",
+        "ci": "npm run lint && npm run cov",
+        "autod": "autod"
+      },
+      "ci": {
+        "version": "6, 8"
+      },
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/yuliang0912/freelog-identity-provider"
+      },
+      "author": "yuliang",
+      "license": "MIT",
+      "optionalDependencies": {}
+    },
+    "baseDir": "D:\\工作\\freelog-identity-provider",
+    "HOME": "C:\\Users\\yuliang",
+    "rundir": "D:\\工作\\freelog-identity-provider\\run",
+    "dump": {
+      "ignore": "<Set>"
+    },
+    "confusedConfigurations": {
+      "bodyparser": "bodyParser",
+      "notFound": "notfound",
+      "sitefile": "siteFile",
+      "middlewares": "middleware",
+      "httpClient": "httpclient"
+    },
+    "notfound": {
+      "pageUrl": ""
+    },
+    "siteFile": {
+      "/favicon.ico": "<Buffer len: 14191>"
+    },
+    "bodyParser": {
+      "enable": true,
+      "encoding": "utf8",
+      "formLimit": "100kb",
+      "jsonLimit": "100kb",
+      "strict": true,
+      "queryString": {
+        "arrayLimit": 100,
+        "depth": 5,
+        "parameterLimit": 1000
+      }
+    },
+    "logger": {
+      "dir": "D:\\工作\\freelog-identity-provider\\logs\\freelog-identity-provider",
+      "encoding": "utf8",
+      "env": "local",
+      "level": "INFO",
+      "consoleLevel": "INFO",
+      "disableConsoleAfterReady": false,
+      "outputJSON": false,
+      "buffer": true,
+      "appLogName": "freelog-identity-provider-web.log",
+      "coreLogName": "egg-web.log",
+      "agentLogName": "egg-agent.log",
+      "errorLogName": "common-error.log",
+      "coreLogger": {
+        "consoleLevel": "WARN"
+      },
+      "allowDebugAtProd": true,
+      "type": "agent"
+    },
+    "httpclient": {
+      "enableDNSCache": false,
+      "dnsCacheMaxLength": 1000,
+      "dnsCacheMaxAge": 10000,
+      "request": {
+        "timeout": 5000
+      },
+      "httpAgent": {
+        "keepAlive": true,
+        "freeSocketKeepAliveTimeout": 4000,
+        "maxSockets": 9007199254740991,
+        "maxFreeSockets": 256
+      },
+      "httpsAgent": {
+        "keepAlive": true,
+        "freeSocketKeepAliveTimeout": 4000,
+        "maxSockets": 9007199254740991,
+        "maxFreeSockets": 256
+      }
+    },
+    "coreMiddleware": [
+      "meta",
+      "siteFile",
+      "notfound",
+      "bodyParser",
+      "overrideMethod"
+    ],
+    "workerStartTimeout": 600000,
+    "cluster": {
+      "listen": {
+        "path": "",
+        "port": 7001,
+        "hostname": ""
+      }
+    },
+    "clusterClient": {
+      "responseTimeout": 60000
+    },
+    "middleware": [
+      "errorHandler"
+    ],
+    "dbConfig": {
+      "user": {
+        "client": "mysql2",
+        "connection": {
+          "host": "192.168.0.3",
+          "user": "root",
+          "password": "<String len: 9>",
+          "database": "fr_user_info",
+          "charset": "utf8",
+          "timezone": "+08:00",
+          "bigNumberStrings": true,
+          "supportBigNumbers": true,
+          "connectTimeout": 10000,
+          "Promise": "<Function Promise>"
+        },
+        "pool": {
+          "maxConnections": 50,
+          "minConnections": 2
+        },
+        "acquireConnectionTimeout": 10000,
+        "debug": true
+      }
+    },
+    "gatewayUrl": "http://192.168.0.3:1201",
+    "jwtAuth": {
+      "cookieName": "authInfo",
+      "privateKey": "-----BEGIN PRIVATE KEY-----\r\nMIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBANHUJW1a7+MoLbGR\r\nlznSL88eLwaX71tdS1hA2P4+vuZJCL2ocH7F4GCiqBPNJcc+llw29hIjhfsZzslR\r\nE9uGySCyz61aPTUZq61qefuGIJBjRRSlu++g0+TI1OW4LgoCNRrMBF1rmKwT01rc\r\nK1TXzkS5Dv4Exo3gEpII9lZf+jW9AgMBAAECgYBNAPD3T98nWxBh0Q9Rfexjsy0I\r\n22tQ+Uz0R2Aa9gXy1yypBY67R30PmcHa+nd5xmNB1j257GV4AEGeKe4Cq1VVysQ3\r\nJEXXeEYXr8vOwF9vmSGk3cuZU2J3iyfa2d6PvN6g5WJbqG9EDJ+Z2No0tBBilMlM\r\n27LhbHfNJj0sIj+xAQJBAP8YijxsH57Eui0cDhC2XTqjWobbF1T9XHnQ9ZnCZ9bL\r\nsPMjtBewBBPGttD36Hf4JOLn8NEaAL7vJh2a67CqRUECQQDSkoiEYgmMAEtHH0rL\r\nXRC9j4lQH5RjLAa18yGFUp0OS+D0NXOT2TIpPt1z8slpPqyJ00lk2jEQu8Yd2Vpn\r\n1CV9AkBSVfhgUkHOfA7fenurt0DWKV2Rw2t/eht8Eg8DpvTfJnWhtLdvIdffDjd5\r\nsVquRkCZoGVhCHSPLB9wVM2YAw1BAkEAgIB/4xnY7aD4T2zfPf+LScMgbs72xRaG\r\n+d5npG7n/WN84ksEP0OaguUkS6/sDdf7fxh7f5pPuwB8RJbxvs8OGQJAeV4/ZDlE\r\nCiWdLMxOdgTheIUS/URyeLfqEr2Ug1hjnZk4aU7fMGAQAaQYfdsrAgnIZsoP0C7a\r\ntV7H7fHaJvhGQA==\r\n-----END PRIVATE KEY-----\r\n",
+      "publickKey": "-----BEGIN PUBLIC KEY-----\r\nMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDR1CVtWu/jKC2xkZc50i/PHi8G\r\nl+9bXUtYQNj+Pr7mSQi9qHB+xeBgoqgTzSXHPpZcNvYSI4X7Gc7JURPbhskgss+t\r\nWj01Gautann7hiCQY0UUpbvvoNPkyNTluC4KAjUazARda5isE9Na3CtU185EuQ7+\r\nBMaN4BKSCPZWX/o1vQIDAQAB\r\n-----END PUBLIC KEY-----\r\n"
+    },
+    "coreMiddlewares": [
+      "meta",
+      "siteFile",
+      "notfound",
+      "bodyParser",
+      "overrideMethod"
+    ],
+    "appMiddlewares": [
+      "errorHandler"
+    ],
+    "appMiddleware": [
+      "errorHandler"
+    ]
+  },
+  "plugins": {
+    "onerror": {
+      "enable": true,
+      "package": "egg-onerror",
+      "name": "onerror",
+      "dependencies": [],
+      "optionalDependencies": [],
+      "env": [],
+      "from": "D:\\工作\\freelog-identity-provider\\node_modules\\egg\\config\\plugin.js",
+      "path": "D:\\工作\\freelog-identity-provider\\node_modules\\egg-onerror",
+      "version": "1.5.0"
+    },
+    "session": {
+      "enable": true,
+      "package": "egg-session",
+      "name": "session",
+      "dependencies": [],
+      "optionalDependencies": [],
+      "env": [],
+      "from": "D:\\工作\\freelog-identity-provider\\node_modules\\egg\\config\\plugin.js",
+      "path": "D:\\工作\\freelog-identity-provider\\node_modules\\egg-session",
+      "version": "2.1.1"
+    },
+    "i18n": {
+      "enable": true,
+      "package": "egg-i18n",
+      "name": "i18n",
+      "dependencies": [],
+      "optionalDependencies": [],
+      "env": [],
+      "from": "D:\\工作\\freelog-identity-provider\\node_modules\\egg\\config\\plugin.js",
+      "path": "D:\\工作\\freelog-identity-provider\\node_modules\\egg-i18n",
+      "version": "1.2.0"
+    },
+    "watcher": {
+      "enable": true,
+      "package": "egg-watcher",
+      "name": "watcher",
+      "dependencies": [],
+      "optionalDependencies": [],
+      "env": [],
+      "from": "D:\\工作\\freelog-identity-provider\\node_modules\\egg\\config\\plugin.js",
+      "path": "D:\\工作\\freelog-identity-provider\\node_modules\\egg-watcher",
+      "version": "2.2.0"
+    },
+    "multipart": {
+      "enable": true,
+      "package": "egg-multipart",
+      "name": "multipart",
+      "dependencies": [],
+      "optionalDependencies": [],
+      "env": [],
+      "from": "D:\\工作\\freelog-identity-provider\\node_modules\\egg\\config\\plugin.js",
+      "path": "D:\\工作\\freelog-identity-provider\\node_modules\\egg-multipart",
+      "version": "1.5.0"
+    },
+    "security": {
+      "enable": true,
+      "package": "egg-security",
+      "name": "security",
+      "dependencies": [],
+      "optionalDependencies": [
+        "session"
+      ],
+      "env": [],
+      "from": "D:\\工作\\freelog-identity-provider\\node_modules\\egg\\config\\plugin.js",
+      "path": "D:\\工作\\freelog-identity-provider\\node_modules\\egg-security",
+      "version": "1.12.1"
+    },
+    "development": {
+      "enable": true,
+      "package": "egg-development",
+      "name": "development",
+      "dependencies": [
+        "watcher"
+      ],
+      "optionalDependencies": [],
+      "env": [
+        "local"
+      ],
+      "from": "D:\\工作\\freelog-identity-provider\\node_modules\\egg\\config\\plugin.js",
+      "path": "D:\\工作\\freelog-identity-provider\\node_modules\\egg-development",
+      "version": "1.3.1"
+    },
+    "schedule": {
+      "enable": true,
+      "package": "egg-schedule",
+      "name": "schedule",
+      "dependencies": [],
+      "optionalDependencies": [],
+      "env": [],
+      "from": "D:\\工作\\freelog-identity-provider\\node_modules\\egg\\config\\plugin.js",
+      "path": "D:\\工作\\freelog-identity-provider\\node_modules\\egg-schedule",
+      "version": "2.6.0"
+    },
+    "logrotator": {
+      "enable": true,
+      "package": "egg-logrotator",
+      "name": "logrotator",
+      "dependencies": [
+        "schedule"
+      ],
+      "optionalDependencies": [],
+      "env": [],
+      "from": "D:\\工作\\freelog-identity-provider\\node_modules\\egg\\config\\plugin.js",
+      "path": "D:\\工作\\freelog-identity-provider\\node_modules\\egg-logrotator",
+      "version": "2.2.3"
+    },
+    "static": {
+      "enable": true,
+      "package": "egg-static",
+      "name": "static",
+      "dependencies": [],
+      "optionalDependencies": [],
+      "env": [],
+      "from": "D:\\工作\\freelog-identity-provider\\node_modules\\egg\\config\\plugin.js",
+      "path": "D:\\工作\\freelog-identity-provider\\node_modules\\egg-static",
+      "version": "1.4.1"
+    },
+    "jsonp": {
+      "enable": true,
+      "package": "egg-jsonp",
+      "name": "jsonp",
+      "dependencies": [],
+      "optionalDependencies": [
+        "security"
+      ],
+      "env": [],
+      "from": "D:\\工作\\freelog-identity-provider\\node_modules\\egg\\config\\plugin.js",
+      "path": "D:\\工作\\freelog-identity-provider\\node_modules\\egg-jsonp",
+      "version": "1.2.1"
+    },
+    "view": {
+      "enable": true,
+      "package": "egg-view",
+      "name": "view",
+      "dependencies": [],
+      "optionalDependencies": [],
+      "env": [],
+      "from": "D:\\工作\\freelog-identity-provider\\node_modules\\egg\\config\\plugin.js",
+      "path": "D:\\工作\\freelog-identity-provider\\node_modules\\egg-view",
+      "version": "1.1.2"
+    },
+    "freelogBase": {
+      "enable": true,
+      "package": "egg-freelog-base",
+      "name": "freelogBase",
+      "dependencies": [],
+      "optionalDependencies": [],
+      "env": [],
+      "from": "D:\\工作\\freelog-identity-provider\\config\\plugin.js",
+      "path": "D:\\工作\\freelog-identity-provider\\node_modules\\egg-freelog-base",
+      "version": "1.0.31"
+    }
+  }
+}

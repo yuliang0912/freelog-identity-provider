@@ -1,0 +1,41 @@
+{
+  "name": "freelog-identity-provider",
+  "version": "1.0.0",
+  "description": "飞致网络身份服务",
+  "private": true,
+  "dependencies": {
+    "bluebird": "^3.5.1",
+    "crypto": "^1.0.1",
+    "egg": "^1.9.0",
+    "egg-freelog-base": "^1.0.31",
+    "knex": "^0.13.0",
+    "lodash": "^4.17.4",
+    "moment": "^2.19.1",
+    "mysql2": "^1.4.2",
+    "node-uuid": "^1.4.8"
+  },
+  "engines": {
+    "node": ">=6.0.0"
+  },
+  "scripts": {
+    "start": "node index.js",
+    "stop": "egg-scripts stop",
+    "dev": "egg-bin dev",
+    "test": "npm run lint -- --fix && npm run test-local",
+    "test-local": "egg-bin test",
+    "cov": "egg-bin cov",
+    "lint": "eslint .",
+    "ci": "npm run lint && npm run cov",
+    "autod": "autod"
+  },
+  "ci": {
+    "version": "6, 8"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yuliang0912/freelog-identity-provider"
+  },
+  "author": "yuliang",
+  "license": "MIT",
+  "optionalDependencies": {}
+}
