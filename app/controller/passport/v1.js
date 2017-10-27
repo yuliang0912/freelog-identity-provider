@@ -8,11 +8,6 @@ const moment = require('moment')
 
 module.exports = app => {
     return class PassPortController extends app.Controller {
-
-        async index(ctx) {
-            ctx.success('hello')
-        }
-
         /**
          * 登录接口
          * @returns {Promise.<void>}
@@ -27,9 +22,9 @@ module.exports = app => {
             ctx.allowContentType({type: 'json'}).validate()
 
             let condition = {}
-            if (/^1[34578]\d{9}$/.test(loginName)) {
+            if (ctx.helper.commonRegex.mobile86.test(loginName)) {
                 condition.mobile = loginName
-            } else if (/^[A-Za-z\d]+([-_.][A-Za-z\d]+)*@([A-Za-z\d]+[-.])+[A-Za-z\d]{2,4}$/.test(loginName)) {
+            } else if (ctx.helper.commonRegex.email.test(loginName)) {
                 condition.email = loginName
             } else {
                 ctx.errors.push({loginName: '登录名必须是手机号或者邮箱'})

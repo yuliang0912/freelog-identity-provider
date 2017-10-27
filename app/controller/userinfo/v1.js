@@ -40,9 +40,10 @@ module.exports = app => {
             ctx.allowContentType({type: 'json'}).validate()
 
             let userInfo = {nickname, userName, password}
-            if (/^1[34578]\d{9}$/.test(loginName)) {
+
+            if (ctx.helper.commonRegex.mobile86.test(loginName)) {
                 userInfo.mobile = loginName
-            } else if (/^[A-Za-z\d]+([-_.][A-Za-z\d]+)*@([A-Za-z\d]+[-.])+[A-Za-z\d]{2,4}$/.test(loginName)) {
+            } else if (ctx.helper.commonRegex.email.test(loginName)) {
                 userInfo.email = loginName
             } else {
                 ctx.errors.push({loginName: '登录名必须是手机号或者邮箱'})

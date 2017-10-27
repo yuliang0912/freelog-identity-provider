@@ -6,8 +6,8 @@
   "dependencies": {
     "bluebird": "^3.5.1",
     "crypto": "^1.0.1",
-    "egg": "^1.9.0",
-    "egg-freelog-base": "^1.0.31",
+    "egg": "^1.10.0",
+    "egg-freelog-base": "^1.0.37",
     "knex": "^0.13.0",
     "lodash": "^4.17.4",
     "moment": "^2.19.1",
