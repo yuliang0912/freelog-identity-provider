@@ -74,5 +74,38 @@ module.exports = app => {
                 ctx.success(model)
             }).catch(ctx.error)
         }
+
+        /**
+         * 重置
+         * @param ctx
+         * @returns {Promise.<void>}
+         */
+        async resetPassword(ctx) {
+            let loginName = ctx.checkBody('loginName').exist().notEmpty().value
+            let password = ctx.checkBody('password').exist().len(6, 24).notEmpty().value
+
+            ctx.allowContentType({type: 'json'}).validate(false)
+
+            let condition = {}
+            if (ctx.helper.commonRegex.mobile86.test(loginName)) {
+                condition.mobile = loginName
+            } else if (ctx.helper.commonRegex.email.test(loginName)) {
+                condition.email = loginName
+            } else {
+                ctx.errors.push({loginName: '登录名必须是手机号或者邮箱'})
+                ctx.validate()
+            }
+
+            let userInfo = await dataProvider.userProvider.getUserInfo(condition).catch(ctx.error)
+            if (!userInfo) {
+                ctx.error({msg: '未找到有效用户'})
+            }
+
+            let newPassword = ctx.helper.generatePassword(userInfo.salt, password)
+
+            await dataProvider.userProvider.updateUserInfo({password: newPassword}, condition).bind(ctx).then(() => {
+                ctx.success(true)
+            }).catch(ctx.error)
+        }
     }
 }

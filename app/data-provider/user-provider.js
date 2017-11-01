@@ -49,6 +49,21 @@ module.exports = app => {
             return knex.user('user_info').insert(model)
         },
 
+        /**
+         * 更新用户信息
+         */
+        updateUserInfo(model, condition){
+
+            if (!type.object(model)) {
+                return Promise.reject(new Error("model must be object"))
+            }
+            if (!type.object(condition)) {
+                return Promise.reject(new Error("condition must be object"))
+            }
+
+            return knex.user('user_info').update(model).where(condition)
+        },
+
         getLoginUserInfo(loginName) {
             if (!loginName) {
                 return Promise.reject(new Error("loginName must be mobile or email"))
