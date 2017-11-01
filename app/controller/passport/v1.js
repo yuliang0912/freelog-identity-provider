@@ -7,6 +7,9 @@
 const moment = require('moment')
 
 module.exports = app => {
+
+    const dataProvider = app.dataProvider
+
     return class PassPortController extends app.Controller {
         /**
          * 登录接口
@@ -19,7 +22,7 @@ module.exports = app => {
             let returnUrl = ctx.checkBody("returnUrl").default('').value
             let jwtType = ctx.checkBody('jwtType').default('cookie').in(['cookie', 'header']).value
 
-            ctx.allowContentType({type: 'json'}).validate()
+            ctx.allowContentType({type: 'json'}).validate(false)
 
             let condition = {}
             if (ctx.helper.commonRegex.mobile86.test(loginName)) {
@@ -31,7 +34,7 @@ module.exports = app => {
                 ctx.validate()
             }
 
-            const userInfo = await ctx.service.userService.getUserInfo(condition)
+            const userInfo = await dataProvider.userProvider.getUserInfo(condition)
             if (!userInfo) {
                 ctx.error({msg: '用户名或密码错误', errCode: app.errCodeEnum.passWordError})
             }

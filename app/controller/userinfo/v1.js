@@ -5,6 +5,9 @@
 'use strict'
 
 module.exports = app => {
+
+    const dataProvider = app.dataProvider
+
     return class UserInfoController extends app.Controller {
 
         /**
@@ -15,7 +18,9 @@ module.exports = app => {
         async show(ctx) {
             let userId = ctx.checkParams('id').exist().toInt().gt(10000).value
 
-            await ctx.validate().service.userService.getUserInfo({userId}).then(userInfo => {
+            ctx.validate()
+
+            await dataProvider.userProvider.getUserInfo({userId}).then(userInfo => {
                 ctx.helper.deleteProperty(userInfo, 'salt', 'password')
                 ctx.success(userInfo)
             })
@@ -51,18 +56,18 @@ module.exports = app => {
             }
 
             if (userInfo.mobile) {
-                await ctx.service.userService.getUserInfo({mobile: loginName}).then(user => {
+                await dataProvider.userProvider.getUserInfo({mobile: loginName}).then(user => {
                     user && ctx.error({msg: '手机号已经被注册'})
                 })
             }
             if (userInfo.email) {
-                await ctx.service.userService.getUserInfo({email: loginName}).then(user => {
+                await dataProvider.userProvider.getUserInfo({email: loginName}).then(user => {
                     user && ctx.error({msg: '电子邮箱已经被注册'})
                 })
             }
 
-            await ctx.service.userService.createUser(userInfo).bind(ctx).then(data => {
-                return data.length ? ctx.service.userService.getUserInfo({userId: data[0]})
+            await dataProvider.userProvider.createUser(userInfo).bind(ctx).then(data => {
+                return data.length ? dataProvider.userProvider.getUserInfo({userId: data[0]})
                     : Promise.reject('用户创建失败')
             }).then(model => {
                 ctx.helper.deleteProperty(model, 'salt', 'tokenSn', 'password')

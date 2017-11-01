@@ -7,7 +7,7 @@ module.exports = appInfo => {
 
     const config = {
 
-        middleware: ['errorHandler'],
+        middleware: ['errorHandler', 'identiyAuthentication'],
 
         /**
          * DB-mysql相关配置

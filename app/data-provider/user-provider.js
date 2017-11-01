@@ -1,14 +1,18 @@
 /**
- * Created by yuliang on 2017/10/19.
+ * Created by yuliang on 2017/11/1.
  */
 
 'use strict'
 
 const moment = require('moment')
 const uuid = require('node-uuid')
+const helper = require('../extend/helper')
 
 module.exports = app => {
-    return class UserInfoService extends app.Service {
+
+    const {type, knex} = app
+
+    return {
 
         /**
          * 获取用户信息
@@ -16,14 +20,13 @@ module.exports = app => {
          * @returns {Promise.<*>}
          */
         getUserInfo(condition) {
-            let {type, knex} = this.app
 
             if (!type.object(condition)) {
                 return Promise.reject(new Error("condition must be object"))
             }
 
             return knex.user('user_info').where(condition).first()
-        }
+        },
 
         /**
          * 创建用户
@@ -31,7 +34,6 @@ module.exports = app => {
          * @returns {Promise.<*>}
          */
         createUser(model) {
-            let {type, knex} = this.app
 
             if (!type.object(model)) {
                 return Promise.reject(new Error("model must be object"))
@@ -41,17 +43,16 @@ module.exports = app => {
             model.userRole = 1
             model.createDate = moment().toDate()
             model.salt = uuid.v4().replace(/-/g, '')
-            model.password = this.ctx.helper.generatePassword(model.salt, model.password)
+            model.password = helper.generatePassword(model.salt, model.password)
             model.tokenSn = uuid.v4().replace(/-/g, '')
 
             return knex.user('user_info').insert(model)
-        }
+        },
 
         getLoginUserInfo(loginName) {
             if (!loginName) {
                 return Promise.reject(new Error("loginName must be mobile or email"))
             }
-
         }
     }
 }
