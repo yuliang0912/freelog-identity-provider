@@ -36,11 +36,7 @@ module.exports = app => {
             let loginName = ctx.checkBody('loginName').exist().notEmpty().value
             let password = ctx.checkBody('password').exist().len(6, 24).notEmpty().value
             let nickname = ctx.checkBody('nickname').exist().len(2, 20).notEmpty().value
-            let userName = ctx.checkBody('userName').default('').value
-
-            if (userName !== undefined && userName !== '' && (userName.length < 2 || userName.length > 20)) {
-                ctx.errors.push({userName: '用户姓名必须在2到20个字符之间'})
-            }
+            let userName = ctx.checkBody('userName').optional().len(2, 20).default('').value
 
             ctx.allowContentType({type: 'json'}).validate()
 
