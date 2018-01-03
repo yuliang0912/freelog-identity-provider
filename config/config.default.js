@@ -1,7 +1,7 @@
 'use strict';
 
 const fs = require('fs')
-const dbConfig = require('./db_config/dbconfig_local')
+const Promise = require('bluebird')
 
 module.exports = appInfo => {
 
@@ -12,7 +12,32 @@ module.exports = appInfo => {
         /**
          * DB-mysql相关配置
          */
-        dbConfig: dbConfig,
+        dbConfig: {
+            /**
+             * 用户相关DB配置
+             */
+            user: {
+                client: 'mysql2',
+                connection: {
+                    host: '192.168.0.99',
+                    user: 'root',
+                    password: 'yuliang@@',
+                    database: 'fr_user_info',
+                    charset: 'utf8',
+                    timezone: '+08:00',
+                    bigNumberStrings: true,
+                    supportBigNumbers: true,
+                    connectTimeout: 10000,
+                    Promise: Promise
+                },
+                pool: {
+                    maxConnections: 50,
+                    minConnections: 2,
+                },
+                acquireConnectionTimeout: 10000,
+                debug: false
+            },
+        },
 
         security: {
             xframe: {
@@ -23,7 +48,7 @@ module.exports = appInfo => {
             }
         },
 
-        gatewayUrl: "http://192.168.0.3:1201",
+        gatewayUrl: "http://192.168.0.99:1201",
 
         jwtAuth: {
             cookieName: 'authInfo',

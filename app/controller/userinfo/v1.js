@@ -38,7 +38,7 @@ module.exports = app => {
             let nickname = ctx.checkBody('nickname').exist().len(2, 20).notEmpty().value
             let userName = ctx.checkBody('userName').optional().len(2, 20).default('').value
 
-            ctx.allowContentType({type: 'json'}).validate()
+            ctx.allowContentType({type: 'json'}).validate(false)
 
             let userInfo = {nickname, userName, password}
 
@@ -48,7 +48,7 @@ module.exports = app => {
                 userInfo.email = loginName
             } else {
                 ctx.errors.push({loginName: '登录名必须是手机号或者邮箱'})
-                ctx.validate()
+                ctx.validate(false)
             }
 
             if (userInfo.mobile) {
@@ -89,7 +89,7 @@ module.exports = app => {
                 condition.email = loginName
             } else {
                 ctx.errors.push({loginName: '登录名必须是手机号或者邮箱'})
-                ctx.validate()
+                ctx.validate(false)
             }
 
             let userInfo = await dataProvider.userProvider.getUserInfo(condition).catch(ctx.error)

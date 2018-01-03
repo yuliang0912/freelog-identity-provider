@@ -31,7 +31,7 @@ module.exports = app => {
                 condition.email = loginName
             } else {
                 ctx.errors.push({loginName: '登录名必须是手机号或者邮箱'})
-                ctx.validate()
+                ctx.validate(false)
             }
 
             const userInfo = await dataProvider.userProvider.getUserInfo(condition)
@@ -49,6 +49,8 @@ module.exports = app => {
             if (jwtType === 'cookie') {
                 ctx.cookies.set(app.config.jwtAuth.cookieName, jwtStr, {
                     httpOnly: true,
+                    //domain: 'freelog.com',
+                    overwrite: true,
                     expires: isRememer ? moment().add(7, 'days').toDate() : undefined
                 })
             } else {
