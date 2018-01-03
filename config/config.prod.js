@@ -8,7 +8,7 @@ module.exports = appInfo => {
          * DB-mysql相关配置
          */
         dbConfig: {
-            node: {
+            user: {
                 client: 'mysql2',
                 connection: {
                     host: 'rm-wz9wj9435a0428942.mysql.rds.aliyuncs.com',
