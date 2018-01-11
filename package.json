@@ -7,7 +7,7 @@
     "bluebird": "^3.5.1",
     "crypto": "^1.0.1",
     "egg": "^1.12.0",
-    "egg-freelog-base": "^1.1.23",
+    "egg-freelog-base": "^1.1.26",
     "knex": "^0.13.0",
     "lodash": "^4.17.4",
     "moment": "^2.20.1",

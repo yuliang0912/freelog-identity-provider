@@ -31,7 +31,7 @@ module.exports = app => {
          * @param ctx
          * @returns {Promise.<void>}
          */
-        async create(ctx) {
+        async register(ctx) {
 
             let loginName = ctx.checkBody('loginName').exist().notEmpty().value
             let password = ctx.checkBody('password').exist().len(6, 24).notEmpty().value
