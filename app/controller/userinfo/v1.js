@@ -21,7 +21,26 @@ module.exports = app => {
             ctx.validate()
 
             await dataProvider.userProvider.getUserInfo({userId}).then(userInfo => {
-                ctx.helper.deleteProperty(userInfo, 'salt', 'password')
+                if (userInfo) {
+                    ctx.helper.deleteProperty(userInfo, 'salt', 'password')
+                }
+                ctx.success(userInfo)
+            })
+        }
+
+        /**
+         * 获取当前登录用户信息
+         * @param ctx
+         * @returns {Promise<void>}
+         */
+        async current(ctx) {
+
+            ctx.validate()
+
+            await dataProvider.userProvider.getUserInfo({userId: ctx.request.userId}).then(userInfo => {
+                if (userInfo) {
+                    ctx.helper.deleteProperty(userInfo, 'salt', 'password')
+                }
                 ctx.success(userInfo)
             })
         }

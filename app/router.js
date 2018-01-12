@@ -17,4 +17,6 @@ module.exports = app => {
     app.post('/v1/userinfos/resetPassword', app.controller.userinfo.v1.resetPassword)
 
     app.post('/v1/userinfos/register', app.controller.userinfo.v1.register)
+
+    app.get('/v1/userinfos/current', app.controller.userinfo.v1.current)
 }
