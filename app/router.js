@@ -18,5 +18,7 @@ module.exports = app => {
 
     app.post('/v1/userinfos/register', app.controller.userinfo.v1.register)
 
+    app.post('/v1/userinfos/updatePassword', app.controller.userinfo.v1.updatePassword)
+    
     app.get('/v1/userinfos/current', app.controller.userinfo.v1.current)
 }

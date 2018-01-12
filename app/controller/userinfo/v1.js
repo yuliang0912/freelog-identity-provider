@@ -4,6 +4,8 @@
 
 'use strict'
 
+const uuid = require('node-uuid')
+
 module.exports = app => {
 
     const dataProvider = app.dataProvider
@@ -119,6 +121,39 @@ module.exports = app => {
             let newPassword = ctx.helper.generatePassword(userInfo.salt, password)
 
             await dataProvider.userProvider.updateUserInfo({password: newPassword}, condition).bind(ctx).then(() => {
+                ctx.success(true)
+            }).catch(ctx.error)
+        }
+
+        /**
+         * 修改密码
+         * @param ctx
+         * @returns {Promise<void>}
+         */
+        async updatePassword(ctx) {
+
+            let oldPassword = ctx.checkBody('oldPassword').exist().notBlank().trim().len(6, 50).value
+            let newPassword = ctx.checkBody('newPassword').exist().notBlank().trim().len(6, 50).value
+
+            ctx.allowContentType({type: 'json'}).validate()
+
+            const userInfo = await dataProvider.userProvider.getUserInfo({userId: ctx.request.userId})
+
+            if (!userInfo) {
+                ctx.error({msg: '用户名或密码错误', errCode: app.errCodeEnum.passWordError})
+            }
+
+            if (ctx.helper.generatePassword(userInfo.salt, oldPassword) !== userInfo.password) {
+                ctx.error({msg: '原始密码错误', errCode: app.errCodeEnum.passWordError})
+            }
+
+            let model = {}
+
+            model.salt = uuid.v4().replace(/-/g, '')
+            model.password = ctx.helper.generatePassword(model.salt, newPassword)
+            model.tokenSn = uuid.v4().replace(/-/g, '')
+
+            await dataProvider.userProvider.updateUserInfo(model, {userId: ctx.request.userId}).bind(ctx).then(() => {
                 ctx.success(true)
             }).catch(ctx.error)
         }
