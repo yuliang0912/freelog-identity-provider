@@ -49,7 +49,7 @@ module.exports = app => {
             if (jwtType === 'cookie') {
                 ctx.cookies.set(app.config.jwtAuth.cookieName, jwtStr, {
                     httpOnly: true,
-                    //domain: 'freelog.com',
+                    domain: 'freelog.com',
                     overwrite: true,
                     expires: isRememer ? moment().add(7, 'days').toDate() : undefined
                 })
