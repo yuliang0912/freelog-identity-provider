@@ -71,9 +71,9 @@ module.exports = app => {
 
             let returnUrl = ctx.checkQuery("returnUrl").default('').value
 
-            ctx.cookies.set(app.config.jwtAuth.cookieName, null, {
-                expires: moment().add(-1, 'days').toDate()
-            })
+            ctx.cookies.set('authInfo', null, {
+                domain: 'freelog.com'
+            });
 
             if (returnUrl) {
                 ctx.redirect(returnUrl)

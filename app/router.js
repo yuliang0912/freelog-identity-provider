@@ -5,10 +5,6 @@
 'use strict';
 
 module.exports = app => {
-    /**
-     * restful wiki: http://eggjs.org/zh-cn/basics/router.html
-     */
-    app.resources('/v1/userinfos', '/v1/userinfos', app.controller.userinfo.v1)
 
     app.post('/v1/passport/login', app.controller.passport.v1.login)
 
@@ -21,4 +17,9 @@ module.exports = app => {
     app.post('/v1/userinfos/updatePassword', app.controller.userinfo.v1.updatePassword)
     
     app.get('/v1/userinfos/current', app.controller.userinfo.v1.current)
+
+    /**
+     * restful wiki: http://eggjs.org/zh-cn/basics/router.html
+     */
+    app.resources('/v1/userinfos', '/v1/userinfos', app.controller.userinfo.v1)
 }
