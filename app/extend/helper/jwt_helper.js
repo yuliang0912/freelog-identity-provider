@@ -4,7 +4,7 @@
 
 'use strict'
 
-const uuid = require('node-uuid')
+const uuid = require('uuid')
 const crypto = require('egg-freelog-base/app/extend/helper/crypto_helper')
 
 const expireSpan = 1296000  //过期时间设置为7天

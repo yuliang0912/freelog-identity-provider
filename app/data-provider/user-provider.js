@@ -5,7 +5,7 @@
 'use strict'
 
 const moment = require('moment')
-const uuid = require('node-uuid')
+const uuid = require('uuid')
 const helper = require('../extend/helper')
 
 module.exports = app => {
