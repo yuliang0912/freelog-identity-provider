@@ -5,7 +5,7 @@
   "private": true,
   "dependencies": {
     "bluebird": "^3.5.1",
-    "egg": "^2.0.0",
+    "egg": "^2.2.1",
     "egg-freelog-base": "^1.1.31",
     "knex": "^0.13.0",
     "lodash": "^4.17.4",

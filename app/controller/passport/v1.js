@@ -16,9 +16,9 @@ module.exports = app => {
          * @returns {Promise.<void>}
          */
         async login(ctx) {
-            let loginName = ctx.checkBody("loginName").notEmpty().value
+            let loginName = ctx.checkBody("loginName").exist().notEmpty().value
             let password = ctx.checkBody('password').exist().len(6, 24).notEmpty().value
-            let isRememer = ctx.checkBody("isRememer").default(0).in([0, 1]).toInt().value
+            let isRememer = ctx.checkBody("isRememer").default(0).toInt().in([0, 1]).value
             let returnUrl = ctx.checkBody("returnUrl").default('').value
             let jwtType = ctx.checkBody('jwtType').default('cookie').in(['cookie', 'header']).value
 
@@ -48,7 +48,7 @@ module.exports = app => {
 
             if (jwtType === 'cookie') {
                 ctx.cookies.set(app.config.jwtAuth.cookieName, jwtStr, {
-                    httpOnly: true,
+                    httpOnly: false,
                     domain: 'freelog.com',
                     overwrite: true,
                     expires: isRememer ? moment().add(7, 'days').toDate() : undefined
@@ -69,9 +69,11 @@ module.exports = app => {
          */
         async logout(ctx) {
 
-            let returnUrl = ctx.checkQuery("returnUrl").default('').value
+            let returnUrl = ctx.checkQuery("returnUrl").optional().decodeURIComponent().isUrl().value
 
-            ctx.cookies.set('authInfo', null, {
+            ctx.validate(false)
+
+            ctx.cookies.set(app.config.jwtAuth.cookieName, null, {
                 domain: 'freelog.com'
             });
 

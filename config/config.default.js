@@ -48,7 +48,7 @@ module.exports = appInfo => {
             }
         },
 
-        gatewayUrl: "http://192.168.0.99:1201",
+        gatewayUrl: "http://api.freelog.com",
 
         jwtAuth: {
             cookieName: 'authInfo',
