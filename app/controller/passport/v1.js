@@ -34,18 +34,18 @@ module.exports = class PassPortController extends Controller {
 
         const userInfo = await ctx.dal.userProvider.getUserInfo(condition)
         if (!userInfo) {
-            ctx.error({msg: '用户名或密码错误', errCode: app.errCodeEnum.passWordError})
+            ctx.error({msg: '用户名或密码错误', errCode: ctx.app.errCodeEnum.passWordError})
         }
 
         if (ctx.helper.generatePassword(userInfo.salt, password) !== userInfo.password) {
-            ctx.error({msg: '用户名或密码错误', errCode: app.errCodeEnum.passWordError})
+            ctx.error({msg: '用户名或密码错误', errCode: ctx.app.errCodeEnum.passWordError})
         }
 
         ctx.helper.deleteProperty(userInfo, 'salt', 'password')
-        const jwtStr = ctx.helper.jwtHelper.createJwt(userInfo, app.config.jwtAuth.privateKey, userInfo.tokenSn)
+        const jwtStr = ctx.helper.jwtHelper.createJwt(userInfo, ctx.app.config.jwtAuth.privateKey, userInfo.tokenSn)
 
         if (jwtType === 'cookie') {
-            ctx.cookies.set(app.config.jwtAuth.cookieName, jwtStr, {
+            ctx.cookies.set(ctx.app.config.jwtAuth.cookieName, jwtStr, {
                 httpOnly: false,
                 domain: 'freelog.com',
                 overwrite: true,
@@ -71,7 +71,7 @@ module.exports = class PassPortController extends Controller {
 
         ctx.validate(false)
 
-        ctx.cookies.set(app.config.jwtAuth.cookieName, null, {
+        ctx.cookies.set(ctx.app.config.jwtAuth.cookieName, null, {
             domain: 'freelog.com'
         });
 

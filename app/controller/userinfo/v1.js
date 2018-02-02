@@ -137,11 +137,11 @@ module.exports = class UserInfoController extends Controller {
         const userInfo = await ctx.dal.userProvider.getUserInfo({userId: ctx.request.userId})
 
         if (!userInfo) {
-            ctx.error({msg: '用户名或密码错误', errCode: app.errCodeEnum.passWordError})
+            ctx.error({msg: '用户名或密码错误', errCode: ctx.app.errCodeEnum.passWordError})
         }
 
         if (ctx.helper.generatePassword(userInfo.salt, oldPassword) !== userInfo.password) {
-            ctx.error({msg: '原始密码错误', errCode: app.errCodeEnum.passWordError})
+            ctx.error({msg: '原始密码错误', errCode: ctx.app.errCodeEnum.passWordError})
         }
 
         let model = {}
