@@ -4,70 +4,51 @@
 
 'use strict'
 
-const moment = require('moment')
 const uuid = require('uuid')
+const moment = require('moment')
 const helper = require('../extend/helper')
+const KnexBaseOperation = require('egg-freelog-database/lib/database/knex-base-operation')
 
-module.exports = app => {
+module.exports = class UserProvider extends KnexBaseOperation {
 
-    const {type, knex} = app
+    constructor(app) {
+        super(app.knex.user("user_info"), 'userId')
+        this.app = app
+    }
 
-    return {
+    /**
+     * 获取用户信息
+     * @param condition
+     * @returns {Promise.<*>}
+     */
+    getUserInfo(condition) {
+        return super.findOne(condition)
+    }
 
-        /**
-         * 获取用户信息
-         * @param condition
-         * @returns {Promise.<*>}
-         */
-        getUserInfo(condition) {
+    /**
+     * 创建用户
+     * @param model
+     * @returns {Promise.<*>}
+     */
+    createUser(model) {
 
-            if (!type.object(condition)) {
-                return Promise.reject(new Error("condition must be object"))
-            }
-
-            return knex.user('user_info').where(condition).first()
-        },
-
-        /**
-         * 创建用户
-         * @param model
-         * @returns {Promise.<*>}
-         */
-        createUser(model) {
-
-            if (!type.object(model)) {
-                return Promise.reject(new Error("model must be object"))
-            }
-
-            model.status = 1
-            model.userRole = 1
-            model.createDate = moment().toDate()
-            model.salt = uuid.v4().replace(/-/g, '')
-            model.password = helper.generatePassword(model.salt, model.password)
-            model.tokenSn = uuid.v4().replace(/-/g, '')
-
-            return knex.user('user_info').insert(model)
-        },
-
-        /**
-         * 更新用户信息
-         */
-        updateUserInfo(model, condition){
-
-            if (!type.object(model)) {
-                return Promise.reject(new Error("model must be object"))
-            }
-            if (!type.object(condition)) {
-                return Promise.reject(new Error("condition must be object"))
-            }
-
-            return knex.user('user_info').update(model).where(condition)
-        },
-
-        getLoginUserInfo(loginName) {
-            if (!loginName) {
-                return Promise.reject(new Error("loginName must be mobile or email"))
-            }
+        if (!super.type.object(model)) {
+            return Promise.reject(new Error("model must be object"))
         }
+        model.status = 1
+        model.userRole = 1
+        model.createDate = moment().toDate()
+        model.salt = uuid.v4().replace(/-/g, '')
+        model.password = helper.generatePassword(model.salt, model.password)
+        model.tokenSn = uuid.v4().replace(/-/g, '')
+
+        return super.create(model)
+    }
+
+    /**
+     * 更新用户信息
+     */
+    updateUserInfo(model, condition) {
+        return super.update(model, condition)
     }
 }

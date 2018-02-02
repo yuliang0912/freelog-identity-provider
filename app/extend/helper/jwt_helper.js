@@ -7,7 +7,7 @@
 const uuid = require('uuid')
 const crypto = require('egg-freelog-base/app/extend/helper/crypto_helper')
 
-const expireSpan = 1296000  //过期时间设置为7天
+const expireSpan = 1296000  //过期时间设置为14天
 const jwtBaseInfo = Object.freeze({
     iss: "FREE-LOG-IDENTITY-PROVIDER",
     sub: "user",

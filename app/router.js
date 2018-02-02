@@ -6,20 +6,22 @@
 
 module.exports = app => {
 
-    app.post('/v1/passport/login', app.controller.passport.v1.login)
+    const {router, controller} = app;
 
-    app.get('/v1/passport/logout', app.controller.passport.v1.logout)
+    router.post('/v1/passport/login', controller.passport.v1.login)
 
-    app.post('/v1/userinfos/resetPassword', app.controller.userinfo.v1.resetPassword)
+    router.get('/v1/passport/logout', controller.passport.v1.logout)
 
-    app.post('/v1/userinfos/register', app.controller.userinfo.v1.register)
+    router.post('/v1/userinfos/resetPassword', controller.userinfo.v1.resetPassword)
 
-    app.post('/v1/userinfos/updatePassword', app.controller.userinfo.v1.updatePassword)
-    
-    app.get('/v1/userinfos/current', app.controller.userinfo.v1.current)
+    router.post('/v1/userinfos/register', controller.userinfo.v1.register)
+
+    router.post('/v1/userinfos/updatePassword', controller.userinfo.v1.updatePassword)
+
+    router.get('/v1/userinfos/current', controller.userinfo.v1.current)
 
     /**
      * restful wiki: http://eggjs.org/zh-cn/basics/router.html
      */
-    app.resources('/v1/userinfos', '/v1/userinfos', app.controller.userinfo.v1)
+    router.resources('/v1/userinfos', '/v1/userinfos', controller.userinfo.v1)
 }
