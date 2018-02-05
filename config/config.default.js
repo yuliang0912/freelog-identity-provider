@@ -11,7 +11,7 @@ module.exports = appInfo => {
         /**
          * DB-mysql相关配置
          */
-        dbConfig: {
+        knex: {
             /**
              * 用户相关DB配置
              */
