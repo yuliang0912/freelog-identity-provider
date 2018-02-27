@@ -8,6 +8,7 @@ module.exports = app => {
             return {
                 groupId: ret.groupId,
                 groupName: ret.groupName,
+                groupType: ret.groupType,
                 userId: ret.userId,
                 members: ret.members,
                 memberCount: ret.memberCount,
