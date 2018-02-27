@@ -20,8 +20,14 @@ module.exports = app => {
 
     router.get('/v1/userinfos/current', controller.userinfo.v1.current)
 
+    router.get('/v1/groups/list', controller.group.v1.list)
+
+    router.post('/v1/groups/operationMembers/:groupId', controller.group.v1.operationMembers)
+
     /**
      * restful wiki: http://eggjs.org/zh-cn/basics/router.html
      */
     router.resources('/v1/userinfos', '/v1/userinfos', controller.userinfo.v1)
+
+    router.resources('/v1/groups', '/v1/groups', controller.group.v1)
 }

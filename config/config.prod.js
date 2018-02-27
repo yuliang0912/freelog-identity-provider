@@ -19,6 +19,10 @@ module.exports = appInfo => {
             },
         },
 
+        mongoose: {
+            url: "mongodb://root:Ff233109@dds-wz9b5420c30a27941546-pub.mongodb.rds.aliyuncs.com:3717,dds-wz9b5420c30a27942267-pub.mongodb.rds.aliyuncs.com:3717/group?replicaSet=mgset-5016983"
+        },
+
         /**
          * api网关内网地址
          */

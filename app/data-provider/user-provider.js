@@ -13,7 +13,6 @@ module.exports = class UserProvider extends KnexBaseOperation {
 
     constructor(app) {
         super(app.knex.user("user_info"), 'userId')
-        this.app = app
     }
 
     /**
@@ -50,5 +49,18 @@ module.exports = class UserProvider extends KnexBaseOperation {
      */
     updateUserInfo(model, condition) {
         return super.update(model, condition)
+    }
+
+    /**
+     * 批量多个用户信息
+     * @param condition
+     */
+    getUserListByUserIds(userIds) {
+
+        if (!Array.isArray(userIds) || !userIds.length) {
+            return Promise.resolve([])
+        }
+
+        return super.queryChain.whereIn('userId', userIds).select()
     }
 }

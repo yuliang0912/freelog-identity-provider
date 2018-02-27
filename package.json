@@ -6,11 +6,12 @@
   "dependencies": {
     "bluebird": "^3.5.1",
     "egg": "^2.3.0",
-    "egg-freelog-base": "^1.1.33",
-    "egg-freelog-database": "^1.0.3",
-    "knex": "^0.14.2",
+    "egg-freelog-base": "^1.1.37",
+    "egg-freelog-database": "^1.0.5",
+    "knex": "^0.14.4",
     "lodash": "^4.17.5",
     "moment": "^2.20.1",
+    "mongoose": "^5.0.7",
     "mysql": "^2.15.0",
     "uuid": "^3.2.1"
   },
