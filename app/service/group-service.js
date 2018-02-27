@@ -10,7 +10,7 @@ module.exports = class GroupService extends Service {
      */
     async createGroup({groupId, groupName, groupType, members}) {
 
-        let {ctx} = this
+        let {ctx, config} = this
         let memberList = []
 
         await ctx.dal.groupProvider.findOne({groupId}).then(group => {
