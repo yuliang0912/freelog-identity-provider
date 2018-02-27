@@ -26,6 +26,6 @@ module.exports = appInfo => {
         /**
          * api网关内网地址
          */
-        gatewayUrl: "http://39.108.77.211",
+        gatewayUrl: "http://172.18.215.224:8895",
     }
 }
