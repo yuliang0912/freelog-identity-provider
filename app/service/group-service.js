@@ -42,7 +42,7 @@ module.exports = class GroupService extends Service {
         }
 
         return ctx.dal.groupProvider.create({
-            groupId,
+            groupId: `group_${groupType === 1 ? 'user' : 'node'}_${this.app.mongoose.getNewObjectId()}`,
             groupName,
             groupType,
             userId: ctx.request.userId,

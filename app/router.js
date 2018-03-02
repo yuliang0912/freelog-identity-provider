@@ -24,6 +24,8 @@ module.exports = app => {
 
     router.post('/v1/groups/operationMembers/:groupId', controller.group.v1.operationMembers)
 
+    router.get('/v1/groups/isExistMember', controller.group.v1.isExistMember)
+
     /**
      * restful wiki: http://eggjs.org/zh-cn/basics/router.html
      */
