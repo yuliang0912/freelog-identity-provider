@@ -18,7 +18,7 @@ module.exports = class GroupProvider extends MongoBaseOperation {
     async getGroupPageList(condition, page, pageSize) {
 
         let totalItemTask = super.count(condition)
-        let dataListTask = await super.findPageList(condition, page, pageSize, 'groupId groupName groupType memberCount status createDate ', 'createDate')
+        let dataListTask = await super.findPageList(condition, page, pageSize, 'groupId groupName groupType userId memberCount status createDate ', 'createDate')
 
         return Promise.all([totalItemTask, dataListTask]).then(([totalItem, dataList]) => {
             return {page, pageSize, totalItem, dataList}
