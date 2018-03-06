@@ -10,9 +10,6 @@ COPY . /data/freelog-identity-provider
 
 RUN npm install
 
-#ENV
-#VOLUME ['/opt/logs','/opt/logs/db','/opt/logs/koa','/opt/logs/track']
-
 ENV NODE_ENV test
 ENV EGG_SERVER_ENV test
 ENV PORT 5011
