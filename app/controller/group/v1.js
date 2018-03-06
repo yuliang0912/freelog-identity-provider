@@ -86,13 +86,16 @@ module.exports = class UserGroupController extends Controller {
     async operationMembers(ctx) {
 
         let groupId = ctx.checkParams('groupId').isGroupId().value
-        let addMembers = ctx.checkBody('addMembers').optional().isArray().len(1, 200).value
-        let removeMembers = ctx.checkBody('removeMembers').optional().isArray().len(1, 200).value
+        let addMembers = ctx.checkBody('addMembers').optional().isArray().len(0, 200).value
+        let removeMembers = ctx.checkBody('removeMembers').optional().isArray().len(0, 200).value
 
         ctx.allowContentType({type: 'json'}).validate()
 
         if (!addMembers && !removeMembers) {
             ctx.error({msg: '参数addMembers和removeMembers最少需要存在一个'})
+        }
+        if (!addMembers.length && !removeMembers.length) {
+            ctx.error({msg: '参数addMembers和removeMembers最少需要存在一个有效参数'})
         }
 
         let groupInfo = await ctx.dal.groupProvider.findOne({groupId})
