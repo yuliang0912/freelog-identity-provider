@@ -4,6 +4,31 @@ const Controller = require('egg').Controller;
 
 module.exports = class UserGroupController extends Controller {
 
+
+    /**
+     * 分组列表
+     * @param ctx
+     * @returns {Promise<void>}
+     */
+    async index(ctx) {
+
+        let page = ctx.checkQuery("page").default(1).gt(0).toInt().value
+        let pageSize = ctx.checkQuery("pageSize").default(10).gt(0).lt(101).toInt().value
+        let groupType = ctx.checkQuery("groupType").optional().toInt().in([1, 2]).value
+
+        ctx.validate()
+
+        let condition = {
+            userId: ctx.request.userId
+        }
+        if (groupType) {
+            condition.groupType = groupType
+        }
+
+        await ctx.dal.groupProvider.getGroupPageList(condition, page, pageSize)
+            .then(data => ctx.success(data)).catch(err => ctx.error(err))
+    }
+
     /**
      * 创建用户分组
      * @param ctx
@@ -61,10 +86,14 @@ module.exports = class UserGroupController extends Controller {
     async operationMembers(ctx) {
 
         let groupId = ctx.checkParams('groupId').isGroupId().value
-        let members = ctx.checkBody('members').exist().isArray().len(1, 200).value
-        let operationType = ctx.checkBody('operationType').exist().toInt().in([1, 2]).value
+        let addMembers = ctx.checkBody('addMembers').optional().isArray().len(1, 200).value
+        let removeMembers = ctx.checkBody('removeMembers').optional().isArray().len(1, 200).value
 
         ctx.allowContentType({type: 'json'}).validate()
+
+        if (!addMembers && !removeMembers) {
+            ctx.error({msg: '参数addMembers和removeMembers最少需要存在一个'})
+        }
 
         let groupInfo = await ctx.dal.groupProvider.findOne({groupId})
 
@@ -72,8 +101,11 @@ module.exports = class UserGroupController extends Controller {
             ctx.error({msg: 'groupId错误或者没有操作权限'})
         }
 
-        await  ctx.service.groupService.operationMembers({groupInfo, members, operationType})
-            .then(data => ctx.success(true)).catch(err => ctx.error(err))
+        await ctx.service.groupService.operationMembers({
+            groupInfo,
+            addMembers: addMembers || [],
+            removeMembers: removeMembers || []
+        }).then(data => ctx.success(true)).catch(err => ctx.error(err))
     }
 
     /**

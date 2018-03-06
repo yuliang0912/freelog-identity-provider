@@ -1,6 +1,7 @@
 'use strict'
 
 const Service = require('egg').Service
+const lodash = require('lodash')
 
 module.exports = class GroupService extends Service {
 
@@ -22,7 +23,7 @@ module.exports = class GroupService extends Service {
             memberList = await ctx.dal.userProvider.getUserListByUserIds(members).map(item => {
                 return {
                     memberId: item.userId,
-                    memberName: item.userName
+                    memberName: item.nickname || item.userName
                 }
             })
         }
@@ -58,28 +59,28 @@ module.exports = class GroupService extends Service {
      * @param operationType
      * @returns {Promise<void>}
      */
-    async operationMembers({groupInfo, members, operationType}) {
+    async operationMembers({groupInfo, addMembers, removeMembers}) {
         let {ctx} = this
 
-        if (operationType === 2) {
-            return this.removeGroupMembers({groupInfo, members})
-        }
-
-        if (groupInfo.memberCount + members.length > 200) {
+        if (groupInfo.memberCount + addMembers.length > 200) {
             ctx.error({msg: '群组中成员数量超出最大限制(200)'})
         }
 
+        addMembers = addMembers.filter(memberId => {
+            return !groupInfo.members.some(item => item.memberId === memberId)
+        })
+
         let memberList = []
-        if (groupInfo.groupType === 1) {
-            memberList = await ctx.dal.userProvider.getUserListByUserIds(members).map(item => {
+        if (addMembers.length && groupInfo.groupType === 1) {
+            memberList = await ctx.dal.userProvider.getUserListByUserIds(addMembers).map(item => {
                 return {
                     memberId: item.userId,
                     memberName: item.nickname || item.userName
                 }
             })
         }
-        else if (groupType === 2) {
-            memberList = await ctx.curlIntranetApi(`${config.gatewayUrl}/api/v1/nodes/list?nodeIds=${members.toString()}`).then(nodeIds => {
+        else if (addMembers.length && groupInfo.groupType === 2) {
+            memberList = await ctx.curlIntranetApi(`${config.gatewayUrl}/api/v1/nodes/list?nodeIds=${addMembers.toString()}`).then(nodeIds => {
                 return nodeIds.map(item => {
                     return {
                         memberId: item.nodeId,
@@ -88,36 +89,11 @@ module.exports = class GroupService extends Service {
                 })
             })
         }
-        if (!memberList.length) {
-            ctx.error({msg: '参数members中有效ID不能为空'})
-        }
 
-        memberList.forEach(newMember => {
-            if (groupInfo.members.some(item => item.memberId === newMember.memberId)) {
-                return
-            }
-            groupInfo.members.push(newMember)
-        })
+        groupInfo.members = groupInfo.members.concat(memberList)
+        groupInfo.members = groupInfo.members.filter(item => !removeMembers.some(x => x === item.memberId))
 
         return ctx.dal.groupProvider.update({groupId: groupInfo.groupId}, {
-            members: groupInfo.members,
-            memberCount: groupInfo.members.length
-        })
-    }
-
-    /**
-     * 移除成员
-     * @param groupInfo
-     * @param members
-     * @returns {Promise<void>}
-     */
-    async removeGroupMembers({groupInfo, members}) {
-
-        groupInfo.members = groupInfo.members.filter(item => {
-            return !members.some(id => item.memberId === id)
-        })
-
-        return this.ctx.dal.groupProvider.update({groupId: groupInfo.groupId}, {
             members: groupInfo.members,
             memberCount: groupInfo.members.length
         })
