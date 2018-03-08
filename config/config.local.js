@@ -19,6 +19,10 @@ module.exports = appInfo => {
             userId: 10022,
             userName: "余亮",
             tokenType: "local"
-        }
+        },
+
+        mongoose: {
+            url: "mongodb://119.23.63.19:27017/group"
+        },
     }
 }
