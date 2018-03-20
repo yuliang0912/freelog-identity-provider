@@ -47,7 +47,7 @@ module.exports = class PassPortController extends Controller {
         if (jwtType === 'cookie') {
             ctx.cookies.set(ctx.app.config.jwtAuth.cookieName, jwtStr, {
                 httpOnly: false,
-                domain: 'freelog.com',
+                domain: ctx.app.config.domain || 'freelog.com',
                 overwrite: true,
                 expires: isRememer ? moment().add(7, 'days').toDate() : undefined
             })
@@ -72,7 +72,7 @@ module.exports = class PassPortController extends Controller {
         ctx.validate(false)
 
         ctx.cookies.set(ctx.app.config.jwtAuth.cookieName, null, {
-            domain: 'freelog.com'
+            domain: ctx.app.config.domain || 'freelog.com'
         });
 
         if (returnUrl) {

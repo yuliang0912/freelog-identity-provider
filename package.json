@@ -5,13 +5,13 @@
   "private": true,
   "dependencies": {
     "bluebird": "^3.5.1",
-    "egg": "^2.4.0",
+    "egg": "^2.5.0",
     "egg-freelog-base": "^1.1.39",
-    "egg-freelog-database": "^1.0.5",
+    "egg-freelog-database": "^1.0.6",
     "knex": "^0.14.4",
     "lodash": "^4.17.5",
-    "moment": "^2.20.1",
-    "mongoose": "^5.0.7",
+    "moment": "^2.21.0",
+    "mongoose": "^5.0.11",
     "mysql": "^2.15.0",
     "uuid": "^3.2.1"
   },
