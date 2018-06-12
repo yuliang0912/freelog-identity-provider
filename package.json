@@ -5,13 +5,14 @@
   "private": true,
   "dependencies": {
     "bluebird": "^3.5.1",
-    "egg": "^2.5.0",
-    "egg-freelog-base": "^1.1.39",
+    "egg": "^2.9.0",
+    "egg-freelog-base": "^1.1.42",
     "egg-freelog-database": "^1.0.6",
-    "knex": "^0.14.4",
-    "lodash": "^4.17.5",
-    "moment": "^2.21.0",
-    "mongoose": "^5.0.11",
+    "egg-scripts": "^2.6.0",
+    "knex": "^0.14.6",
+    "lodash": "^4.17.10",
+    "moment": "^2.22.2",
+    "mongoose": "^5.1.5",
     "mysql": "^2.15.0",
     "uuid": "^3.2.1"
   },
@@ -22,7 +23,7 @@
     "node": ">=8.0.0"
   },
   "scripts": {
-    "start": "node index.js",
+    "start": "egg-scripts start",
     "stop": "egg-scripts stop",
     "dev": "egg-bin dev",
     "test": "npm run lint -- --fix && npm run test-local",

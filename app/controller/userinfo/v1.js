@@ -10,6 +10,21 @@ const Controller = require('egg').Controller;
 module.exports = class UserInfoController extends Controller {
 
     /**
+     * 获取用户列表
+     * @param ctx
+     * @returns {Promise<void>}
+     */
+    async index(ctx) {
+
+        const userIds = ctx.checkQuery('userIds').exist().match(/^[0-9]{5,12}(,[0-9]{5,12})*$/, 'userIds格式错误').toSplitArray().len(1, 200).value
+        ctx.validate(false)
+
+        userIds.forEach(x => parseInt(x))
+
+        await ctx.dal.userProvider.getUserListByUserIds(userIds).then(ctx.success).catch(ctx.error)
+    }
+
+    /**
      * 获取用户信息
      * @param ctx
      * @returns {Promise.<void>}
@@ -154,4 +169,5 @@ module.exports = class UserInfoController extends Controller {
             ctx.success(true)
         }).catch(ctx.error)
     }
+
 }

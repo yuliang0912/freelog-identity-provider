@@ -6,6 +6,12 @@ module.exports = appInfo => {
 
     const config = {
 
+        cluster: {
+            listen: {
+                port: 7011
+            }
+        },
+
         middleware: ['errorHandler', 'identiyAuthentication'],
 
         /**
@@ -18,7 +24,7 @@ module.exports = appInfo => {
             user: {
                 client: 'mysql',
                 connection: {
-                    host: '192.168.0.99',
+                    host: '127.0.0.1',
                     user: 'root',
                     password: 'yuliang@@',
                     database: 'fr_user_info',

@@ -6,6 +6,12 @@
 
 module.exports = {
 
+    cluster: {
+        listen: {
+            port: 5011
+        }
+    },
+
     /**
      * DB-mysql相关配置
      */
