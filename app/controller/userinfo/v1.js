@@ -36,7 +36,7 @@ module.exports = class UserInfoController extends Controller {
 
         await ctx.dal.userProvider.getUserInfo({userId}).then(userInfo => {
             if (userInfo) {
-                ctx.helper.deleteProperty(userInfo, 'salt', 'password')
+                ctx.app.deleteProperties(userInfo, 'salt', 'password')
             }
             ctx.success(userInfo)
         })
@@ -53,7 +53,7 @@ module.exports = class UserInfoController extends Controller {
 
         await ctx.dal.userProvider.getUserInfo({userId: ctx.request.userId}).then(userInfo => {
             if (userInfo) {
-                ctx.helper.deleteProperty(userInfo, 'salt', 'password')
+                ctx.app.deleteProperties(userInfo, 'salt', 'password')
             }
             ctx.success(userInfo)
         })
@@ -95,11 +95,11 @@ module.exports = class UserInfoController extends Controller {
             })
         }
 
-        await ctx.dal.userProvider.createUser(userInfo).bind(ctx).then(data => {
+        await ctx.dal.userProvider.createUser(userInfo).then(data => {
             return data.length ? ctx.dal.userProvider.getUserInfo({userId: data[0]})
                 : Promise.reject('用户创建失败')
         }).then(model => {
-            ctx.helper.deleteProperty(model, 'salt', 'tokenSn', 'password')
+            ctx.app.deleteProperties(model, 'salt', 'tokenSn', 'password')
             ctx.success(model)
         }).catch(ctx.error)
     }
@@ -132,7 +132,7 @@ module.exports = class UserInfoController extends Controller {
 
         let newPassword = ctx.helper.generatePassword(userInfo.salt, password)
 
-        await ctx.dal.userProvider.updateUserInfo({password: newPassword}, condition).bind(ctx).then(() => {
+        await ctx.dal.userProvider.updateUserInfo({password: newPassword}, condition).then(() => {
             ctx.success(true)
         }).catch(ctx.error)
     }
@@ -160,12 +160,11 @@ module.exports = class UserInfoController extends Controller {
         }
 
         let model = {}
-
         model.salt = uuid.v4().replace(/-/g, '')
         model.password = ctx.helper.generatePassword(model.salt, newPassword)
         model.tokenSn = uuid.v4().replace(/-/g, '')
 
-        await ctx.dal.userProvider.updateUserInfo(model, {userId: ctx.request.userId}).bind(ctx).then(() => {
+        await ctx.dal.userProvider.updateUserInfo(model, {userId: ctx.request.userId}).then(() => {
             ctx.success(true)
         }).catch(ctx.error)
     }

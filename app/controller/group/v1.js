@@ -26,7 +26,7 @@ module.exports = class UserGroupController extends Controller {
         }
 
         await ctx.dal.groupProvider.getGroupPageList(condition, page, pageSize)
-            .then(data => ctx.success(data)).catch(err => ctx.error(err))
+            .then(data => ctx.success(data)).catch(ctx.error)
     }
 
     /**
@@ -44,7 +44,7 @@ module.exports = class UserGroupController extends Controller {
         members.forEach(parseInt)
 
         await ctx.service.groupService.createGroup({groupName, members, groupType})
-            .then(data => ctx.success(data)).catch(err => ctx.error(err))
+            .then(data => ctx.success(data)).catch(ctx.error)
     }
 
 

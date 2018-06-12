@@ -6,6 +6,7 @@
 
 const moment = require('moment')
 const Controller = require('egg').Controller;
+const jwtHelper = require('egg-freelog-base/app/extend/helper/jwt_helper')
 
 module.exports = class PassPortController extends Controller {
 
@@ -14,18 +15,20 @@ module.exports = class PassPortController extends Controller {
      * @returns {Promise.<void>}
      */
     async login(ctx) {
-        let loginName = ctx.checkBody("loginName").exist().notEmpty().value
-        let password = ctx.checkBody('password').exist().len(6, 24).notEmpty().value
-        let isRememer = ctx.checkBody("isRememer").default(0).toInt().in([0, 1]).value
-        let returnUrl = ctx.checkBody("returnUrl").default('').value
-        let jwtType = ctx.checkBody('jwtType').default('cookie').in(['cookie', 'header']).value
+
+        const loginName = ctx.checkBody("loginName").exist().notEmpty().value
+        const password = ctx.checkBody('password').exist().len(6, 24).notEmpty().value
+        const isRememer = ctx.checkBody("isRememer").default(0).optional().toInt().in([0, 1]).value
+        const returnUrl = ctx.checkBody("returnUrl").optional().value
+        const jwtType = ctx.checkBody('jwtType').default('cookie').optional().in(['cookie', 'header']).value
 
         ctx.allowContentType({type: 'json'}).validate(false)
 
-        let condition = {}
-        if (ctx.helper.commonRegex.mobile86.test(loginName)) {
+        const {app, helper, config} = ctx
+        const condition = {}
+        if (helper.commonRegex.mobile86.test(loginName)) {
             condition.mobile = loginName
-        } else if (ctx.helper.commonRegex.email.test(loginName)) {
+        } else if (helper.commonRegex.email.test(loginName)) {
             condition.email = loginName
         } else {
             ctx.errors.push({loginName: '登录名必须是手机号或者邮箱'})
@@ -36,18 +39,20 @@ module.exports = class PassPortController extends Controller {
         if (!userInfo) {
             ctx.error({msg: '用户名或密码错误', errCode: ctx.app.errCodeEnum.passWordError})
         }
-
-        if (ctx.helper.generatePassword(userInfo.salt, password) !== userInfo.password) {
+        if (helper.generatePassword(userInfo.salt, password) !== userInfo.password) {
             ctx.error({msg: '用户名或密码错误', errCode: ctx.app.errCodeEnum.passWordError})
         }
 
-        ctx.helper.deleteProperty(userInfo, 'salt', 'password')
-        const jwtStr = ctx.helper.jwtHelper.createJwt(userInfo, ctx.app.config.jwtAuth.privateKey, userInfo.tokenSn)
+        app.deleteProperties(userInfo, 'salt', 'password')
+
+        const {publicKey, privateKey, cookieName} = config.jwtAuth
+        const payLoad = Object.assign({}, userInfo, generateJwtPayload(userInfo.tokenSn))
+        const jwtStr = new jwtHelper(publicKey, privateKey).createJwt(payLoad, 1296000)
 
         if (jwtType === 'cookie') {
-            ctx.cookies.set(ctx.app.config.jwtAuth.cookieName, jwtStr, {
+            ctx.cookies.set(cookieName, jwtStr, {
                 httpOnly: false,
-                //domain: ctx.app.config.domain || 'freelog.com',
+                domain: config.domain || 'freelog.com',
                 overwrite: true,
                 expires: isRememer ? moment().add(7, 'days').toDate() : undefined
             })
@@ -57,7 +62,7 @@ module.exports = class PassPortController extends Controller {
 
         ctx.success(userInfo)
 
-        if (returnUrl !== '') {
+        if (returnUrl) {
             ctx.redirect(returnUrl)
         }
     }
@@ -67,7 +72,7 @@ module.exports = class PassPortController extends Controller {
      */
     async logout(ctx) {
 
-        let returnUrl = ctx.checkQuery("returnUrl").optional().decodeURIComponent().isUrl().value
+        const returnUrl = ctx.checkQuery("returnUrl").optional().decodeURIComponent().isUrl().value
 
         ctx.validate(false)
 
@@ -80,5 +85,19 @@ module.exports = class PassPortController extends Controller {
         } else {
             ctx.success(1)
         }
+    }
+}
+
+const generateJwtPayload = (token) => {
+
+    const currTime = Math.round(new Date().getTime() / 1000)
+
+    return {
+        iss: "FREE-LOG-IDENTITY-PROVIDER",
+        sub: "user",
+        aud: "freeLogWebSite",
+        exp: currTime + 1296000,
+        iat: currTime,
+        jti: token
     }
 }
