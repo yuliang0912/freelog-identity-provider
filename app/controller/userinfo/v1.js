@@ -30,7 +30,8 @@ module.exports = class UserInfoController extends Controller {
      * @returns {Promise.<void>}
      */
     async show(ctx) {
-        let userId = ctx.checkParams('id').exist().toInt().gt(10000).value
+
+        const userId = ctx.checkParams('id').exist().toInt().gt(10000).value
 
         ctx.validate()
 
@@ -66,14 +67,14 @@ module.exports = class UserInfoController extends Controller {
      */
     async register(ctx) {
 
-        let loginName = ctx.checkBody('loginName').exist().notEmpty().value
-        let password = ctx.checkBody('password').exist().len(6, 24).notEmpty().value
-        let nickname = ctx.checkBody('nickname').exist().len(2, 20).notEmpty().value
-        let userName = ctx.checkBody('userName').optional().len(2, 20).default('').value
+        const loginName = ctx.checkBody('loginName').exist().notEmpty().value
+        const password = ctx.checkBody('password').exist().len(6, 24).notEmpty().value
+        const nickname = ctx.checkBody('nickname').exist().len(2, 20).notEmpty().value
+        const userName = ctx.checkBody('userName').optional().len(2, 20).default('').value
 
         ctx.allowContentType({type: 'json'}).validate(false)
 
-        let userInfo = {nickname, userName, password}
+        const userInfo = {nickname, userName, password}
 
         if (ctx.helper.commonRegex.mobile86.test(loginName)) {
             userInfo.mobile = loginName
@@ -110,12 +111,13 @@ module.exports = class UserInfoController extends Controller {
      * @returns {Promise.<void>}
      */
     async resetPassword(ctx) {
-        let loginName = ctx.checkBody('loginName').exist().notEmpty().value
-        let password = ctx.checkBody('password').exist().len(6, 24).notEmpty().value
+
+        const loginName = ctx.checkBody('loginName').exist().notEmpty().value
+        const password = ctx.checkBody('password').exist().len(6, 24).notEmpty().value
 
         ctx.allowContentType({type: 'json'}).validate(false)
 
-        let condition = {}
+        const condition = {}
         if (ctx.helper.commonRegex.mobile86.test(loginName)) {
             condition.mobile = loginName
         } else if (ctx.helper.commonRegex.email.test(loginName)) {
@@ -125,12 +127,12 @@ module.exports = class UserInfoController extends Controller {
             ctx.validate(false)
         }
 
-        let userInfo = await ctx.dal.userProvider.getUserInfo(condition).catch(ctx.error)
+        const userInfo = await ctx.dal.userProvider.getUserInfo(condition).catch(ctx.error)
         if (!userInfo) {
             ctx.error({msg: '未找到有效用户'})
         }
 
-        let newPassword = ctx.helper.generatePassword(userInfo.salt, password)
+        const newPassword = ctx.helper.generatePassword(userInfo.salt, password)
 
         await ctx.dal.userProvider.updateUserInfo({password: newPassword}, condition).then(() => {
             ctx.success(true)
@@ -144,22 +146,20 @@ module.exports = class UserInfoController extends Controller {
      */
     async updatePassword(ctx) {
 
-        let oldPassword = ctx.checkBody('oldPassword').exist().notBlank().trim().len(6, 50).value
-        let newPassword = ctx.checkBody('newPassword').exist().notBlank().trim().len(6, 50).value
+        const oldPassword = ctx.checkBody('oldPassword').exist().notBlank().trim().len(6, 50).value
+        const newPassword = ctx.checkBody('newPassword').exist().notBlank().trim().len(6, 50).value
 
         ctx.allowContentType({type: 'json'}).validate()
 
         const userInfo = await ctx.dal.userProvider.getUserInfo({userId: ctx.request.userId})
-
         if (!userInfo) {
             ctx.error({msg: '用户名或密码错误', errCode: ctx.app.errCodeEnum.passWordError})
         }
-
         if (ctx.helper.generatePassword(userInfo.salt, oldPassword) !== userInfo.password) {
             ctx.error({msg: '原始密码错误', errCode: ctx.app.errCodeEnum.passWordError})
         }
 
-        let model = {}
+        const model = {}
         model.salt = uuid.v4().replace(/-/g, '')
         model.password = ctx.helper.generatePassword(model.salt, newPassword)
         model.tokenSn = uuid.v4().replace(/-/g, '')
@@ -168,5 +168,4 @@ module.exports = class UserInfoController extends Controller {
             ctx.success(true)
         }).catch(ctx.error)
     }
-
 }

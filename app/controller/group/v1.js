@@ -12,13 +12,13 @@ module.exports = class UserGroupController extends Controller {
      */
     async index(ctx) {
 
-        let page = ctx.checkQuery("page").default(1).gt(0).toInt().value
-        let pageSize = ctx.checkQuery("pageSize").default(10).gt(0).lt(101).toInt().value
-        let groupType = ctx.checkQuery("groupType").optional().toInt().in([1, 2]).value
+        const page = ctx.checkQuery("page").default(1).gt(0).toInt().value
+        const pageSize = ctx.checkQuery("pageSize").default(10).gt(0).lt(101).toInt().value
+        const groupType = ctx.checkQuery("groupType").optional().toInt().in([1, 2]).value
 
         ctx.validate()
 
-        let condition = {
+        const condition = {
             userId: ctx.request.userId
         }
         if (groupType) {
@@ -26,7 +26,7 @@ module.exports = class UserGroupController extends Controller {
         }
 
         await ctx.dal.groupProvider.getGroupPageList(condition, page, pageSize)
-            .then(data => ctx.success(data)).catch(ctx.error)
+            .then(ctx.success).catch(ctx.error)
     }
 
     /**
@@ -35,16 +35,17 @@ module.exports = class UserGroupController extends Controller {
      * @returns {Promise<void>}
      */
     async create(ctx) {
-        let groupName = ctx.checkBody('groupName').exist().notBlank().len(4, 20).value
-        let members = ctx.checkBody('members').exist().isArray().len(1, 200).value
-        let groupType = ctx.checkBody('groupType').exist().toInt().in([1, 2]).value
+
+        const groupName = ctx.checkBody('groupName').exist().notBlank().len(4, 20).value
+        const members = ctx.checkBody('members').exist().isArray().len(1, 200).value
+        const groupType = ctx.checkBody('groupType').exist().toInt().in([1, 2]).value
 
         ctx.allowContentType({type: 'json'}).validate()
 
-        members.forEach(parseInt)
+        members.forEach(x => parseInt(x))
 
         await ctx.service.groupService.createGroup({groupName, members, groupType})
-            .then(data => ctx.success(data)).catch(ctx.error)
+            .then(ctx.success).catch(ctx.error)
     }
 
 
@@ -55,11 +56,10 @@ module.exports = class UserGroupController extends Controller {
      */
     async show(ctx) {
 
-        let groupId = ctx.checkParams('id').isGroupId().value
+        const groupId = ctx.checkParams('id').isGroupId().value
         ctx.validate()
 
-        await ctx.dal.groupProvider.findOne({groupId}).bind(ctx)
-            .then(ctx.success).catch(ctx.error)
+        await ctx.dal.groupProvider.findOne({groupId}).then(ctx.success).catch(ctx.error)
     }
 
     /**
@@ -69,13 +69,13 @@ module.exports = class UserGroupController extends Controller {
      */
     async list(ctx) {
 
-        let groupIds = ctx.checkQuery('groupIds').isSplitGroupId().toSplitArray().len(1, 100).value
+        const groupIds = ctx.checkQuery('groupIds').isSplitGroupId().toSplitArray().len(1, 100).value
 
         ctx.validate()
 
-        let condition = {groupId: {$in: groupIds}}
+        const condition = {groupId: {$in: groupIds}}
 
-        await ctx.dal.groupProvider.find(condition).bind(ctx).then(ctx.success).catch(ctx.error)
+        await ctx.dal.groupProvider.find(condition).then(ctx.success).catch(ctx.error)
     }
 
     /**
@@ -85,9 +85,9 @@ module.exports = class UserGroupController extends Controller {
      */
     async operationMembers(ctx) {
 
-        let groupId = ctx.checkParams('groupId').isGroupId().value
-        let addMembers = ctx.checkBody('addMembers').optional().isArray().len(0, 200).value
-        let removeMembers = ctx.checkBody('removeMembers').optional().isArray().len(0, 200).value
+        const groupId = ctx.checkParams('groupId').isGroupId().value
+        const addMembers = ctx.checkBody('addMembers').optional().isArray().len(0, 200).value
+        const removeMembers = ctx.checkBody('removeMembers').optional().isArray().len(0, 200).value
 
         ctx.allowContentType({type: 'json'}).validate()
 
@@ -98,8 +98,7 @@ module.exports = class UserGroupController extends Controller {
             ctx.error({msg: '参数addMembers和removeMembers最少需要存在一个有效参数'})
         }
 
-        let groupInfo = await ctx.dal.groupProvider.findOne({groupId})
-
+        const groupInfo = await ctx.dal.groupProvider.findOne({groupId})
         if (!groupInfo || groupInfo.userId !== ctx.request.userId) {
             ctx.error({msg: 'groupId错误或者没有操作权限'})
         }
@@ -108,7 +107,7 @@ module.exports = class UserGroupController extends Controller {
             groupInfo,
             addMembers: addMembers || [],
             removeMembers: removeMembers || []
-        }).then(data => ctx.success(true)).catch(err => ctx.error(err))
+        }).then(data => ctx.success(true)).catch(ctx.error)
     }
 
     /**
@@ -118,17 +117,15 @@ module.exports = class UserGroupController extends Controller {
      */
     async isExistMember(ctx) {
 
-        let groupIds = ctx.checkQuery('groupIds').exist().isSplitGroupId().toSplitArray().len(1, 100).value
-        let memberId = ctx.checkQuery("memberId").exist().toInt().gt(0).value
+        const groupIds = ctx.checkQuery('groupIds').exist().isSplitGroupId().toSplitArray().len(1, 100).value
+        const memberId = ctx.checkQuery("memberId").exist().toInt().gt(0).value
 
         ctx.validate(false)
 
-        let condition = {
+        const condition = {
             groupId: {$in: groupIds}, 'members.memberId': memberId
         }
 
-        let groups = await ctx.dal.groupProvider.find(condition, 'groupId groupName')
-
-        ctx.success(groups)
+        await ctx.dal.groupProvider.find(condition, 'groupId groupName').then(ctx.success)
     }
 }

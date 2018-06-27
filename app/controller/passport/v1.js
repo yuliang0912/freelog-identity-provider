@@ -50,9 +50,10 @@ module.exports = class PassPortController extends Controller {
         const jwtStr = new jwtHelper(publicKey, privateKey).createJwt(payLoad, 1296000)
 
         if (jwtType === 'cookie') {
+            console.log(config.domain)
             ctx.cookies.set(cookieName, jwtStr, {
                 httpOnly: false,
-                domain: config.domain || 'freelog.com',
+                domain: 'testfreelog.com' || 'freelog.com',
                 overwrite: true,
                 expires: isRememer ? moment().add(7, 'days').toDate() : undefined
             })
