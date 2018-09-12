@@ -180,10 +180,10 @@ module.exports = class UserInfoController extends Controller {
         }
         ctx.validate()
 
-        const {ext, fileBuffer} = await ctx.helper.checkHeadImage(fileStream)
-        const fileObjectKey = `headImage/${ctx.request.userId}.${ext}`
+        const {mime, fileBuffer} = await ctx.helper.checkHeadImage(fileStream)
+        const fileObjectKey = `headImage/${ctx.request.userId}`
 
-        await ctx.app.ossClient.putBuffer(fileObjectKey, fileBuffer)
+        await ctx.app.ossClient.putBuffer(fileObjectKey, fileBuffer, {headers: {'Content-Type': mime}})
 
         ctx.success(`https://image.freelog.com/${fileObjectKey}?x-oss-process=style/head-image`)
     }
