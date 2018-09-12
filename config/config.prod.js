@@ -20,6 +20,13 @@ module.exports = appInfo => {
         },
 
 
+        uploadConfig: {
+            aliOss: {
+                internal: true
+            },
+            amzS3: {}
+        },
+
         mongoose: {
             url: "mongodb://root:Ff233109@dds-wz9b5420c30a27941546-pub.mongodb.rds.aliyuncs.com:3717,dds-wz9b5420c30a27942267-pub.mongodb.rds.aliyuncs.com:3717/group?replicaSet=mgset-5016983"
         },

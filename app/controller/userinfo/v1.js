@@ -164,8 +164,27 @@ module.exports = class UserInfoController extends Controller {
         model.password = ctx.helper.generatePassword(model.salt, newPassword)
         model.tokenSn = uuid.v4().replace(/-/g, '')
 
-        await ctx.dal.userProvider.updateUserInfo(model, {userId: ctx.request.userId}).then(() => {
-            ctx.success(true)
-        }).catch(ctx.error)
+        await ctx.dal.userProvider.updateUserInfo(model, {userId: ctx.request.userId}).then(() => ctx.success(true)).catch(ctx.error)
+    }
+
+    /**
+     * 上传头像
+     * @param ctx
+     * @returns {Promise<void>}
+     */
+    async uploadHeadImg(ctx) {
+
+        const fileStream = await ctx.getFileStream()
+        if (!fileStream || !fileStream.filename) {
+            ctx.error({msg: 'Can\'t found upload file'})
+        }
+        ctx.validate()
+
+        const {ext, fileBuffer} = await ctx.helper.checkHeadImage(fileStream)
+        const fileObjectKey = `headImage/${ctx.request.userId}.${ext}`
+
+        await ctx.app.ossClient.putBuffer(fileObjectKey, fileBuffer)
+
+        ctx.success(`https://image.freelog.com/${fileObjectKey}?x-oss-process=style/head-image`)
     }
 }

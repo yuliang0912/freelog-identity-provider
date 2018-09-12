@@ -4,6 +4,7 @@
 
 'use strict'
 
+const headImageFileCheck = new (require('./head-image-check'))
 const crypto = require('egg-freelog-base/app/extend/helper/crypto_helper')
 
 module.exports = {
@@ -17,4 +18,11 @@ module.exports = {
 
         return crypto.hmacSha1(crypto.base64Encode(text), salt)
     },
+
+    /**
+     * 检查头像文件
+     */
+    checkHeadImage(fileStream) {
+        return headImageFileCheck.check(fileStream)
+    }
 }

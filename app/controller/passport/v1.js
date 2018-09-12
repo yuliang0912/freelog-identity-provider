@@ -18,9 +18,9 @@ module.exports = class PassPortController extends Controller {
 
         const loginName = ctx.checkBody("loginName").exist().notEmpty().value
         const password = ctx.checkBody('password').exist().len(6, 24).notEmpty().value
-        const isRememer = ctx.checkBody("isRememer").default(0).optional().toInt().in([0, 1]).value
+        const isRememer = ctx.checkBody("isRememer").optional().toInt().in([0, 1]).default(0).value
         const returnUrl = ctx.checkBody("returnUrl").optional().value
-        const jwtType = ctx.checkBody('jwtType').default('cookie').optional().in(['cookie', 'header']).value
+        const jwtType = ctx.checkBody('jwtType').optional().in(['cookie', 'header']).default('cookie').value
 
         ctx.allowContentType({type: 'json'}).validate(false)
 
@@ -31,8 +31,7 @@ module.exports = class PassPortController extends Controller {
         } else if (helper.commonRegex.email.test(loginName)) {
             condition.email = loginName
         } else {
-            ctx.errors.push({loginName: '登录名必须是手机号或者邮箱'})
-            ctx.validate(false)
+            ctx.error({msg: '登录名必须是手机号或者邮箱', data: {loginName}})
         }
 
         const userInfo = await ctx.dal.userProvider.getUserInfo(condition)
@@ -46,13 +45,13 @@ module.exports = class PassPortController extends Controller {
         app.deleteProperties(userInfo, 'salt', 'password')
 
         const {publicKey, privateKey, cookieName} = config.jwtAuth
-        const payLoad = Object.assign({}, userInfo, generateJwtPayload(userInfo.tokenSn))
+        const payLoad = Object.assign({}, userInfo, generateJwtPayload(userInfo.userId, userInfo.tokenSn))
         const jwtStr = new jwtHelper(publicKey, privateKey).createJwt(payLoad, 1296000)
 
         if (jwtType === 'cookie') {
             cookies.set(cookieName, jwtStr, {
                 httpOnly: false,
-                domain: config.domain || 'testfreelog.com' || 'freelog.com',
+                domain: config.domain || 'freelog.com',
                 overwrite: true,
                 expires: isRememer ? moment().add(7, 'days').toDate() : undefined
             })
@@ -88,14 +87,14 @@ module.exports = class PassPortController extends Controller {
     }
 }
 
-const generateJwtPayload = (token) => {
+const generateJwtPayload = (userId, token) => {
 
     const currTime = Math.round(new Date().getTime() / 1000)
 
     return {
-        iss: "FREE-LOG-IDENTITY-PROVIDER",
-        sub: "user",
-        aud: "freeLogWebSite",
+        iss: "https://identity.freelog.com",
+        sub: userId.toString(),
+        aud: "freelog-website",
         exp: currTime + 1296000,
         iat: currTime,
         jti: token
