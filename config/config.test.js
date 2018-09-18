@@ -7,9 +7,7 @@
 module.exports = {
 
     cluster: {
-        listen: {
-            port: 5011
-        }
+        listen: {port: 5011}
     },
 
     /**

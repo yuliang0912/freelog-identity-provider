@@ -61,6 +61,6 @@ module.exports = class UserProvider extends KnexBaseOperation {
             return Promise.resolve([])
         }
 
-        return super.queryChain.whereIn('userId', userIds).select('userId', 'userName', 'nickName', 'email', 'mobile', 'userRole')
+        return super.queryChain.whereIn('userId', userIds).select('userId', 'userName', 'nickName', 'email', 'mobile', 'userRole', 'headImage')
     }
 }

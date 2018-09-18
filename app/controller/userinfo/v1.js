@@ -5,9 +5,15 @@
 'use strict'
 
 const uuid = require('uuid')
+const lodash = require('lodash')
 const Controller = require('egg').Controller;
 
 module.exports = class UserInfoController extends Controller {
+
+    constructor({app}) {
+        super(...arguments)
+        this.userProvider = app.dal.userProvider
+    }
 
     /**
      * 获取用户列表
@@ -21,7 +27,7 @@ module.exports = class UserInfoController extends Controller {
 
         userIds.forEach(x => parseInt(x))
 
-        await ctx.dal.userProvider.getUserListByUserIds(userIds).then(ctx.success).catch(ctx.error)
+        await this.userProvider.getUserListByUserIds(userIds).then(ctx.success).catch(ctx.error)
     }
 
     /**
@@ -35,12 +41,9 @@ module.exports = class UserInfoController extends Controller {
 
         ctx.validate()
 
-        await ctx.dal.userProvider.getUserInfo({userId}).then(userInfo => {
-            if (userInfo) {
-                ctx.app.deleteProperties(userInfo, 'salt', 'password')
-            }
-            ctx.success(userInfo)
-        })
+        await this.userProvider.getUserInfo({userId})
+            .then(userInfo => lodash.omit(userInfo, ['password', 'salt', 'tokenSn', 'updateDate']))
+            .then(ctx.success)
     }
 
     /**
@@ -52,12 +55,9 @@ module.exports = class UserInfoController extends Controller {
 
         ctx.validate()
 
-        await ctx.dal.userProvider.getUserInfo({userId: ctx.request.userId}).then(userInfo => {
-            if (userInfo) {
-                ctx.app.deleteProperties(userInfo, 'salt', 'password')
-            }
-            ctx.success(userInfo)
-        })
+        await this.userProvider.getUserInfo({userId: ctx.request.userId})
+            .then(userInfo => lodash.omit(userInfo, ['password', 'salt', 'tokenSn', 'updateDate']))
+            .then(ctx.success)
     }
 
     /**
@@ -86,23 +86,19 @@ module.exports = class UserInfoController extends Controller {
         }
 
         if (userInfo.mobile) {
-            await ctx.dal.userProvider.getUserInfo({mobile: loginName}).then(user => {
+            await this.userProvider.getUserInfo({mobile: loginName}).then(user => {
                 user && ctx.error({msg: '手机号已经被注册'})
             })
         }
         if (userInfo.email) {
-            await ctx.dal.userProvider.getUserInfo({email: loginName}).then(user => {
+            await this.userProvider.getUserInfo({email: loginName}).then(user => {
                 user && ctx.error({msg: '电子邮箱已经被注册'})
             })
         }
 
-        await ctx.dal.userProvider.createUser(userInfo).then(data => {
-            return data.length ? ctx.dal.userProvider.getUserInfo({userId: data[0]})
-                : Promise.reject('用户创建失败')
-        }).then(model => {
-            ctx.app.deleteProperties(model, 'salt', 'tokenSn', 'password')
-            ctx.success(model)
-        }).catch(ctx.error)
+        await this.userProvider.createUser(userInfo).then(data => {
+            return data.length ? this.userProvider.getUserInfo({userId: data[0]}) : Promise.reject('用户创建失败')
+        }).then(userInfo => lodash.omit(userInfo, ['password', 'salt', 'tokenSn', 'updateDate'])).then(ctx.success).catch(ctx.error)
     }
 
     /**
@@ -127,14 +123,14 @@ module.exports = class UserInfoController extends Controller {
             ctx.validate(false)
         }
 
-        const userInfo = await ctx.dal.userProvider.getUserInfo(condition).catch(ctx.error)
+        const userInfo = await this.userProvider.getUserInfo(condition).catch(ctx.error)
         if (!userInfo) {
             ctx.error({msg: '未找到有效用户'})
         }
 
         const newPassword = ctx.helper.generatePassword(userInfo.salt, password)
 
-        await ctx.dal.userProvider.updateUserInfo({password: newPassword}, condition).then(() => {
+        await this.userProvider.updateUserInfo({password: newPassword}, condition).then(() => {
             ctx.success(true)
         }).catch(ctx.error)
     }
@@ -151,7 +147,7 @@ module.exports = class UserInfoController extends Controller {
 
         ctx.allowContentType({type: 'json'}).validate()
 
-        const userInfo = await ctx.dal.userProvider.getUserInfo({userId: ctx.request.userId})
+        const userInfo = await this.userProvider.getUserInfo({userId: ctx.request.userId})
         if (!userInfo) {
             ctx.error({msg: '用户名或密码错误', errCode: ctx.app.errCodeEnum.passWordError})
         }
@@ -164,7 +160,7 @@ module.exports = class UserInfoController extends Controller {
         model.password = ctx.helper.generatePassword(model.salt, newPassword)
         model.tokenSn = uuid.v4().replace(/-/g, '')
 
-        await ctx.dal.userProvider.updateUserInfo(model, {userId: ctx.request.userId}).then(() => ctx.success(true)).catch(ctx.error)
+        await this.userProvider.updateUserInfo(model, {userId: ctx.request.userId}).then(() => ctx.success(true)).catch(ctx.error)
     }
 
     /**
@@ -183,8 +179,12 @@ module.exports = class UserInfoController extends Controller {
         const {mime, fileBuffer} = await ctx.helper.checkHeadImage(fileStream)
         const fileObjectKey = `headImage/${ctx.request.userId}`
 
-        await ctx.app.ossClient.putBuffer(fileObjectKey, fileBuffer, {headers: {'Content-Type': mime}})
+        await ctx.app.ossClient.putBuffer(fileObjectKey, fileBuffer, {headers: {'Content-Type': mime}}).catch(ctx.error)
 
-        ctx.success(`https://image.freelog.com/${fileObjectKey}?x-oss-process=style/head-image`)
+        const headImageUrl = `https://image.freelog.com/${fileObjectKey}`
+
+        await this.userProvider.updateUserInfo({headImage: headImageUrl}, {userId: ctx.request.userId}).then(() => {
+            ctx.success(`${headImageUrl}?x-oss-process=style/head-image`)
+        })
     }
 }

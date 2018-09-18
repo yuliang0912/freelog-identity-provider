@@ -44,7 +44,7 @@ module.exports = appInfo => {
          * mongoDB配置
          */
         mongoose: {
-            url: "mongodb://192.168.0.99:27017/group",
+            url: "mongodb://localhost:27017/group",
         },
 
         security: {
