@@ -53,6 +53,7 @@ module.exports = class PassPortController extends Controller {
                 httpOnly: false,
                 domain: config.domain || 'freelog.com',
                 overwrite: true,
+                signed: false,
                 expires: isRememer ? moment().add(7, 'days').toDate() : undefined
             })
         } else {

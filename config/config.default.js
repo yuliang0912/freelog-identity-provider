@@ -61,7 +61,7 @@ module.exports = appInfo => {
         jwtAuth: {
             cookieName: 'authInfo',
             privateKey: fs.readFileSync('config/auth_key/private_key.pem').toString(),
-            publickKey: fs.readFileSync('config/auth_key/public_key.pem').toString()
+            publicKey: fs.readFileSync('config/auth_key/public_key.pem').toString()
         },
 
         domain: "freelog.com",
