@@ -55,6 +55,8 @@ module.exports = class UserInfoController extends Controller {
 
         ctx.validate()
 
+        console.log(ctx.request.identityInfo, ctx.request.userId)
+
         await this.userProvider.getUserInfo({userId: ctx.request.userId})
             .then(userInfo => lodash.omit(userInfo, ['password', 'salt', 'tokenSn', 'updateDate']))
             .then(ctx.success)
@@ -123,7 +125,7 @@ module.exports = class UserInfoController extends Controller {
             ctx.validate(false)
         }
 
-        const userInfo = await this.userProvider.getUserInfo(condition).catch(ctx.error)
+        const userInfo = await this.userProvider.getUserInfo(condition)
         if (!userInfo) {
             ctx.error({msg: '未找到有效用户'})
         }

@@ -18,7 +18,7 @@ module.exports = class PassPortController extends Controller {
 
         const loginName = ctx.checkBody("loginName").exist().notEmpty().value
         const password = ctx.checkBody('password').exist().len(6, 24).notEmpty().value
-        const isRememer = ctx.checkBody("isRememer").optional().toInt().in([0, 1]).default(0).value
+        const isRemember = ctx.checkBody("isRememer").optional().toInt().in([0, 1]).default(0).value
         const returnUrl = ctx.checkBody("returnUrl").optional().value
         const jwtType = ctx.checkBody('jwtType').optional().in(['cookie', 'header']).default('cookie').value
 
@@ -54,7 +54,7 @@ module.exports = class PassPortController extends Controller {
                 domain: config.domain || 'freelog.com',
                 overwrite: true,
                 signed: false,
-                expires: isRememer ? moment().add(7, 'days').toDate() : undefined
+                expires: isRemember ? moment().add(7, 'days').toDate() : undefined
             })
         } else {
             ctx.set('Authorization', `Bearer ${jwtStr}`)
