@@ -12,7 +12,7 @@ module.exports = appInfo => {
             }
         },
 
-        middleware: ['errorHandler', 'identityAuthentication'],
+        middleware: ['errorHandler', 'identiyAuthentication'],
 
         /**
          * DB-mysql相关配置
