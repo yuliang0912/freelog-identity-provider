@@ -55,8 +55,6 @@ module.exports = class UserInfoController extends Controller {
 
         ctx.validate()
 
-        console.log(ctx.request.identityInfo, ctx.request.userId)
-
         await this.userProvider.getUserInfo({userId: ctx.request.userId})
             .then(userInfo => lodash.omit(userInfo, ['password', 'salt', 'tokenSn', 'updateDate']))
             .then(ctx.success)
