@@ -16,8 +16,9 @@ module.exports = {
     knex: {
         user: {
             connection: {
-                host: 'rm-wz93t7g809kthrub7.mysql.rds.aliyuncs.com',
-                user: 'freelog_test',
+                host: '172.18.215.231',
+                user: 'root',
+                port: 3307,
                 password: 'Ff@233109',
                 database: 'fr_user_info',
             },
@@ -27,7 +28,7 @@ module.exports = {
 
 
     mongoose: {
-        url: "mongodb://172.18.215.229:27017/group"
+        url: "mongodb://172.18.215.231:27018/group",
     },
 
 

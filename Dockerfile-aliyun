@@ -1,4 +1,4 @@
-FROM daocloud.io/node:8.11.1
+FROM node:10.5.0
 
 MAINTAINER yuliang <yu.liang@freelog.com>
 
@@ -15,6 +15,8 @@ RUN npm install
 
 ENV EGG_SERVER_ENV prod
 ENV PORT 7011
+ENV TZ=Asia/Shanghai
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 EXPOSE 7011
 
