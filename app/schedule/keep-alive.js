@@ -7,13 +7,13 @@ module.exports = class KeepAlive extends Subscription {
     static get schedule() {
         return {
             cron: '*/30 * * * * * *',
-            type: 'worker',
+            type: 'all',
             immediate: false,
             disable: false
         }
     }
 
     async subscribe() {
-        await this.app.dal.userProvider.findOne({userId: 10022})
+        await this.app.dal.userProvider.findOne({}).catch(console.error)
     }
 }
