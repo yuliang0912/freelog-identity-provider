@@ -14,11 +14,11 @@ module.exports = app => {
 
     const UserInfoSchema = new mongoose.Schema({
         userId: {type: Number, unique: true, required: true}, //用户ID
-        userName: {type: String, required: true},
-        nickName: {type: String, required: true},
+        userName: {type: String, required: false, default: ''},
+        nickname: {type: String, required: false, default: ''},
         email: {type: String, required: false, default: ''},
         mobile: {type: String, required: false, default: ''},
-        userRole: {type: Number, required: true, enum: [1, 2, 3, 4, 5, 7]},
+        userRole: {type: Number, required: true, default: 1, enum: [1, 2, 3, 4, 5, 7]},
         headImage: {type: String, required: false, default: ''},
         password: {type: String, required: true},
         salt: {type: String, required: true},

@@ -10,6 +10,11 @@ const jwtHelper = require('egg-freelog-base/app/extend/helper/jwt_helper')
 
 module.exports = class PassPortController extends Controller {
 
+    constructor({app}) {
+        super(...arguments)
+        this.userProvider = app.dal.userProvider
+    }
+
     /**
      * 登录接口
      * @returns {Promise.<void>}
@@ -34,7 +39,7 @@ module.exports = class PassPortController extends Controller {
             ctx.error({msg: '登录名必须是手机号或者邮箱', data: {loginName}})
         }
 
-        const userInfo = await ctx.dal.userProvider.getUserInfo(condition)
+        const userInfo = await this.userProvider.findOne(condition)
         if (!userInfo) {
             ctx.error({msg: '用户名或密码错误', errCode: ctx.app.errCodeEnum.passWordError})
         }
@@ -42,10 +47,8 @@ module.exports = class PassPortController extends Controller {
             ctx.error({msg: '用户名或密码错误', errCode: ctx.app.errCodeEnum.passWordError})
         }
 
-        app.deleteProperties(userInfo, 'salt', 'password')
-
         const {publicKey, privateKey, cookieName} = config.jwtAuth
-        const payLoad = Object.assign({}, userInfo, generateJwtPayload(userInfo.userId, userInfo.tokenSn))
+        const payLoad = Object.assign({}, userInfo.toObject(), generateJwtPayload(userInfo.userId, userInfo.tokenSn))
         const jwtStr = new jwtHelper(publicKey, privateKey).createJwt(payLoad, 1296000)
 
         if (jwtType === 'cookie') {

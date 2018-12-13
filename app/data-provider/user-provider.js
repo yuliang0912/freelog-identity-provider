@@ -1,27 +1,14 @@
-/**
- * Created by yuliang on 2017/11/1.
- */
-
 'use strict'
 
 const uuid = require('uuid')
-const moment = require('moment')
 const helper = require('../extend/helper')
-const KnexBaseOperation = require('egg-freelog-database/lib/database/knex-base-operation')
+const MongoBaseOperation = require('egg-freelog-database/lib/database/mongo-base-operation')
 
-module.exports = class UserProvider extends KnexBaseOperation {
+module.exports = class UserInfoProvider extends MongoBaseOperation {
 
     constructor(app) {
-        super(app.knex.user("user_info"), 'userId')
-    }
-
-    /**
-     * 获取用户信息
-     * @param condition
-     * @returns {Promise.<*>}
-     */
-    getUserInfo(condition) {
-        return super.findOne(condition)
+        super(app.model.UserInfo)
+        this.app = app
     }
 
     /**
@@ -29,14 +16,15 @@ module.exports = class UserProvider extends KnexBaseOperation {
      * @param model
      * @returns {Promise.<*>}
      */
-    createUser(model) {
+    async createUser(model) {
 
         if (!super.type.object(model)) {
             return Promise.reject(new Error("model must be object"))
         }
-        model.status = 1
-        model.userRole = 1
-        model.createDate = moment().toDate()
+
+        const userId = await this.app.dal.autoIncrementRecordProvider.getNextDateValue()
+
+        model.userId = userId
         model.salt = uuid.v4().replace(/-/g, '')
         model.password = helper.generatePassword(model.salt, model.password)
         model.tokenSn = uuid.v4().replace(/-/g, '')
@@ -45,22 +33,14 @@ module.exports = class UserProvider extends KnexBaseOperation {
     }
 
     /**
-     * 更新用户信息
-     */
-    updateUserInfo(model, condition) {
-        return super.update(model, condition)
-    }
-
-    /**
      * 批量多个用户信息
      * @param condition
      */
     getUserListByUserIds(userIds) {
-
         if (!Array.isArray(userIds) || !userIds.length) {
             return Promise.resolve([])
         }
-
-        return super.queryChain.whereIn('userId', userIds).select('userId', 'userName', 'nickName', 'email', 'mobile', 'userRole', 'headImage')
+        //const projection = 'userId userName nickName email mobile userRole headImage'
+        return super.find({userId: {$in: userIds}})
     }
 }

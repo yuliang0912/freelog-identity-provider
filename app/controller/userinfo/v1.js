@@ -5,7 +5,6 @@
 'use strict'
 
 const uuid = require('uuid')
-const lodash = require('lodash')
 const Controller = require('egg').Controller;
 
 module.exports = class UserInfoController extends Controller {
@@ -23,9 +22,8 @@ module.exports = class UserInfoController extends Controller {
     async index(ctx) {
 
         const userIds = ctx.checkQuery('userIds').exist().match(/^[0-9]{5,12}(,[0-9]{5,12})*$/, 'userIds格式错误').toSplitArray().len(1, 200).value
-        ctx.validate(false)
 
-        userIds.forEach(x => parseInt(x))
+        ctx.validate(false)
 
         await this.userProvider.getUserListByUserIds(userIds).then(ctx.success).catch(ctx.error)
     }
@@ -41,9 +39,7 @@ module.exports = class UserInfoController extends Controller {
 
         ctx.validate()
 
-        await this.userProvider.getUserInfo({userId})
-            .then(userInfo => lodash.omit(userInfo, ['password', 'salt', 'tokenSn', 'updateDate']))
-            .then(ctx.success)
+        await this.userProvider.findOne({userId}).then(ctx.success)
     }
 
     /**
@@ -55,9 +51,7 @@ module.exports = class UserInfoController extends Controller {
 
         ctx.validate()
 
-        await this.userProvider.getUserInfo({userId: ctx.request.userId})
-            .then(userInfo => lodash.omit(userInfo, ['password', 'salt', 'tokenSn', 'updateDate']))
-            .then(ctx.success)
+        await this.userProvider.findOne({userId: ctx.request.userId}).then(ctx.success)
     }
 
     /**
@@ -86,19 +80,17 @@ module.exports = class UserInfoController extends Controller {
         }
 
         if (userInfo.mobile) {
-            await this.userProvider.getUserInfo({mobile: loginName}).then(user => {
-                user && ctx.error({msg: '手机号已经被注册'})
+            await this.userProvider.count({mobile: loginName}).then(count => {
+                count && ctx.error({msg: '手机号已经被注册'})
             })
         }
         if (userInfo.email) {
-            await this.userProvider.getUserInfo({email: loginName}).then(user => {
-                user && ctx.error({msg: '电子邮箱已经被注册'})
+            await this.userProvider.count({email: loginName}).then(count => {
+                count && ctx.error({msg: '电子邮箱已经被注册'})
             })
         }
 
-        await this.userProvider.createUser(userInfo).then(data => {
-            return data.length ? this.userProvider.getUserInfo({userId: data[0]}) : Promise.reject('用户创建失败')
-        }).then(userInfo => lodash.omit(userInfo, ['password', 'salt', 'tokenSn', 'updateDate'])).then(ctx.success).catch(ctx.error)
+        await this.userProvider.createUser(userInfo).then(ctx.success).catch(ctx.error)
     }
 
     /**
@@ -123,16 +115,15 @@ module.exports = class UserInfoController extends Controller {
             ctx.validate(false)
         }
 
-        const userInfo = await this.userProvider.getUserInfo(condition)
+        const userInfo = await this.userProvider.findOne(condition)
         if (!userInfo) {
             ctx.error({msg: '未找到有效用户'})
         }
 
-        const newPassword = ctx.helper.generatePassword(userInfo.salt, password)
+        const salt = uuid.v4().replace(/-/g, '')
+        const newPassword = ctx.helper.generatePassword(salt, password)
 
-        await this.userProvider.updateUserInfo({password: newPassword}, condition).then(() => {
-            ctx.success(true)
-        }).catch(ctx.error)
+        await userInfo.updateOne({password: newPassword, salt}).then(() => ctx.success(true)).catch(ctx.error)
     }
 
     /**
@@ -147,20 +138,23 @@ module.exports = class UserInfoController extends Controller {
 
         ctx.allowContentType({type: 'json'}).validate()
 
-        const userInfo = await this.userProvider.getUserInfo({userId: ctx.request.userId})
+        const userId = ctx.request.userId
+        const userInfo = await this.userProvider.findOne({userId})
         if (!userInfo) {
             ctx.error({msg: '用户名或密码错误', errCode: ctx.app.errCodeEnum.passWordError})
         }
         if (ctx.helper.generatePassword(userInfo.salt, oldPassword) !== userInfo.password) {
             ctx.error({msg: '原始密码错误', errCode: ctx.app.errCodeEnum.passWordError})
         }
+        if (oldPassword === newPassword) {
+            return ctx.success(true)
+        }
 
-        const model = {}
-        model.salt = uuid.v4().replace(/-/g, '')
-        model.password = ctx.helper.generatePassword(model.salt, newPassword)
-        model.tokenSn = uuid.v4().replace(/-/g, '')
+        const salt = uuid.v4().replace(/-/g, '')
+        const password = ctx.helper.generatePassword(salt, newPassword)
+        const tokenSn = uuid.v4().replace(/-/g, '')
 
-        await this.userProvider.updateUserInfo(model, {userId: ctx.request.userId}).then(() => ctx.success(true)).catch(ctx.error)
+        await userInfo.updateOne({password, salt, tokenSn}).then(() => ctx.success(true)).catch(ctx.error)
     }
 
     /**
@@ -176,6 +170,7 @@ module.exports = class UserInfoController extends Controller {
         }
         ctx.validate()
 
+        const userId = ctx.request.userId
         const {mime, fileBuffer} = await ctx.helper.checkHeadImage(fileStream)
         const fileObjectKey = `headImage/${ctx.request.userId}`
 
@@ -183,7 +178,7 @@ module.exports = class UserInfoController extends Controller {
 
         const headImageUrl = `https://image.freelog.com/${fileObjectKey}`
 
-        await this.userProvider.updateUserInfo({headImage: headImageUrl}, {userId: ctx.request.userId}).then(() => {
+        await this.userProvider.updateOne({userId}, {headImage: headImageUrl}).then(() => {
             ctx.success(`${headImageUrl}?x-oss-process=style/head-image`)
         })
     }
