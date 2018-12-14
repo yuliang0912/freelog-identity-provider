@@ -28,7 +28,7 @@ module.exports = {
 
 
     mongoose: {
-        url: "mongodb://172.18.215.231:27018/group",
+        url: "mongodb://172.18.215.231:27018/user",
     },
 
 
