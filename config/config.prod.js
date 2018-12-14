@@ -4,22 +4,6 @@ module.exports = appInfo => {
 
     return {
 
-        /**
-         * DB-mysql相关配置
-         */
-        knex: {
-            user: {
-                connection: {
-                    host: '172.18.215.231',
-                    user: 'root',
-                    password: 'Ff@233109',
-                    database: 'fr_user_info',
-                },
-                debug: false
-            },
-        },
-
-
         uploadConfig: {
             aliOss: {
                 internal: true

@@ -15,32 +15,6 @@ module.exports = appInfo => {
         middleware: ['errorHandler', 'identiyAuthentication'],
 
         /**
-         * DB-mysql相关配置
-         */
-        knex: {
-            /**
-             * 用户相关DB配置
-             */
-            user: {
-                client: 'mysql',
-                connection: {
-                    host: '127.0.0.1',
-                    user: 'root',
-                    password: 'yuliang@@',
-                    database: 'fr_user_info',
-                    charset: 'utf8',
-                    timezone: '+08:00',
-                    bigNumberStrings: true,
-                    supportBigNumbers: true,
-                    connectTimeout: 2000
-                },
-                pool: {max: 10, min: 2},
-                acquireConnectionTimeout: 800,
-                debug: false
-            },
-        },
-
-        /**
          * mongoDB配置
          */
         mongoose: {
