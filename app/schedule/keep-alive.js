@@ -9,7 +9,7 @@ module.exports = class KeepAlive extends Subscription {
             cron: '* * * * * * */2',
             type: 'all',
             immediate: true,
-            disable: true
+            disable: false
         }
     }
 
