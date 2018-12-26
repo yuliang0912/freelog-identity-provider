@@ -4,16 +4,16 @@
   "description": "飞致网络身份服务",
   "private": true,
   "dependencies": {
-    "ali-oss": "^6.0.1",
+    "ali-oss": "^6.0.2",
     "bluebird": "^3.5.3",
-    "egg": "^2.14.1",
-    "egg-freelog-base": "^1.1.80",
+    "egg": "^2.14.2",
+    "egg-freelog-base": "^1.1.81",
     "egg-freelog-database": "^1.0.13",
-    "egg-scripts": "^2.10.0",
+    "egg-scripts": "^2.11.0",
     "file-type": "^9.0.0",
     "lodash": "^4.17.11",
-    "moment": "^2.22.2",
-    "mongoose": "^5.3.15",
+    "moment": "^2.23.0",
+    "mongoose": "^5.4.0",
     "uuid": "^3.3.2"
   },
   "egg": {

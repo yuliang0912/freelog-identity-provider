@@ -30,6 +30,7 @@ module.exports = class PassPortController extends Controller {
         ctx.allowContentType({type: 'json'}).validate(false)
 
         const {app, helper, config, cookies} = ctx
+
         const condition = {}
         if (helper.commonRegex.mobile86.test(loginName)) {
             condition.mobile = loginName
@@ -41,10 +42,10 @@ module.exports = class PassPortController extends Controller {
 
         const userInfo = await this.userProvider.findOne(condition)
         if (!userInfo) {
-            ctx.error({msg: '用户名或密码错误', errCode: ctx.app.errCodeEnum.passWordError})
+            ctx.error({msg: '用户名或密码错误', errCode: ctx.app.errCodeEnum.passwordError})
         }
         if (helper.generatePassword(userInfo.salt, password) !== userInfo.password) {
-            ctx.error({msg: '用户名或密码错误', errCode: ctx.app.errCodeEnum.passWordError})
+            ctx.error({msg: '用户名或密码错误', errCode: ctx.app.errCodeEnum.passwordError})
         }
 
         const {publicKey, privateKey, cookieName} = config.jwtAuth
@@ -54,7 +55,7 @@ module.exports = class PassPortController extends Controller {
         if (jwtType === 'cookie') {
             cookies.set(cookieName, jwtStr, {
                 httpOnly: false,
-                domain: config.domain || 'freelog.com',
+                domain: ctx.app.env === 'test' ? 'testfreelog.com' : 'freelog.com',
                 overwrite: true,
                 signed: false,
                 expires: isRemember ? moment().add(7, 'days').toDate() : undefined
@@ -80,7 +81,7 @@ module.exports = class PassPortController extends Controller {
         ctx.validate(false)
 
         ctx.cookies.set(ctx.app.config.jwtAuth.cookieName, null, {
-            domain: ctx.app.config.domain || 'freelog.com'
+            domain: ctx.app.env === 'test' ? 'testfreelog.com' : 'freelog.com'
         });
 
         if (returnUrl) {
