@@ -51,6 +51,9 @@ module.exports = class PassPortController extends Controller {
         const payLoad = Object.assign({}, userInfo.toObject(), generateJwtPayload(userInfo.userId, userInfo.tokenSn))
         const jwtStr = new jwtHelper(publicKey, privateKey).createJwt(payLoad, 1296000)
 
+        console.log(ctx.app.env === 'test' ? 'testfreelog.com' : 'freelog.com')
+        console.log(ctx.app.config.domain)
+
         if (jwtType === 'cookie') {
             cookies.set(cookieName, jwtStr, {
                 httpOnly: false,
@@ -62,9 +65,6 @@ module.exports = class PassPortController extends Controller {
         } else {
             ctx.set('Authorization', `Bearer ${jwtStr}`)
         }
-
-        console.log(ctx.app.env === 'test' ? 'testfreelog.com' : 'freelog.com')
-        console.log(ctx.app.config.domain)
 
         ctx.success(userInfo)
 
