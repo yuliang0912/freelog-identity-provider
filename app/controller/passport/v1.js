@@ -63,6 +63,9 @@ module.exports = class PassPortController extends Controller {
             ctx.set('Authorization', `Bearer ${jwtStr}`)
         }
 
+        console.log(ctx.app.env === 'test' ? 'testfreelog.com' : 'freelog.com')
+        console.log(ctx.app.config.domain)
+
         ctx.success(userInfo)
 
         if (returnUrl) {
