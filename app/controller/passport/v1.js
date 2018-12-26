@@ -29,7 +29,11 @@ module.exports = class PassPortController extends Controller {
 
         ctx.allowContentType({type: 'json'}).validate(false)
 
+
         const {app, helper, config, cookies} = ctx
+
+        console.log(app.config.domain, 1111111)
+
         const condition = {}
         if (helper.commonRegex.mobile86.test(loginName)) {
             condition.mobile = loginName
@@ -51,8 +55,8 @@ module.exports = class PassPortController extends Controller {
         const payLoad = Object.assign({}, userInfo.toObject(), generateJwtPayload(userInfo.userId, userInfo.tokenSn))
         const jwtStr = new jwtHelper(publicKey, privateKey).createJwt(payLoad, 1296000)
 
-        console.log(ctx.app.env === 'test' ? 'testfreelog.com' : 'freelog.com')
-        console.log(ctx.app.config.domain)
+        console.log(app.env === 'test' ? 'testfreelog.com' : 'freelog.com')
+
 
         if (jwtType === 'cookie') {
             cookies.set(cookieName, jwtStr, {
