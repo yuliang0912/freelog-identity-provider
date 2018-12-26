@@ -14,11 +14,11 @@ module.exports = {
         url: "mongodb://172.18.215.231:27018/user",
     },
 
-
     /**
      * api网关内网地址
      */
     gatewayUrl: "http://172.18.215.224:8895/test",
+
 
     domain: "testfreelog.com"
 }
