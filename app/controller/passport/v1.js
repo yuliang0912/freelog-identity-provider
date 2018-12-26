@@ -52,6 +52,9 @@ module.exports = class PassPortController extends Controller {
         const payLoad = Object.assign({}, userInfo.toObject(), generateJwtPayload(userInfo.userId, userInfo.tokenSn))
         const jwtStr = new jwtHelper(publicKey, privateKey).createJwt(payLoad, 1296000)
 
+        console.log(app.env === 'test' ? 'testfreelog.com' : 'freelog.com')
+
+
         if (jwtType === 'cookie') {
             cookies.set(cookieName, jwtStr, {
                 httpOnly: false,
