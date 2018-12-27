@@ -12,7 +12,7 @@ module.exports = appInfo => {
             }
         },
 
-        middleware: ['errorHandler', 'identiyAuthentication'],
+        middleware: ['errorHandler', 'identityAuthentication'],
 
         /**
          * mongoDB配置
