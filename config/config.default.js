@@ -30,8 +30,6 @@ module.exports = appInfo => {
             }
         },
 
-        gatewayUrl: "http://api.freelog.com",
-
         jwtAuth: {
             cookieName: 'authInfo',
             privateKey: fs.readFileSync('config/auth_key/private_key.pem').toString(),

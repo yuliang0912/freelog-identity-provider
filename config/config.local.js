@@ -6,19 +6,16 @@
  * @returns {{middleware: [string]}}
  */
 
-module.exports = appInfo => {
+module.exports = {
 
-    return {
+    //middleware: ['errorHandler', 'localUserIdentity'],
 
-        middleware: ['errorHandler', 'localUserIdentity'],
-
-        /**
-         * 本地开发环境身份信息
-         */
-        localIdentity: {
-            userId: 10022,
-            userName: "余亮",
-            tokenType: "local"
-        }
+    /**
+     * 本地开发环境身份信息
+     */
+    localIdentity: {
+        userId: 10022,
+        userName: "余亮",
+        tokenType: "local"
     }
 }
