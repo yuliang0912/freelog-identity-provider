@@ -57,9 +57,9 @@ module.exports = class UserInfoController extends Controller {
     /**
      * 注册用户
      * @param ctx
-     * @returns {Promise.<void>}
+     * @returns {Promise<void>}
      */
-    async register(ctx) {
+    async create(ctx) {
 
         const loginName = ctx.checkBody('loginName').exist().notEmpty().value
         const password = ctx.checkBody('password').exist().len(6, 24).notEmpty().value
@@ -91,6 +91,15 @@ module.exports = class UserInfoController extends Controller {
         }
 
         await this.userProvider.createUser(userInfo).then(ctx.success).catch(ctx.error)
+    }
+
+    /**
+     * 注册用户
+     * @param ctx
+     * @returns {Promise.<void>}
+     */
+    async register(ctx) {
+        return this.create(ctx)
     }
 
     /**

@@ -38,7 +38,6 @@ module.exports = appInfo => {
 
         domain: "freelog.com",
 
-
         /**
          * 上传文件相关配置
          */
@@ -56,7 +55,13 @@ module.exports = appInfo => {
         },
 
         //cookie加密与解密key
-        keys: 'd5dd9d6d5d9aa0f36c00b779fa7e3cf4,6a40eb7a1d7d01d508af102a151ab56f'
+        keys: 'd5dd9d6d5d9aa0f36c00b779fa7e3cf4,6a40eb7a1d7d01d508af102a151ab56f',
+
+        clientCredentialInfo: {
+            clientId: 1001,
+            publicKey: 'c2390e26867d04fbcf1f07bec47ba779',
+            privateKey: '96d8bd08230d2f3052f4df986c2b8ce9'
+        },
     };
 
     return config;

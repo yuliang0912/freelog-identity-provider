@@ -29,7 +29,7 @@ module.exports = class PassPortController extends Controller {
 
         ctx.allowContentType({type: 'json'}).validate(false)
 
-        const {app, helper, config, cookies} = ctx
+        const {helper, config, cookies} = ctx
 
         const condition = {}
         if (helper.commonRegex.mobile86.test(loginName)) {
@@ -52,13 +52,10 @@ module.exports = class PassPortController extends Controller {
         const payLoad = Object.assign({}, userInfo.toObject(), generateJwtPayload(userInfo.userId, userInfo.tokenSn))
         const jwtStr = new jwtHelper(publicKey, privateKey).createJwt(payLoad, 1296000)
 
-        console.log(app.env === 'test' ? 'testfreelog.com' : 'freelog.com')
-
-
         if (jwtType === 'cookie') {
             cookies.set(cookieName, jwtStr, {
                 httpOnly: false,
-                domain: ctx.app.env === 'test' ? 'testfreelog.com' : 'freelog.com',
+                domain: config.domain,
                 overwrite: true,
                 signed: false,
                 expires: isRemember ? moment().add(7, 'days').toDate() : undefined
@@ -67,11 +64,7 @@ module.exports = class PassPortController extends Controller {
             ctx.set('Authorization', `Bearer ${jwtStr}`)
         }
 
-        ctx.success(userInfo)
-
-        if (returnUrl) {
-            ctx.redirect(returnUrl)
-        }
+        returnUrl ? ctx.redirect(returnUrl) : ctx.success(userInfo)
     }
 
     /**
@@ -83,15 +76,11 @@ module.exports = class PassPortController extends Controller {
 
         ctx.validate(false)
 
-        ctx.cookies.set(ctx.app.config.jwtAuth.cookieName, null, {
-            domain: ctx.app.env === 'test' ? 'testfreelog.com' : 'freelog.com'
-        });
+        ctx.cookies.set(ctx.config.jwtAuth.cookieName, null, {
+            domain: ctx.config.domain
+        })
 
-        if (returnUrl) {
-            ctx.redirect(returnUrl)
-        } else {
-            ctx.success(1)
-        }
+        returnUrl ? ctx.redirect(returnUrl) : ctx.success(true)
     }
 }
 
