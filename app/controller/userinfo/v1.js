@@ -3,7 +3,6 @@
  */
 
 'use strict'
-const fs = require('fs')
 const uuid = require('uuid')
 const Controller = require('egg').Controller;
 
@@ -214,7 +213,7 @@ module.exports = class UserInfoController extends Controller {
     async _generateHeadImage(ctx, userId) {
 
         const fileObjectKey = `headImage/${userId}`
-        const fileBuffer = Buffer.from(ctx.helper.generateHeadImage(userId), 'base64')
+        const fileBuffer = Buffer.from(ctx.helper.generateHeadImage(userId.toString()), 'base64')
         await ctx.app.ossClient.putBuffer(fileObjectKey, fileBuffer, {headers: {'Content-Type': 'image/png'}})
         const headImageUrl = `https://image.freelog.com/${fileObjectKey}`
         await this.userProvider.updateOne({userId: userId}, {headImage: headImageUrl})
