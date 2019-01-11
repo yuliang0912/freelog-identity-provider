@@ -3,7 +3,7 @@
  */
 
 'use strict'
-
+const fs = require('fs')
 const uuid = require('uuid')
 const Controller = require('egg').Controller;
 
@@ -90,16 +90,11 @@ module.exports = class UserInfoController extends Controller {
             })
         }
 
-        await this.userProvider.createUser(userInfo).then(ctx.success).catch(ctx.error)
-    }
+        var model = await this.userProvider.createUser(userInfo)
 
-    /**
-     * 注册用户
-     * @param ctx
-     * @returns {Promise.<void>}
-     */
-    async register(ctx) {
-        return this.create(ctx)
+        this._generateHeadImage(ctx, model.user).catch(console.error)
+
+        ctx.success(model)
     }
 
     /**
@@ -190,5 +185,40 @@ module.exports = class UserInfoController extends Controller {
         await this.userProvider.updateOne({userId}, {headImage: headImageUrl}).then(() => {
             ctx.success(`${headImageUrl}?x-oss-process=style/head-image`)
         })
+    }
+
+    /**
+     * 自动修补头像数据
+     * @param ctx
+     * @returns {Promise<void>}
+     */
+    async autoRectifyHeadImage(ctx) {
+
+        var userList = await this.userProvider.find({headImage: ''})
+
+        for (let i = 0; i < userList.length; i++) {
+            const {userId} = userList[i]
+            this._generateHeadImage(ctx, userId).catch(console.error)
+        }
+
+        ctx.success(true)
+    }
+
+    /**
+     * 生成头像并保存
+     * @param ctx
+     * @param userId
+     * @returns {Promise<string>}
+     * @private
+     */
+    async _generateHeadImage(ctx, userId) {
+
+        const fileObjectKey = `headImage/${userId}`
+        const fileBuffer = Buffer.from(ctx.helper.generateHeadImage(userId), 'base64')
+        await ctx.app.ossClient.putBuffer(fileObjectKey, fileBuffer, {headers: {'Content-Type': 'image/png'}})
+        const headImageUrl = `https://image.freelog.com/${fileObjectKey}`
+        await this.userProvider.updateOne({userId: userId}, {headImage: headImageUrl})
+
+        return headImageUrl
     }
 }

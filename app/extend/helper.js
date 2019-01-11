@@ -5,6 +5,7 @@
 'use strict'
 
 const headImageFileCheck = new (require('./head-image-check'))
+const generateHeadImage = new (require('./generate-head-image'))
 const crypto = require('egg-freelog-base/app/extend/helper/crypto_helper')
 
 module.exports = {
@@ -17,6 +18,13 @@ module.exports = {
         const text = `identity@freelog.com#${password}`
 
         return crypto.hmacSha1(crypto.base64Encode(text), salt)
+    },
+
+    /**
+     * 生成头像
+     */
+    generateHeadImage(key, schemeId) {
+        return generateHeadImage.generateHeadImage(key, schemeId)
     },
 
     /**
