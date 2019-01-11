@@ -92,7 +92,7 @@ module.exports = class UserInfoController extends Controller {
 
         var model = await this.userProvider.createUser(userInfo)
 
-        this._generateHeadImage(ctx, model.user).catch(console.error)
+        this._generateHeadImage(ctx, model.userId).catch(console.error)
 
         ctx.success(model)
     }
