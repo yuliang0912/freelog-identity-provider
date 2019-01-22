@@ -50,6 +50,8 @@ module.exports = class PassPortController extends Controller {
 
         const {publicKey, privateKey, cookieName} = config.jwtAuth
         const payLoad = Object.assign({}, userInfo.toObject(), generateJwtPayload(userInfo.userId, userInfo.tokenSn))
+        payLoad.userName = encodeURIComponent(payLoad.userName)
+        payLoad.nickname = encodeURIComponent(payLoad.nickname)
         const jwtStr = new jwtHelper(publicKey, privateKey).createJwt(payLoad, 1296000)
 
         if (jwtType === 'cookie') {
@@ -61,7 +63,7 @@ module.exports = class PassPortController extends Controller {
                 expires: isRemember ? moment().add(7, 'days').toDate() : undefined
             }
             cookies.set(cookieName, jwtStr, cookieOptions)
-            cookies.set('auth-user-id', userInfo.userId.toString(), cookieOptions)
+            cookies.set('uid', userInfo.userId.toString(), cookieOptions)
         } else {
             ctx.set('Authorization', `Bearer ${jwtStr}`)
         }
@@ -79,7 +81,7 @@ module.exports = class PassPortController extends Controller {
         ctx.validate(false)
 
         ctx.cookies.set(ctx.config.jwtAuth.cookieName, null, {domain: ctx.config.domain})
-        cookies.set('auth-user-id', null, {domain: ctx.config.domain})
+        ctx.cookies.set('uid', null, {domain: ctx.config.domain})
 
         returnUrl ? ctx.redirect(returnUrl) : ctx.success(true)
     }
