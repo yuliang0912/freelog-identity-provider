@@ -92,15 +92,18 @@ module.exports = class UserGroupController extends Controller {
         ctx.allowContentType({type: 'json'}).validate()
 
         if (!addMembers && !removeMembers) {
-            ctx.error({msg: '参数addMembers和removeMembers最少需要存在一个'})
+            ctx.error({msg: ctx.gettext('params-required-validate-failed')})
         }
         if (!addMembers.length && !removeMembers.length) {
-            ctx.error({msg: '参数addMembers和removeMembers最少需要存在一个有效参数'})
+            ctx.error({msg: ctx.gettext('params-required-validate-failed')})
         }
 
         const groupInfo = await ctx.dal.groupProvider.findOne({groupId})
-        if (!groupInfo || groupInfo.userId !== ctx.request.userId) {
-            ctx.error({msg: 'groupId错误或者没有操作权限'})
+        if (!groupInfo) {
+            ctx.error({msg: ctx.gettext('params-validate-failed', 'groupId')})
+        }
+        if (groupInfo.userId !== ctx.request.userId) {
+            ctx.error({msg: ctx.gettext('user-authentication-failed')})
         }
 
         await ctx.service.groupService.operationMembers({

@@ -4,7 +4,8 @@
 
 'use strict'
 const uuid = require('uuid')
-const Controller = require('egg').Controller;
+const Controller = require('egg').Controller
+const authCodeType = require('../../enum/auth-code-type-enum')
 
 module.exports = class UserInfoController extends Controller {
 
@@ -20,7 +21,8 @@ module.exports = class UserInfoController extends Controller {
      */
     async index(ctx) {
 
-        const userIds = ctx.checkQuery('userIds').exist().match(/^[0-9]{5,12}(,[0-9]{5,12})*$/, 'userIds格式错误').toSplitArray().len(1, 200).value
+
+        const userIds = ctx.checkQuery('userIds').exist().match(/^[0-9]{5,12}(,[0-9]{5,12})*$/, ctx.gettext('params-validate-failed', 'userIds')).toSplitArray().len(1, 200).value
 
         ctx.validate(false)
 
@@ -39,6 +41,23 @@ module.exports = class UserInfoController extends Controller {
         ctx.validate()
 
         await this.userProvider.findOne({userId}).then(ctx.success)
+    }
+
+    /**
+     * 发送短信
+     * @param ctx
+     * @returns {Promise<void>}
+     */
+    async sendSms(ctx) {
+
+        const mobile = ctx.checkBody('mobile').optional().match(ctx.helper.commonRegex.mobile86).value
+        const smsType = ctx.checkBody('mobile').optional().in(['register', 'resetPassword']).value
+
+        ctx.validate(false)
+
+        //const templateCode
+
+        ctx.helper.sendSms(mobile, 'SMS_158050266', {code: 123456}).then(console.log).catch(console.error)
     }
 
     /**
@@ -64,6 +83,7 @@ module.exports = class UserInfoController extends Controller {
         const password = ctx.checkBody('password').exist().len(6, 24).notEmpty().value
         const nickname = ctx.checkBody('nickname').exist().len(2, 20).notEmpty().value
         const userName = ctx.checkBody('userName').optional().len(2, 20).default('').value
+        const authCode = ctx.checkBody('authCode').exist().toInt().value
 
         ctx.allowContentType({type: 'json'}).validate(false)
 
@@ -74,18 +94,22 @@ module.exports = class UserInfoController extends Controller {
         } else if (ctx.helper.commonRegex.email.test(loginName)) {
             userInfo.email = loginName
         } else {
-            ctx.errors.push({loginName: '登录名必须是手机号或者邮箱'})
+            ctx.errors.push({loginName: ctx.gettext('login-name-format-validate-failed')})
             ctx.validate(false)
         }
 
+        const isVerify = await ctx.service.messageService.verify(authCodeType.register, loginName, authCode)
+        if (isVerify) {
+            ctx.error({msg: ctx.gettext('auth-code-validate-failed')})
+        }
         if (userInfo.mobile) {
             await this.userProvider.count({mobile: loginName}).then(count => {
-                count && ctx.error({msg: '手机号已经被注册'})
+                count && ctx.error({msg: ctx.gettext('mobile-register-validate-failed')})
             })
         }
         if (userInfo.email) {
             await this.userProvider.count({email: loginName}).then(count => {
-                count && ctx.error({msg: '电子邮箱已经被注册'})
+                count && ctx.error({msg: ctx.gettext('email-register-validate-failed')})
             })
         }
 
@@ -114,13 +138,13 @@ module.exports = class UserInfoController extends Controller {
         } else if (ctx.helper.commonRegex.email.test(loginName)) {
             condition.email = loginName
         } else {
-            ctx.errors.push({loginName: '登录名必须是手机号或者邮箱'})
+            ctx.errors.push({loginName: ctx.gettext('login-name-format-validate-failed')})
             ctx.validate(false)
         }
 
         const userInfo = await this.userProvider.findOne(condition)
         if (!userInfo) {
-            ctx.error({msg: '未找到有效用户'})
+            ctx.error({msg: ctx.gettext('user-entity-not-found')})
         }
 
         const salt = uuid.v4().replace(/-/g, '')
@@ -144,10 +168,13 @@ module.exports = class UserInfoController extends Controller {
         const userId = ctx.request.userId
         const userInfo = await this.userProvider.findOne({userId})
         if (!userInfo) {
-            ctx.error({msg: '用户名或密码错误', errCode: ctx.app.errCodeEnum.passwordError})
+            ctx.error({
+                msg: ctx.gettext('login-name-or-password-validate-failed'),
+                errCode: ctx.app.errCodeEnum.passwordError
+            })
         }
         if (ctx.helper.generatePassword(userInfo.salt, oldPassword) !== userInfo.password) {
-            ctx.error({msg: '原始密码错误', errCode: ctx.app.errCodeEnum.passwordError})
+            ctx.error({msg: ctx.gettext('login-password-validate-failed'), errCode: ctx.app.errCodeEnum.passwordError})
         }
         if (oldPassword === newPassword) {
             return ctx.success(true)

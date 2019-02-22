@@ -7,6 +7,9 @@
 const headImageFileCheck = new (require('./head-image-check'))
 const generateHeadImage = new (require('./generate-head-image'))
 const crypto = require('egg-freelog-base/app/extend/helper/crypto_helper')
+const SmsHelper = require('./sms-helper')
+const EmailHelper = require('./email-helper')
+let smsHelper = null, emailHelper = null
 
 module.exports = {
 
@@ -31,6 +34,29 @@ module.exports = {
      * 检查头像文件
      */
     checkHeadImage(fileStream) {
-        return headImageFileCheck.check(fileStream)
+        const {ctx} = this
+        return headImageFileCheck.check(ctx, fileStream)
+    },
+
+    /**
+     * 发送短信
+     * @returns {Promise<*>|*}
+     */
+    sendSms(phoneNumbers, templateCode, templateParam) {
+        if (!smsHelper) {
+            smsHelper = new SmsHelper(this.app)
+        }
+        return smsHelper.sendSMS(...arguments)
+    },
+
+    /**
+     * 发送邮件
+     * @returns {*|Promise<void>}
+     */
+    sendEmail(address, subject, text, html) {
+        if (!emailHelper) {
+            emailHelper = new EmailHelper(this.app)
+        }
+        return emailHelper.sendEmail(address, subject, text, html)
     }
 }

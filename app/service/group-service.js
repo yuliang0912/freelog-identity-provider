@@ -20,7 +20,7 @@ module.exports = class GroupService extends Service {
         const {ctx, config, userProvider, groupProvider} = this
 
         await groupProvider.findOne({groupId}).then(group => {
-            group && ctx.error({msg: 'groupId已经存在,不能重复创建'})
+            group && ctx.error({msg: ctx.gettext('group-create-duplicate-error')})
         })
 
         //用户分组
@@ -38,7 +38,7 @@ module.exports = class GroupService extends Service {
         }
 
         if (!memberList.length) {
-            ctx.error({msg: '参数members中有效ID不能为空'})
+            ctx.error({msg: ctx.gettext('params-format-validate-failed', 'members')})
         }
 
         return groupProvider.create({
@@ -63,7 +63,7 @@ module.exports = class GroupService extends Service {
         const {ctx, app, userProvider, groupProvider} = this
 
         if (groupInfo.memberCount + addMembers.length > 200) {
-            ctx.error({msg: '群组中成员数量超出最大限制(200)'})
+            ctx.error({msg: ctx.gettext('group-member-count-limit-validate-failed', '200')})
         }
 
         addMembers = addMembers.filter(memberId => {

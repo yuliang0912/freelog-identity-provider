@@ -37,15 +37,21 @@ module.exports = class PassPortController extends Controller {
         } else if (helper.commonRegex.email.test(loginName)) {
             condition.email = loginName
         } else {
-            ctx.error({msg: '登录名必须是手机号或者邮箱', data: {loginName}})
+            ctx.error({msg: ctx.gettext('login-name-format-validate-failed'), data: {loginName}})
         }
 
         const userInfo = await this.userProvider.findOne(condition)
         if (!userInfo) {
-            ctx.error({msg: '用户名或密码错误', errCode: ctx.app.errCodeEnum.passwordError})
+            ctx.error({
+                msg: ctx.gettext('login-name-or-password-validate-failed'),
+                errCode: ctx.app.errCodeEnum.passwordError
+            })
         }
         if (helper.generatePassword(userInfo.salt, password) !== userInfo.password) {
-            ctx.error({msg: '用户名或密码错误', errCode: ctx.app.errCodeEnum.passwordError})
+            ctx.error({
+                msg: ctx.gettext('login-name-or-password-validate-failed'),
+                errCode: ctx.app.errCodeEnum.passwordError
+            })
         }
 
         const {publicKey, privateKey, cookieName} = config.jwtAuth

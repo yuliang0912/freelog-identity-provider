@@ -12,6 +12,11 @@ module.exports = appInfo => {
             }
         },
 
+        i18n: {
+            enable: true,
+            defaultLocale: 'zh-CN'
+        },
+
         middleware: ['errorHandler', 'identityAuthentication'],
 
         /**
@@ -52,6 +57,16 @@ module.exports = appInfo => {
                 timeout: 180000
             },
             amzS3: {}
+        },
+
+        smtpTransportConfig: {
+            host: 'smtpdm.aliyun.com',
+            port: 465,
+            secure: true,
+            auth: {
+                user: 'webmaster@service.freelog.com',
+                pass: 'FreeLog233109'
+            }
         },
 
         //cookie加密与解密key
