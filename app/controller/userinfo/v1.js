@@ -99,7 +99,7 @@ module.exports = class UserInfoController extends Controller {
         }
 
         const isVerify = await ctx.service.messageService.verify(authCodeType.register, loginName, authCode)
-        if (isVerify) {
+        if (!isVerify) {
             ctx.error({msg: ctx.gettext('auth-code-validate-failed')})
         }
         if (userInfo.mobile) {
@@ -148,7 +148,7 @@ module.exports = class UserInfoController extends Controller {
             ctx.error({msg: ctx.gettext('user-entity-not-found')})
         }
         const isVerify = await ctx.service.messageService.verify(authCodeType.resetPassword, loginName, authCode)
-        if (isVerify) {
+        if (!isVerify) {
             ctx.error({msg: ctx.gettext('auth-code-validate-failed')})
         }
 
