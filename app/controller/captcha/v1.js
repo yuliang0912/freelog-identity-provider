@@ -2,7 +2,6 @@
 
 const uuid = require('uuid')
 const Controller = require('egg').Controller;
-const crypto = require('egg-freelog-base/app/extend/helper/crypto_helper')
 
 module.exports = class PassPortController extends Controller {
 
@@ -13,7 +12,7 @@ module.exports = class PassPortController extends Controller {
      */
     async generateCaptcha(ctx) {
 
-        const captchaKey = ctx.checkParams('captchaKey').exist().in(['register']).value
+        const captchaKey = ctx.checkParams('captchaKey').exist().in(['register', 'resetPassword']).value
         const width = ctx.checkQuery('width').default(120).optional().toInt().value
         const height = ctx.checkQuery('height').default(50).optional().toInt().value
         const size = ctx.checkQuery('size').default(4).optional().toInt().value
@@ -74,7 +73,7 @@ module.exports = class PassPortController extends Controller {
      */
     async verify(ctx) {
 
-        const captchaKey = ctx.checkParams('captchaKey').exist().in(['register']).value
+        const captchaKey = ctx.checkParams('captchaKey').exist().in(['register', 'resetPassword']).value
         const captchaInput = ctx.checkQuery('captchaInput').exist().value
         ctx.validate(false)
 

@@ -30,9 +30,9 @@ module.exports = app => {
 
     router.get('/v1/captcha/:captchaKey/verify', controller.captcha.v1.verify)
 
-    router.post('/v1/message/register',controller.message.v1.register)
+    router.post('/v1/message/send', controller.message.v1.send)
 
-    router.get('/v1/message/verify',controller.message.v1.verify)
+    router.get('/v1/message/verify', controller.message.v1.verify)
 
 
     /**

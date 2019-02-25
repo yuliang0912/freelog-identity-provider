@@ -2,7 +2,8 @@
 
 const lodash = require('lodash')
 const Service = require('egg').Service
-const authCodeType = require('../enum/auth-code-type-enum')
+const {register, resetPassword} = require('../enum/auth-code-type-enum')
+const {ApplicationError} = require('egg-freelog-base/error')
 
 
 module.exports = class MessageService extends Service {
@@ -16,15 +17,24 @@ module.exports = class MessageService extends Service {
      * 发送注册短信
      * @param targetType 1:手机号  2:邮件
      */
-    async sendRegisterMessage(toAddress, targetType) {
+    async sendMessage(authCodeType, toAddress, targetType) {
 
-        const templateCode = this.getTemplateCode('register')
-        const templateParams = {code: lodash.random(100000, 999999)}
         const expireDate = new Date()
-        expireDate.setMinutes(expireDate.getMinutes() + 5)
+        expireDate.setMinutes(expireDate.getMinutes() - 1)
+
+        const count = await this.messageProvider.count({
+            authCodeType, toAddress, createDate: {$gt: expireDate}
+        })
+        if (count) {
+            throw new ApplicationError(this.ctx.gettext('auth-code-send-limit-failed'))
+        }
+
+        const templateCode = this.getTemplateCode(authCodeType)
+        const templateParams = {code: lodash.random(100000, 999999)}
+        expireDate.setMinutes(expireDate.getMinutes() + 6)
 
         await this.messageProvider.create({
-            toAddress, authCodeType: authCodeType.register,
+            toAddress, authCodeType,
             templateCode, templateParams, expireDate
         })
 
@@ -67,7 +77,7 @@ module.exports = class MessageService extends Service {
      */
     sendEmailMessage(toAddress, templateCode, templateParam) {
         const {ctx} = this
-        return ctx.helper.sendEmail(toAddress, '【飞致网络】注册验证码', null, `<h3>${this.getTemplateContent(templateCode, templateParam)}</h3>`)
+        return ctx.helper.sendEmail(toAddress, '【飞致网络】验证码', null, `<h3>${this.getTemplateContent(templateCode, templateParam)}</h3>`)
     }
 
     /**
@@ -76,7 +86,7 @@ module.exports = class MessageService extends Service {
      * @returns {string}
      */
     getTemplateCode(smsType) {
-        return smsType === 'register' ? 'SMS_158050266' : ''
+        return smsType === register ? 'SMS_157980466' : smsType === resetPassword ? 'SMS_157980465' : ''
     }
 
     /**
@@ -87,8 +97,10 @@ module.exports = class MessageService extends Service {
      */
     getTemplateContent(templateCode, templateParam) {
         switch (templateCode) {
-            case 'SMS_158050266':
-                return `您的验证码为：${templateParam.code}，您正在进行账号注册操作，如非本人操作，请忽略本邮件！`
+            case 'SMS_157980466':
+                return `验证码${templateParam.code}，您正在注册成为新用户，感谢您的支持！`
+            case 'SMS_157980465':
+                return `验证码${templateParam.code}，您正在尝试修改登录密码，请妥善保管账户信息。`
             default:
                 return 'null'
         }

@@ -129,6 +129,7 @@ module.exports = class UserInfoController extends Controller {
 
         const loginName = ctx.checkBody('loginName').exist().notEmpty().value
         const password = ctx.checkBody('password').exist().len(6, 24).notEmpty().value
+        const authCode = ctx.checkBody('authCode').exist().toInt().value
 
         ctx.allowContentType({type: 'json'}).validate(false)
 
@@ -145,6 +146,10 @@ module.exports = class UserInfoController extends Controller {
         const userInfo = await this.userProvider.findOne(condition)
         if (!userInfo) {
             ctx.error({msg: ctx.gettext('user-entity-not-found')})
+        }
+        const isVerify = await ctx.service.messageService.verify(authCodeType.resetPassword, loginName, authCode)
+        if (isVerify) {
+            ctx.error({msg: ctx.gettext('auth-code-validate-failed')})
         }
 
         const salt = uuid.v4().replace(/-/g, '')

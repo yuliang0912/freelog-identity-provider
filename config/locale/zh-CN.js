@@ -30,6 +30,10 @@ module.exports = {
 
     'head-image-size-limit-validate-failed': '头像图片超出最大文件限制,最大不能超过%s',
 
-    'auth-code-validate-failed': '验证码输入错误'
+    'auth-code-validate-failed': '验证码输入错误',
+
+    'login-name-not-exist-error': '登录名不存在',
+
+    'auth-code-send-limit-failed': '验证码60秒之内只能发送一次'
 
 }

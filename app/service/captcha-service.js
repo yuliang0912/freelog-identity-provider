@@ -19,7 +19,7 @@ module.exports = class CaptchaService extends Service {
 
         const cookieOptions = {
             httpOnly: false,
-            domain: ctx.config.domain,
+            //domain: ctx.config.domain,
             overwrite: true, signed: false
         }
         const cookieKey = `captcha-${captchaKey}`
