@@ -64,7 +64,7 @@ module.exports = appInfo => {
             port: 465,
             secure: true,
             auth: {
-                user: 'webmaster@service.freelog.com',
+                user: 'noreply@service.freelog.com',
                 pass: 'FreeLog233109'
             }
         },

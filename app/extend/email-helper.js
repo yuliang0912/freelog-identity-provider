@@ -17,7 +17,7 @@ module.exports = class EmailHelper {
         const transporter = nodeMailer.createTransport(this.smtpTransportConfig)
 
         var mailOptions = {
-            from: this.smtpTransportConfig.auth.user,
+            from: `"飞致网络" <${this.smtpTransportConfig.auth.user}>`,
             to: address, subject, html
         }
 

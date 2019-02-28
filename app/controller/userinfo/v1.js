@@ -44,23 +44,6 @@ module.exports = class UserInfoController extends Controller {
     }
 
     /**
-     * 发送短信
-     * @param ctx
-     * @returns {Promise<void>}
-     */
-    async sendSms(ctx) {
-
-        const mobile = ctx.checkBody('mobile').optional().match(ctx.helper.commonRegex.mobile86).value
-        const smsType = ctx.checkBody('mobile').optional().in(['register', 'resetPassword']).value
-
-        ctx.validate(false)
-
-        //const templateCode
-
-        ctx.helper.sendSms(mobile, 'SMS_158050266', {code: 123456}).then(console.log).catch(console.error)
-    }
-
-    /**
      * 获取当前登录用户信息
      * @param ctx
      * @returns {Promise<void>}
