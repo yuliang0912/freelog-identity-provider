@@ -4,9 +4,11 @@
 
 'use strict'
 
+const lodash = require('lodash')
 const moment = require('moment')
 const Controller = require('egg').Controller;
 const jwtHelper = require('egg-freelog-base/app/extend/helper/jwt_helper')
+const {ArgumentError, AuthenticationError} = require('egg-freelog-base/error')
 
 module.exports = class PassPortController extends Controller {
 
@@ -29,35 +31,26 @@ module.exports = class PassPortController extends Controller {
 
         ctx.allowContentType({type: 'json'}).validate(false)
 
-        const {helper, config, cookies} = ctx
-
         const condition = {}
+        const {helper, config, cookies} = ctx
         if (helper.commonRegex.mobile86.test(loginName)) {
             condition.mobile = loginName
         } else if (helper.commonRegex.email.test(loginName)) {
             condition.email = loginName
         } else {
-            ctx.error({msg: ctx.gettext('login-name-format-validate-failed'), data: {loginName}})
+            throw new ArgumentError({msg: ctx.gettext('login-name-format-validate-failed'), data: {loginName}})
         }
 
         const userInfo = await this.userProvider.findOne(condition)
-        if (!userInfo) {
-            ctx.error({
-                msg: ctx.gettext('login-name-or-password-validate-failed'),
-                errCode: ctx.app.errCodeEnum.passwordError
-            })
-        }
-        if (helper.generatePassword(userInfo.salt, password) !== userInfo.password) {
-            ctx.error({
-                msg: ctx.gettext('login-name-or-password-validate-failed'),
-                errCode: ctx.app.errCodeEnum.passwordError
-            })
+        if (!userInfo || helper.generatePassword(userInfo.salt, password) !== userInfo.password) {
+            let authenticationError = new AuthenticationError(ctx.gettext('login-name-or-password-validate-failed'))
+            authenticationError.errCode = ctx.app.errCodeEnum.passwordError
+            throw authenticationError
         }
 
         const {publicKey, privateKey, cookieName} = config.jwtAuth
-        const payLoad = Object.assign({}, userInfo.toObject(), generateJwtPayload(userInfo.userId, userInfo.tokenSn))
-        payLoad.userName = encodeURIComponent(payLoad.userName)
-        payLoad.nickname = encodeURIComponent(payLoad.nickname)
+        const payLoad = Object.assign(lodash.pick(userInfo, ['userId', 'username', 'mobile', 'email']), generateJwtPayload(userInfo.userId, userInfo.tokenSn))
+
         const jwtStr = new jwtHelper(publicKey, privateKey).createJwt(payLoad, 1296000)
 
         if (jwtType === 'cookie') {

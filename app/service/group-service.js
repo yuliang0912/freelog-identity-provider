@@ -17,17 +17,17 @@ module.exports = class GroupService extends Service {
     async createGroup({groupId, groupName, groupType, members}) {
 
         let memberList = []
-        const {ctx, config, userProvider, groupProvider} = this
+        const {ctx, config} = this
 
-        await groupProvider.findOne({groupId}).then(group => {
+        await this.groupProvider.findOne({groupId}).then(group => {
             group && ctx.error({msg: ctx.gettext('group-create-duplicate-error')})
         })
 
         //用户分组
         if (groupType === 1) {
-            memberList = await userProvider.getUserListByUserIds(members).map(item => new Object({
+            memberList = await this.userProvider.find({userId: {$in: members}}).map(item => Object({
                 memberId: item.userId,
-                memberName: item.nickname || item.userName
+                memberName: item.username
             }))
         }
         else if (groupType === 2) {
@@ -41,7 +41,7 @@ module.exports = class GroupService extends Service {
             ctx.error({msg: ctx.gettext('params-format-validate-failed', 'members')})
         }
 
-        return groupProvider.create({
+        return this.groupProvider.create({
             groupId: `group_${groupType === 1 ? 'user' : 'node'}_${this.app.mongoose.getNewObjectId()}`,
             groupName, groupType,
             userId: ctx.request.userId,
@@ -60,7 +60,7 @@ module.exports = class GroupService extends Service {
     async operationMembers({groupInfo, addMembers, removeMembers}) {
 
         let memberList = []
-        const {ctx, app, userProvider, groupProvider} = this
+        const {ctx, app} = this
 
         if (groupInfo.memberCount + addMembers.length > 200) {
             ctx.error({msg: ctx.gettext('group-member-count-limit-validate-failed', '200')})
@@ -71,9 +71,9 @@ module.exports = class GroupService extends Service {
         })
 
         if (addMembers.length && groupInfo.groupType === 1) {
-            memberList = await userProvider.getUserListByUserIds(addMembers).map(item => new Object({
+            memberList = await this.userProvider.find({userId: {$in: addMembers}}).map(item => new Object({
                 memberId: item.userId,
-                memberName: item.nickname || item.userName
+                memberName: item.username
             }))
         }
         else if (addMembers.length && groupInfo.groupType === 2) {
@@ -87,7 +87,7 @@ module.exports = class GroupService extends Service {
         groupInfo.members = groupInfo.members.concat(memberList)
         groupInfo.members = groupInfo.members.filter(item => !removeMembers.some(x => x === item.memberId))
 
-        return groupProvider.update({groupId: groupInfo.groupId}, {
+        return this.groupProvider.update({groupId: groupInfo.groupId}, {
             members: groupInfo.members,
             memberCount: groupInfo.members.length
         })

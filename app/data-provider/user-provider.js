@@ -18,10 +18,6 @@ module.exports = class UserInfoProvider extends MongoBaseOperation {
      */
     async createUser(model) {
 
-        if (!super.type.object(model)) {
-            return Promise.reject(new Error("model must be object"))
-        }
-
         const userId = await this.app.dal.autoIncrementRecordProvider.getNextDateValue()
 
         model.userId = userId
@@ -30,17 +26,5 @@ module.exports = class UserInfoProvider extends MongoBaseOperation {
         model.tokenSn = uuid.v4().replace(/-/g, '')
 
         return super.create(model)
-    }
-
-    /**
-     * 批量多个用户信息
-     * @param condition
-     */
-    getUserListByUserIds(userIds) {
-        if (!Array.isArray(userIds) || !userIds.length) {
-            return Promise.resolve([])
-        }
-        //const projection = 'userId userName nickName email mobile userRole headImage'
-        return super.find({userId: {$in: userIds}})
     }
 }

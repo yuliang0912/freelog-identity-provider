@@ -6,6 +6,7 @@
 const uuid = require('uuid')
 const Controller = require('egg').Controller
 const authCodeType = require('../../enum/auth-code-type-enum')
+const {ArgumentError} = require('egg-freelog-base/error')
 
 module.exports = class UserInfoController extends Controller {
 
@@ -21,12 +22,11 @@ module.exports = class UserInfoController extends Controller {
      */
     async index(ctx) {
 
-
         const userIds = ctx.checkQuery('userIds').exist().match(/^[0-9]{5,12}(,[0-9]{5,12})*$/, ctx.gettext('params-validate-failed', 'userIds')).toSplitArray().len(1, 200).value
-
+        const projection = ctx.checkQuery('projection').optional().toSplitArray().default([]).value
         ctx.validate(false)
 
-        await this.userProvider.getUserListByUserIds(userIds).then(ctx.success).catch(ctx.error)
+        await this.userProvider.find({userId: {$in: userIds}}, projection.join(' ')).then(ctx.success)
     }
 
     /**
@@ -63,44 +63,41 @@ module.exports = class UserInfoController extends Controller {
     async create(ctx) {
 
         const loginName = ctx.checkBody('loginName').exist().notEmpty().value
-        const password = ctx.checkBody('password').exist().len(6, 24).notEmpty().value
-        const nickname = ctx.checkBody('nickname').exist().len(2, 20).notEmpty().value
-        const userName = ctx.checkBody('userName').optional().len(2, 20).default('').value
+        const password = ctx.checkBody('password').exist().trim().len(6, 24).value
+        const username = ctx.checkBody('username').exist().isUsername().value
         const authCode = ctx.checkBody('authCode').exist().toInt().value
+        ctx.validate(false)
 
-        ctx.allowContentType({type: 'json'}).validate(false)
-
-        const userInfo = {nickname, userName, password}
-
+        var model = {}
         if (ctx.helper.commonRegex.mobile86.test(loginName)) {
-            userInfo.mobile = loginName
+            model.mobile = loginName
         } else if (ctx.helper.commonRegex.email.test(loginName)) {
-            userInfo.email = loginName
+            model.email = loginName
         } else {
-            ctx.errors.push({loginName: ctx.gettext('login-name-format-validate-failed')})
-            ctx.validate(false)
+            throw new ArgumentError(ctx.gettext('login-name-format-validate-failed'), {loginName})
         }
 
         const isVerify = await ctx.service.messageService.verify(authCodeType.register, loginName, authCode)
         if (!isVerify) {
             ctx.error({msg: ctx.gettext('auth-code-validate-failed')})
         }
-        if (userInfo.mobile) {
-            await this.userProvider.count({mobile: loginName}).then(count => {
-                count && ctx.error({msg: ctx.gettext('mobile-register-validate-failed')})
-            })
-        }
-        if (userInfo.email) {
-            await this.userProvider.count({email: loginName}).then(count => {
-                count && ctx.error({msg: ctx.gettext('email-register-validate-failed')})
-            })
-        }
 
-        var model = await this.userProvider.createUser(userInfo)
+        const condition = {$or: [{username}, model.mobile ? {mobile: loginName} : {email: loginName}]}
+        await this.userProvider.findOne(condition).then(data => {
+            if (data && data.mobile === loginName) {
+                throw new ArgumentError(ctx.gettext('mobile-register-validate-failed'))
+            } else if (data && data.email === loginName) {
+                throw new ArgumentError(ctx.gettext('email-register-validate-failed'))
+            } else if (data) {
+                throw new ArgumentError(ctx.gettext('username-register-validate-failed'))
+            }
+        })
 
-        this._generateHeadImage(ctx, model.userId).catch(console.error)
-
-        ctx.success(model)
+        const userInfo = Object.assign({username, password}, model)
+        await this.userProvider.createUser(userInfo).then(createdUserInfo => {
+            ctx.success(createdUserInfo)
+            return this._generateHeadImage(ctx, createdUserInfo.userId)
+        })
     }
 
     /**

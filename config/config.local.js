@@ -15,7 +15,7 @@ module.exports = {
      */
     localIdentity: {
         userId: 10022,
-        userName: "余亮",
+        username: "yuliang",
         tokenType: "local"
     }
 }

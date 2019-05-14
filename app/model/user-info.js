@@ -14,8 +14,7 @@ module.exports = app => {
 
     const UserInfoSchema = new mongoose.Schema({
         userId: {type: Number, unique: true, required: true}, //用户ID
-        userName: {type: String, required: false, default: ''},
-        nickname: {type: String, required: false, default: ''},
+        username: {type: String, unique: true, required: true},
         email: {type: String, required: false, default: ''},
         mobile: {type: String, required: false, default: ''},
         userRole: {type: Number, required: true, default: 1, enum: [1, 2, 3, 4, 5, 7]},
@@ -33,5 +32,5 @@ module.exports = app => {
 
     UserInfoSchema.index({userId: 1, groupType: 1});
 
-    return mongoose.model('user-info', UserInfoSchema)
+    return mongoose.model('user-infos', UserInfoSchema)
 }

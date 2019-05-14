@@ -10,6 +10,8 @@ module.exports = {
 
     'email-register-validate-failed': '电子邮箱已经被注册',
 
+    'username-register-validate-failed': '用户名已经被注册',
+
     'user-entity-not-found': '未找到有效用户',
 
     'user-authentication-failed': '用户认证失败,请登录',

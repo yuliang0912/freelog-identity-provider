@@ -4,6 +4,10 @@ const Controller = require('egg').Controller;
 
 module.exports = class UserGroupController extends Controller {
 
+    constructor({app}) {
+        super(...arguments)
+        this.groupProvider = app.dal.groupProvider
+    }
 
     /**
      * 分组列表
@@ -12,21 +16,17 @@ module.exports = class UserGroupController extends Controller {
      */
     async index(ctx) {
 
-        const page = ctx.checkQuery("page").default(1).gt(0).toInt().value
-        const pageSize = ctx.checkQuery("pageSize").default(10).gt(0).lt(101).toInt().value
+        const page = ctx.checkQuery("page").optional().default(1).gt(0).toInt().value
+        const pageSize = ctx.checkQuery("pageSize").optional().default(10).gt(0).lt(101).toInt().value
         const groupType = ctx.checkQuery("groupType").optional().toInt().in([1, 2]).value
-
         ctx.validate()
 
-        const condition = {
-            userId: ctx.request.userId
-        }
+        const condition = {userId: ctx.request.userId}
         if (groupType) {
             condition.groupType = groupType
         }
 
-        await ctx.dal.groupProvider.getGroupPageList(condition, page, pageSize)
-            .then(ctx.success).catch(ctx.error)
+        await this.groupProvider.getGroupPageList(condition, page, pageSize).then(ctx.success)
     }
 
     /**
@@ -39,13 +39,9 @@ module.exports = class UserGroupController extends Controller {
         const groupName = ctx.checkBody('groupName').exist().notBlank().len(4, 20).value
         const members = ctx.checkBody('members').exist().isArray().len(1, 200).value
         const groupType = ctx.checkBody('groupType').exist().toInt().in([1, 2]).value
+        ctx.validate()
 
-        ctx.allowContentType({type: 'json'}).validate()
-
-        members.forEach(x => parseInt(x))
-
-        await ctx.service.groupService.createGroup({groupName, members, groupType})
-            .then(ctx.success).catch(ctx.error)
+        await ctx.service.groupService.createGroup({groupName, members, groupType}).then(ctx.success)
     }
 
 
@@ -59,7 +55,7 @@ module.exports = class UserGroupController extends Controller {
         const groupId = ctx.checkParams('id').isGroupId().value
         ctx.validate()
 
-        await ctx.dal.groupProvider.findOne({groupId}).then(ctx.success).catch(ctx.error)
+        await ctx.dal.groupProvider.findOne({groupId}).then(ctx.success)
     }
 
     /**
@@ -75,7 +71,7 @@ module.exports = class UserGroupController extends Controller {
 
         const condition = {groupId: {$in: groupIds}}
 
-        await ctx.dal.groupProvider.find(condition).then(ctx.success).catch(ctx.error)
+        await this.groupProvider.find(condition).then(ctx.success)
     }
 
     /**
@@ -98,7 +94,7 @@ module.exports = class UserGroupController extends Controller {
             ctx.error({msg: ctx.gettext('params-required-validate-failed')})
         }
 
-        const groupInfo = await ctx.dal.groupProvider.findOne({groupId})
+        const groupInfo = await this.groupProvider.findOne({groupId})
         if (!groupInfo) {
             ctx.error({msg: ctx.gettext('params-validate-failed', 'groupId')})
         }
@@ -129,6 +125,6 @@ module.exports = class UserGroupController extends Controller {
             groupId: {$in: groupIds}, 'members.memberId': memberId
         }
 
-        await ctx.dal.groupProvider.find(condition, 'groupId groupName').then(ctx.success)
+        await this.groupProvider.find(condition, 'groupId groupName').then(ctx.success)
     }
 }
