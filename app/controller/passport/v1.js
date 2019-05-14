@@ -25,7 +25,7 @@ module.exports = class PassPortController extends Controller {
 
         const loginName = ctx.checkBody("loginName").exist().notEmpty().value
         const password = ctx.checkBody('password').exist().len(6, 24).notEmpty().value
-        const isRemember = ctx.checkBody("isRememer").optional().toInt().in([0, 1]).default(0).value
+        const isRemember = ctx.checkBody("isRemember").optional().toInt().in([0, 1]).default(0).value
         const returnUrl = ctx.checkBody("returnUrl").optional().value
         const jwtType = ctx.checkBody('jwtType').optional().in(['cookie', 'header']).default('cookie').value
 
@@ -43,9 +43,7 @@ module.exports = class PassPortController extends Controller {
 
         const userInfo = await this.userProvider.findOne(condition)
         if (!userInfo || helper.generatePassword(userInfo.salt, password) !== userInfo.password) {
-            let authenticationError = new AuthenticationError(ctx.gettext('login-name-or-password-validate-failed'))
-            authenticationError.errCode = ctx.app.errCodeEnum.passwordError
-            throw authenticationError
+            throw new AuthenticationError(ctx.gettext('login-name-or-password-validate-failed'))
         }
 
         const {publicKey, privateKey, cookieName} = config.jwtAuth
