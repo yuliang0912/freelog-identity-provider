@@ -8,7 +8,7 @@ module.exports = app => {
 
     const toObjectOptions = {
         transform: function (doc, ret, options) {
-            return lodash.omit(ret, ['_id', 'password', 'salt', 'updateDate'])
+            return lodash.omit(ret, ['_id', 'password', 'salt', 'updateDate', 'userRole'])
         }
     }
 
@@ -30,7 +30,7 @@ module.exports = app => {
         toObject: toObjectOptions
     })
 
-    UserInfoSchema.index({userId: 1, groupType: 1});
+    UserInfoSchema.index({userId: 1});
 
     return mongoose.model('user-infos', UserInfoSchema)
 }
