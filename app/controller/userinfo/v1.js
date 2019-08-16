@@ -7,6 +7,7 @@ const uuid = require('uuid')
 const Controller = require('egg').Controller
 const authCodeType = require('../../enum/auth-code-type-enum')
 const {ArgumentError} = require('egg-freelog-base/error')
+const {LoginUser, InternalClient} = require('egg-freelog-base/app/enum/identity-type')
 
 module.exports = class UserInfoController extends Controller {
 
@@ -24,7 +25,7 @@ module.exports = class UserInfoController extends Controller {
 
         const userIds = ctx.checkQuery('userIds').exist().match(/^[0-9]{5,12}(,[0-9]{5,12})*$/, ctx.gettext('params-validate-failed', 'userIds')).toSplitArray().len(1, 200).value
         const projection = ctx.checkQuery('projection').optional().toSplitArray().default([]).value
-        ctx.validate(false)
+        ctx.validateParams().validateVisitorIdentity(InternalClient | LoginUser)
 
         await this.userProvider.find({userId: {$in: userIds}}, projection.join(' ')).then(ctx.success)
     }
@@ -37,8 +38,7 @@ module.exports = class UserInfoController extends Controller {
     async show(ctx) {
 
         const userId = ctx.checkParams('id').exist().toInt().gt(10000).value
-
-        ctx.validate()
+        ctx.validateParams().validateVisitorIdentity(InternalClient | LoginUser)
 
         await this.userProvider.findOne({userId}).then(ctx.success)
     }
@@ -50,7 +50,7 @@ module.exports = class UserInfoController extends Controller {
      */
     async current(ctx) {
 
-        ctx.validate()
+        ctx.validateVisitorIdentity(LoginUser)
 
         await this.userProvider.findOne({userId: ctx.request.userId}).then(ctx.success)
     }
@@ -66,7 +66,7 @@ module.exports = class UserInfoController extends Controller {
         const password = ctx.checkBody('password').exist().trim().len(6, 24).value
         const username = ctx.checkBody('username').exist().isUsername().value
         const authCode = ctx.checkBody('authCode').exist().toInt().value
-        ctx.validate(false)
+        ctx.validateParams()
 
         var model = {}
         if (ctx.helper.commonRegex.mobile86.test(loginName)) {
@@ -110,8 +110,7 @@ module.exports = class UserInfoController extends Controller {
         const loginName = ctx.checkBody('loginName').exist().notEmpty().value
         const password = ctx.checkBody('password').exist().len(6, 24).notEmpty().value
         const authCode = ctx.checkBody('authCode').exist().toInt().value
-
-        ctx.allowContentType({type: 'json'}).validate(false)
+        ctx.allowContentType({type: 'json'}).validateParams()
 
         const condition = {}
         if (ctx.helper.commonRegex.mobile86.test(loginName)) {
@@ -147,8 +146,7 @@ module.exports = class UserInfoController extends Controller {
 
         const oldPassword = ctx.checkBody('oldPassword').exist().notBlank().trim().len(6, 50).value
         const newPassword = ctx.checkBody('newPassword').exist().notBlank().trim().len(6, 50).value
-
-        ctx.allowContentType({type: 'json'}).validate()
+        ctx.allowContentType({type: 'json'}).validateParams().validateVisitorIdentity(LoginUser)
 
         const userId = ctx.request.userId
         const userInfo = await this.userProvider.findOne({userId})
@@ -183,7 +181,7 @@ module.exports = class UserInfoController extends Controller {
         if (!fileStream || !fileStream.filename) {
             ctx.error({msg: 'Can\'t found upload file'})
         }
-        ctx.validate()
+        ctx.validateParams().validateVisitorIdentity(LoginUser)
 
         const userId = ctx.request.userId
         const {mime, fileBuffer} = await ctx.helper.checkHeadImage(fileStream)

@@ -17,7 +17,7 @@ module.exports = class PassPortController extends Controller {
         const height = ctx.checkQuery('height').default(50).optional().toInt().value
         const size = ctx.checkQuery('size').default(4).optional().toInt().value
         const noise = ctx.checkQuery('noise').default(1).optional().toInt().in([1, 2, 3]).value
-        ctx.validate(false)
+        ctx.validateParams()
 
         const captcha = ctx.service.captchaService.generateCaptcha(captchaKey, {width, height, size, noise})
 
@@ -75,7 +75,7 @@ module.exports = class PassPortController extends Controller {
 
         const captchaKey = ctx.checkParams('captchaKey').exist().in(['register', 'resetPassword']).value
         const captchaInput = ctx.checkQuery('captchaInput').exist().value
-        ctx.validate(false)
+        ctx.validateParams()
 
         const isVerify = ctx.service.captchaService.verify(captchaKey, captchaInput)
 

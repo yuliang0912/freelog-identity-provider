@@ -28,8 +28,7 @@ module.exports = class PassPortController extends Controller {
         const isRemember = ctx.checkBody("isRemember").optional().toInt().in([0, 1]).default(0).value
         const returnUrl = ctx.checkBody("returnUrl").optional().value
         const jwtType = ctx.checkBody('jwtType').optional().in(['cookie', 'header']).default('cookie').value
-
-        ctx.allowContentType({type: 'json'}).validate(false)
+        ctx.allowContentType({type: 'json'}).validateParams()
 
         const condition = {}
         const {helper, config, cookies} = ctx
@@ -74,8 +73,7 @@ module.exports = class PassPortController extends Controller {
     async logout(ctx) {
 
         const returnUrl = ctx.checkQuery("returnUrl").optional().decodeURIComponent().isUrl().value
-
-        ctx.validate(false)
+        ctx.validateParams()
 
         ctx.cookies.set(ctx.config.jwtAuth.cookieName, null, {domain: ctx.config.domain})
         ctx.cookies.set('uid', null, {domain: ctx.config.domain})

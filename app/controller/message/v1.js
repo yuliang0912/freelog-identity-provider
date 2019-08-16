@@ -21,7 +21,7 @@ module.exports = class MessageController extends Controller {
         const loginName = ctx.checkBody('loginName').exist().match(mobileOrEmailRegex, ctx.gettext('login-name-format-validate-failed')).value
         //const captchaInput = ctx.checkBody('captchaInput').exist().notEmpty().value
         const authCodeType = ctx.checkBody('authCodeType').exist().in([register, resetPassword]).value
-        ctx.validate(false)
+        ctx.validateParams()
 
         // const isVerify = ctx.service.captchaService.verify(authCodeType, captchaInput)
         // if (!isVerify) {
@@ -52,8 +52,7 @@ module.exports = class MessageController extends Controller {
         const authCode = ctx.checkQuery('authCode').exist().toInt().value
         const mobileOrEmailRegex = /^(1[34578]\d{9})|([A-Za-z\d]+([-_.][A-Za-z\d]+)*@([A-Za-z\d]+[-.])+[A-Za-z\d]{2,4})$/
         const address = ctx.checkQuery('address').exist().match(mobileOrEmailRegex, ctx.gettext('login-name-format-validate-failed')).value
-
-        ctx.validate(false)
+        ctx.validateParams()
 
         const isVerify = await ctx.service.messageService.verify(authCodeType, address, authCode)
 
