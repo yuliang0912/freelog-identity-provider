@@ -15,7 +15,7 @@ module.exports = class AutoIncrementRecordProvider extends MongoBaseOperation {
      */
     async getNextDateValue(dataType = 'USER_ID') {
         return super.findOneAndUpdate({dataType}, {$inc: {value: 1}}, {new: true}).then(model => {
-            return model || super.create({dataType, value: 1})
+            return model || super.create({dataType, value: 10001})
         }).then(data => data.value)
     }
 }
