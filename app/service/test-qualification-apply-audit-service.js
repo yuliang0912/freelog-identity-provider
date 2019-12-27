@@ -47,10 +47,15 @@ module.exports = class TestQualificationApplyAuditService extends Service {
         const {ctx} = this
         const toAddress = userInfo.mobile || userInfo.email
 
+        const templateCode = auditStatus === 1 ? "SMS_181430088" : "SMS_181192172"
+
         if (userInfo.mobile) {
-            //ctx.helper.sendSms(toAddress, auditStatus === 1 ? "success" : "failed", templateParam)
+            ctx.helper.sendSms(toAddress, templateCode, {
+                username: userInfo.username,
+                path: auditStatus === 1 ? '' : 'alpha-test/apply'
+            })
         } else if (userInfo.email) {
-            ctx.helper.sendEmail(toAddress, '【飞致网络】审核通知', null, `<h3>${this.getEmailTemplateContent(auditStatus === 1 ? "success" : "failed", userInfo)}</h3>`)
+            ctx.helper.sendEmail(toAddress, '【飞致网络】审核通知', null, `<h3>${this.getEmailTemplateContent(templateCode, userInfo)}</h3>`)
         }
     }
 
@@ -62,13 +67,13 @@ module.exports = class TestQualificationApplyAuditService extends Service {
      */
     getEmailTemplateContent(templateCode, templateParam) {
         switch (templateCode) {
-            case 'success':
+            case 'SMS_181430088':
                 return `Hi [${templateParam.username}]，
                 感谢您的支持！您的内测申请已通过。立即体验内测版本，请点击https://console.freelog.com/。
                 使用中有任何问题或建议，欢迎您到我们的官方论坛https://forum.freelog.com留言！
                 您真诚的，
                 Freelog团队`
-            case 'failed':
+            case 'SMS_181192172':
                 return `Hi [${templateParam.username}]，
                 感谢您的支持！很遗憾，您的内测申请未通过。重新提交申请，请点击[内测申请提交页面网址]。
                 您真诚的，
