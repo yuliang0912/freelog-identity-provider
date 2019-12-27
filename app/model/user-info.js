@@ -22,7 +22,8 @@ module.exports = app => {
         password: {type: String, required: true},
         salt: {type: String, required: true},
         tokenSn: {type: String, required: true},
-        status: {type: Number, default: 1, required: true} //状态
+        userType: {type: Number, required: true, default: 0, enum: [0, 1]}, // 0:初始账户 1:内测用户
+        status: {type: Number, default: 0, required: true}
     }, {
         versionKey: false,
         timestamps: {createdAt: 'createDate', updatedAt: 'updateDate'},

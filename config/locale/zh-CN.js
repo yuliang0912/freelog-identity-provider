@@ -36,6 +36,11 @@ module.exports = {
 
     'login-name-not-exist-error': '登录名不存在',
 
-    'auth-code-send-limit-failed': '验证码60秒之内只能发送一次'
+    'auth-code-send-limit-failed': '验证码60秒之内只能发送一次',
 
+    'test-qualification-apply-refuse-error': '已获得测试资格,无需申请',
+
+    'test-qualification-apply-existing-error': '目前还有未审核的申请记录,不能重复申请',
+
+    'test-qualification-activation-code-invalid': '激活码无效'
 }

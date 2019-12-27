@@ -46,7 +46,7 @@ module.exports = class PassPortController extends Controller {
         }
 
         const {publicKey, privateKey, cookieName} = config.jwtAuth
-        const payLoad = Object.assign(lodash.pick(userInfo, ['userId', 'username', 'mobile', 'email']), generateJwtPayload(userInfo.userId, userInfo.tokenSn))
+        const payLoad = Object.assign(lodash.pick(userInfo, ['userId', 'username', 'userType', 'mobile', 'email']), generateJwtPayload(userInfo.userId, userInfo.tokenSn))
 
         const jwtStr = new jwtHelper(publicKey, privateKey).createJwt(payLoad, 1296000)
 

@@ -8,13 +8,13 @@
 
 module.exports = {
 
-    //middleware: ['errorHandler', 'localUserIdentity'],
+    middleware: ['errorHandler', 'localUserIdentity'],
 
     /**
      * 本地开发环境身份信息
      */
     localIdentity: {
-        userId: 10022,
+        userId: 50003,
         username: "yuliang",
         tokenType: "local"
     }
