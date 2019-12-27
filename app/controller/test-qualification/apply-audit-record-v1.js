@@ -152,4 +152,15 @@ module.exports = class BetaTestController extends Controller {
             status, auditMsg
         }).then(ctx.success)
     }
+
+
+    /**
+     * 删除申请记录
+     * @param ctx
+     * @returns {Promise<void>}
+     */
+    async destroy(ctx) {
+        ctx.validateParams().validateVisitorIdentity(LoginUser)
+        await this.testQualificationApplyAuditRecordProvider.deleteMany({userId: ctx.request.userId}).then(ctx.success)
+    }
 }

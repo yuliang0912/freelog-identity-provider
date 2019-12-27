@@ -43,6 +43,7 @@ module.exports = app => {
 
     //使用授权码激活测试资格
     router.post('activate-test-qualification', '/v1/testQualifications/beta/activate', applyAuditRecordV1.activateTestQualification)
+    router.delete('delete-test-qualification-apply', '/v1/testQualifications/beta/applyRecords/currentUser', applyAuditRecordV1.destroy)
 
     router.resources('restful-activation-code', '/v1/testQualifications/beta/codes', activationCodeV1)
     router.resources('restful-user-info', '/v1/userinfos', controller.userinfo.v1)
