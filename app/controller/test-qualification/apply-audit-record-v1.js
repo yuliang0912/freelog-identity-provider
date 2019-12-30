@@ -141,7 +141,7 @@ module.exports = class BetaTestController extends Controller {
         const recordId = ctx.checkBody("recordId").exist().isMongoObjectId().value
         const status = ctx.checkBody('status').exist().toInt().value //只有初始态才可以修改
         const auditMsg = ctx.checkBody('auditMsg').optional().type('string').default('').value //只有初始态才可以修改
-        ctx.validateParams().validateVisitorIdentity(LoginUser)
+        ctx.validateParams().validateOfficialAuditAccount()
 
         const applyRecordInfo = await this.testQualificationApplyAuditRecordProvider.findById(recordId)
         if (applyRecordInfo.status !== 0) {

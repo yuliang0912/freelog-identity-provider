@@ -6,8 +6,7 @@
 
 const uuid = require('uuid')
 const Controller = require('egg').Controller
-const {ArgumentError} = require('egg-freelog-base/error')
-const {LoginUser, InternalClient} = require('egg-freelog-base/app/enum/identity-type')
+const {LoginUser} = require('egg-freelog-base/app/enum/identity-type')
 const cryptoHelper = require('egg-freelog-base/app/extend/helper/crypto_helper')
 
 module.exports = class BetaTestController extends Controller {
@@ -66,7 +65,7 @@ module.exports = class BetaTestController extends Controller {
     async batchCreate(ctx) {
 
         const createQuantity = ctx.checkBody('quantity').optional().toInt().gt(1).lt(51).default(10).value
-        ctx.validateParams().validateVisitorIdentity(LoginUser)
+        ctx.validateParams().validateOfficialAuditAccount()
 
         const codes = []
         while (codes.length < createQuantity) {
@@ -77,6 +76,20 @@ module.exports = class BetaTestController extends Controller {
         const list = codes.map(x => Object({code: x, type: 'beta'}))
 
         await this.activationCodeProvider.insertMany(list).then(ctx.success)
+    }
+
+    /**
+     * 批量修改,目前仅支持修改为分发状态
+     * @param ctx
+     * @returns {Promise<void>}
+     */
+    async batchUpdate(ctx) {
+
+        const codes = ctx.checkBody('codes').toSplitArray().len(0, 100).value //目前只能设置为分发状态
+        const status = ctx.checkBody('status').exist().in([1]).value //目前只能设置为分发状态
+        ctx.validateParams().validateOfficialAuditAccount()
+
+        await this.activationCodeProvider.updateMany({code: {$in: codes}}, {status}).then(() => ctx.success(true))
     }
 
     /**

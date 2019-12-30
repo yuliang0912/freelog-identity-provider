@@ -16,6 +16,8 @@ module.exports = {
 
     'user-authentication-failed': '用户认证失败,请登录',
 
+    'user-authorization-failed': '当前登录用户未获得授权',
+
     'login-password-validate-failed': '原始密码错误',
 
     'params-required-validate-failed': '缺少必选参数',
