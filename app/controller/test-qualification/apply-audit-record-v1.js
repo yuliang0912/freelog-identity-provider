@@ -138,19 +138,24 @@ module.exports = class BetaTestController extends Controller {
      */
     async update(ctx) {
 
-        const recordId = ctx.checkBody("recordId").exist().isMongoObjectId().value
+        const recordIds = ctx.checkBody("recordIds").exist().isArray().len(1, 50).value
         const status = ctx.checkBody('status').exist().toInt().value //只有初始态才可以修改
         const auditMsg = ctx.checkBody('auditMsg').optional().type('string').default('').value //只有初始态才可以修改
         ctx.validateParams().validateOfficialAuditAccount()
 
-        const applyRecordInfo = await this.testQualificationApplyAuditRecordProvider.findById(recordId)
-        if (applyRecordInfo.status !== 0) {
-            throw new ApplicationError('不能重复审核')
-        }
+        const applyRecordInfos = await this.testQualificationApplyAuditRecordProvider.find({_id: {$in: recordIds}})
 
-        await ctx.service.testQualificationApplyAuditService.auditTestQualificationApply(applyRecordInfo, {
-            status, auditMsg
-        }).then(ctx.success)
+        const tasks = []
+        applyRecordInfos.forEach(applyRecordInfo => {
+            if (applyRecordInfo.status === 0) {
+                let task = ctx.service.testQualificationApplyAuditService.auditTestQualificationApply(applyRecordInfo, {
+                    status, auditMsg
+                })
+                tasks.push(task)
+            }
+        })
+
+        await Promise.all(tasks).then(x => ctx.success(true))
     }
 
 

@@ -84,7 +84,7 @@ module.exports = class BetaTestController extends Controller {
      */
     async batchUpdate(ctx) {
 
-        const codes = ctx.checkBody('codes').toSplitArray().len(0, 100).value //目前只能设置为分发状态
+        const codes = ctx.checkBody('codes').exist().isArray().len(1, 100).value //目前只能设置为分发状态
         const status = ctx.checkBody('status').exist().in([1]).value //目前只能设置为分发状态
         ctx.validateParams().validateOfficialAuditAccount()
 
