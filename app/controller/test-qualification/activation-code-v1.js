@@ -88,7 +88,7 @@ module.exports = class BetaTestController extends Controller {
         const status = ctx.checkBody('status').exist().in([1]).value //目前只能设置为分发状态
         ctx.validateParams().validateOfficialAuditAccount()
 
-        await this.activationCodeProvider.updateMany({code: {$in: codes}}, {
+        await this.activationCodeProvider.updateMany({code: {$in: codes}, status: 0}, {
             status,
             distributeDate: new Date()
         }).then(() => ctx.success(true))

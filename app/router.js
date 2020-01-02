@@ -31,6 +31,7 @@ module.exports = app => {
 
     //激活码
     router.post('batch-create-activation-code', '/v1/testQualifications/beta/codes/batchCreate', activationCodeV1.batchCreate)
+    router.put('batch-update-activation-code-status', '/v1/testQualifications/beta/codes/batchUpdate', activationCodeV1.batchUpdate)
 
     //测试资格申请
     router.post('beta-test-apply', '/v1/testQualifications/beta/apply', applyAuditRecordV1.create)
