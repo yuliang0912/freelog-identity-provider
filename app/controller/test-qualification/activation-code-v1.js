@@ -43,7 +43,6 @@ module.exports = class BetaTestController extends Controller {
         ctx.success(result)
     }
 
-
     /**
      * 查看详情
      * @param ctx
@@ -89,7 +88,10 @@ module.exports = class BetaTestController extends Controller {
         const status = ctx.checkBody('status').exist().in([1]).value //目前只能设置为分发状态
         ctx.validateParams().validateOfficialAuditAccount()
 
-        await this.activationCodeProvider.updateMany({code: {$in: codes}}, {status}).then(() => ctx.success(true))
+        await this.activationCodeProvider.updateMany({code: {$in: codes}}, {
+            status,
+            distributeDate: new Date()
+        }).then(() => ctx.success(true))
     }
 
     /**

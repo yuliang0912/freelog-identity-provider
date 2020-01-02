@@ -18,6 +18,7 @@ module.exports = app => {
         usedCount: {type: Number, default: 0, required: true},
         limitCount: {type: Number, default: 1, required: true, mixin: 1},
         usedUsers: {type: [Number], default: []},
+        distributeDate: {type: Date, default: null, required: false},
         status: {type: Number, default: 0, required: true}, //0:未使用 1:已分发 2:已核销
     }, {
         versionKey: false,

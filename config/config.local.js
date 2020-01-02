@@ -16,6 +16,7 @@ module.exports = {
     localIdentity: {
         userId: 50003,
         username: "yuliang",
+        email: "support@freelog.com",
         tokenType: "local"
     }
 }
