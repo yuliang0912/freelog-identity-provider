@@ -10,8 +10,11 @@ module.exports = {
         listen: {port: 5011}
     },
 
+    /**
+     * mongoDB配置
+     */
     mongoose: {
-        url: "mongodb://172.18.215.231:27018/user",
+        url: "mongodb://mongo-test.common:27017/user"
     },
 
 
