@@ -44,6 +44,31 @@ module.exports = class UserInfoController extends Controller {
     }
 
     /**
+     * 获取用户详情
+     * @param ctx
+     * @returns {Promise<void>}
+     */
+    async detail(ctx) {
+
+        //手机号,邮箱
+        const keywords = ctx.checkQuery('keywords').exist().value
+        ctx.validateParams().validateVisitorIdentity(LoginUser)
+
+        const condition = {}
+        if (ctx.helper.commonRegex.mobile86.test(keywords)) {
+            condition.mobile = new RegExp(`^${keywords}$`, 'i')
+        } else if (ctx.helper.commonRegex.email.test(keywords)) {
+            condition.email = new RegExp(`^${keywords}$`, 'i')
+        } else if (ctx.helper.commonRegex.username.test(keywords)) {
+            condition.username = new RegExp(`^${keywords}$`, 'i')
+        } else {
+            throw new ArgumentError(ctx.gettext('params-format-validate-failed', 'keywords'))
+        }
+
+        await this.userProvider.findOne(condition).then(ctx.success)
+    }
+
+    /**
      * 获取当前登录用户信息
      * @param ctx
      * @returns {Promise<void>}

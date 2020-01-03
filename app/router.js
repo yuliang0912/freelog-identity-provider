@@ -13,6 +13,7 @@ module.exports = app => {
 
     router.post('user-login', '/v1/passport/login', passport.v1.login)
     router.get('user-logout', '/v1/passport/logout', passport.v1.logout)
+    router.get('search-user', '/v1/userinfos/detail', userinfo.v1.detail)
 
     router.put('repair-user-head-image', '/v1/userinfos/autoRectifyHeadImage', userinfo.v1.autoRectifyHeadImage)
 
