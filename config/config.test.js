@@ -17,6 +17,5 @@ module.exports = {
         url: "mongodb://mongo-test.common:27017/user"
     },
 
-
     domain: "testfreelog.com"
 }
