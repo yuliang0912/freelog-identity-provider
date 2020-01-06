@@ -122,7 +122,7 @@ module.exports = class BetaTestController extends Controller {
         }
 
         const task1 = activationCodeInfo.updateOne({
-            $inc: {usedCount: 1}, status: 2,
+            $inc: {usedCount: 1}, status: 2, destroyDate: new Date(),
             $push: {usedUsers: ctx.request.userId}
         })
 
