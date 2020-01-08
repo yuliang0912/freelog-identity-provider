@@ -50,12 +50,12 @@ module.exports = class TestQualificationApplyAuditService extends Service {
         const templateCode = auditStatus === 1 ? "SMS_181430088" : "SMS_181192172"
 
         if (userInfo.mobile) {
-            ctx.helper.sendSms(toAddress, templateCode, {
+           return ctx.helper.sendSms(toAddress, templateCode, {
                 username: userInfo.username,
                 path: auditStatus === 1 ? '' : 'alpha-test/apply'
             })
         } else if (userInfo.email) {
-            ctx.helper.sendEmail(toAddress, '【飞致网络】审核通知', null, `<h3>${this.getEmailTemplateContent(templateCode, userInfo)}</h3>`)
+            return ctx.helper.sendEmail(toAddress, '【飞致网络】审核通知', null, `<h3>${this.getEmailTemplateContent(templateCode, userInfo)}</h3>`)
         }
     }
 
