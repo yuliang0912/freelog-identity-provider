@@ -47,7 +47,7 @@ module.exports = class TestQualificationApplyAuditService extends Service {
         const {ctx} = this
         const toAddress = userInfo.mobile || userInfo.email
 
-        const templateCode = auditStatus === 1 ? "SMS_181430088" : "SMS_181192172"
+        const templateCode = auditStatus === 1 ? "SMS_181859961" : "SMS_181859997"
 
         if (userInfo.mobile) {
            return ctx.helper.sendSms(toAddress, templateCode, {
