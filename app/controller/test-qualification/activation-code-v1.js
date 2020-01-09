@@ -63,7 +63,7 @@ module.exports = class BetaTestController extends Controller {
      */
     async batchCreate(ctx) {
 
-        const createQuantity = ctx.checkBody('quantity').optional().toInt().gt(1).lt(51).default(10).value
+        const createQuantity = ctx.checkBody('quantity').optional().toInt().gt(0).lt(51).default(10).value
         ctx.validateParams().validateOfficialAuditAccount()
 
         const codes = []
