@@ -32,10 +32,11 @@ module.exports = class TestQualificationApplyAuditService extends Service {
 
         const task2 = handleInfo.status === 1 ? userInfo.updateOne({userType: userInfo.userType | 1}) : undefined
 
-        return Promise.all([task1, task2]).then(() => {
-            this.sendAuditNoticeMessage(userInfo, handleInfo.status).catch(console.error)
-            return true
+        await Promise.all([task1, task2]).then(() => {
+            return this.sendAuditNoticeMessage(userInfo, handleInfo.status)
         })
+
+        return true
     }
 
     /**
@@ -45,18 +46,17 @@ module.exports = class TestQualificationApplyAuditService extends Service {
     async sendAuditNoticeMessage(userInfo, auditStatus) {
 
         const {ctx} = this
-        const toAddress = userInfo.mobile || userInfo.email
-
+        const {mobile, username, email} = userInfo
         const templateCode = auditStatus === 1 ? "SMS_182385369" : "SMS_181859961"
 
-        if (userInfo.mobile) {
-            return ctx.helper.sendSms(toAddress, templateCode, {
-                username: userInfo.username,
-                phone: userInfo.mobile.substr(userInfo.mobile.length - 4),
+        if (mobile) {
+            return ctx.helper.sendSms(mobile, templateCode, {
+                username,
+                phone: mobile.substr(mobile.length - 4),
                 path: auditStatus === 1 ? '' : 'alpha-test/apply'
             })
-        } else if (userInfo.email) {
-            return ctx.helper.sendEmail(toAddress, '【飞致网络】审核通知', null, `<h3>${this.getEmailTemplateContent(templateCode, userInfo)}</h3>`)
+        } else if (email) {
+            return ctx.helper.sendEmail(email, '【飞致网络】审核通知', null, `<h3>${this.getEmailTemplateContent(templateCode, userInfo)}</h3>`)
         }
     }
 
@@ -68,7 +68,7 @@ module.exports = class TestQualificationApplyAuditService extends Service {
      */
     getEmailTemplateContent(templateCode, templateParam) {
         switch (templateCode) {
-            case 'SMS_181430088':
+            case 'SMS_182385369':
                 return `<!DOCTYPE html>
                          <html lang="en">
                           <head>
@@ -83,7 +83,7 @@ module.exports = class TestQualificationApplyAuditService extends Service {
                               </div>
                           </body>
                         </html>`
-            case 'SMS_181192172':
+            case 'SMS_181859961':
                 return `<!DOCTYPE html>
                          <html lang="en">
                           <head>
