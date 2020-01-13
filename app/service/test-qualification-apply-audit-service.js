@@ -33,7 +33,7 @@ module.exports = class TestQualificationApplyAuditService extends Service {
         const task2 = handleInfo.status === 1 ? userInfo.updateOne({userType: userInfo.userType | 1}) : undefined
 
         return Promise.all([task1, task2]).then(() => {
-            this.sendAuditNoticeMessage(userInfo, handleInfo.status).then()
+            this.sendAuditNoticeMessage(userInfo, handleInfo.status).catch(console.error)
             return true
         })
     }
@@ -47,7 +47,7 @@ module.exports = class TestQualificationApplyAuditService extends Service {
         const {ctx} = this
         const toAddress = userInfo.mobile || userInfo.email
 
-        const templateCode = auditStatus === 1 ? "SMS_181430088" : "SMS_181859961"
+        const templateCode = auditStatus === 1 ? "SMS_182385369" : "SMS_181859961"
 
         if (userInfo.mobile) {
             return ctx.helper.sendSms(toAddress, templateCode, {
