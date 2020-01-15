@@ -36,6 +36,8 @@ module.exports = class PassPortController extends Controller {
             condition.mobile = loginName
         } else if (helper.commonRegex.email.test(loginName)) {
             condition.email = loginName
+        } else if (helper.commonRegex.username.test(loginName)) {
+            condition.username = loginName
         } else {
             throw new ArgumentError({msg: ctx.gettext('login-name-format-validate-failed'), data: {loginName}})
         }
