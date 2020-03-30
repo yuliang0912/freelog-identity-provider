@@ -5,20 +5,20 @@
   "private": true,
   "dependencies": {
     "@alicloud/sms-sdk": "^1.1.6",
-    "ali-oss": "^6.4.0",
+    "ali-oss": "^6.5.1",
     "bluebird": "^3.7.2",
     "egg": "^2.26.0",
-    "egg-freelog-base": "^1.2.27",
+    "egg-freelog-base": "^1.2.29",
     "egg-freelog-database": "^1.0.17",
-    "egg-scripts": "^2.12.0",
+    "egg-scripts": "^2.13.0",
     "file-type": "^11.1.0",
     "identicon.js": "^2.3.3",
     "lodash": "^4.17.15",
     "moment": "^2.24.0",
-    "mongoose": "^5.8.3",
+    "mongoose": "^5.9.6",
     "nodemailer": "^5.1.1",
     "svg-captcha": "^1.4.0",
-    "uuid": "^3.3.3"
+    "uuid": "^3.4.0"
   },
   "egg": {
     "framework": "egg-freelog-base"
