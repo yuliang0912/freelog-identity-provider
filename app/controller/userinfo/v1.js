@@ -88,7 +88,7 @@ module.exports = class UserInfoController extends Controller {
     async create(ctx) {
 
         const loginName = ctx.checkBody('loginName').exist().notEmpty().value
-        const password = ctx.checkBody('password').exist().trim().len(6, 24).value
+        const password = ctx.checkBody('password').exist().isLoginPassword(ctx.gettext('password_length') + ctx.gettext('password_include')).value
         const username = ctx.checkBody('username').exist().isUsername().value
         const authCode = ctx.checkBody('authCode').exist().toInt().value
         ctx.validateParams()
@@ -133,7 +133,7 @@ module.exports = class UserInfoController extends Controller {
     async resetPassword(ctx) {
 
         const loginName = ctx.checkBody('loginName').exist().notEmpty().value
-        const password = ctx.checkBody('password').exist().len(6, 24).notEmpty().value
+        const password = ctx.checkBody('password').exist().isLoginPassword(ctx.gettext('password_length') + ctx.gettext('password_include')).value
         const authCode = ctx.checkBody('authCode').exist().toInt().value
         ctx.allowContentType({type: 'json'}).validateParams()
 
@@ -170,7 +170,7 @@ module.exports = class UserInfoController extends Controller {
     async updatePassword(ctx) {
 
         const oldPassword = ctx.checkBody('oldPassword').exist().notBlank().trim().len(6, 50).value
-        const newPassword = ctx.checkBody('newPassword').exist().notBlank().trim().len(6, 50).value
+        const newPassword = ctx.checkBody('newPassword').exist().isLoginPassword(ctx.gettext('password_length') + ctx.gettext('password_include')).value
         ctx.allowContentType({type: 'json'}).validateParams().validateVisitorIdentity(LoginUser)
 
         const userId = ctx.request.userId
