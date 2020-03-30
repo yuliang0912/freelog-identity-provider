@@ -70,32 +70,37 @@ module.exports = class TestQualificationApplyAuditService extends Service {
         switch (templateCode) {
             case 'SMS_182385369':
                 return `<!DOCTYPE html>
-                         <html lang="en">
-                          <head>
-                              <meta charset="UTF-8">
-                          </head>
-                          <body>
-                              <div>
-                                  <p>Hi ${templateParam.username}，</p>
-                                  <p>感谢您的支持！您的内测申请已通过。立即体验内测版本，请点击<a href="https://console.freelog.com/" target="_blank">https://console.freelog.com/</a>。</p>
-                                  <p>使用中有任何问题或建议，欢迎您到我们的官方论坛<a href="https://forum.freelog.com/" target="_blank">https://forum.freelog.com/</a>留言！</p>
-                                  <p>您真诚的，<br/>Freelog团队 </p>
-                              </div>
-                          </body>
+                        <html lang="en">
+                        <head>
+                            <meta charset="UTF-8">
+                        </head>
+                        <body>
+                            <div style="font-size: 14px;">
+                                <div>Hi ${templateParam.username}，</div>
+                                <br>
+                                <div>感谢您的支持！您的内测申请已通过。立即体验内测版本，请点击<a style="color: inherit;" href="https://console.freelog.com">https://console.freelog.com/</a>。</div>
+                                <br>
+                                <div>使用中有任何问题或建议，欢迎您到我们的官方论坛<a style="color: inherit;" href="https://forum.freelog.com">https://forum.freelog.com</a>留言！</div>
+                                <br>
+                                <div>您真诚的，<br>Freelog团队</div>
+                            </div>
+                        </body>
                         </html>`
             case 'SMS_181859961':
                 return `<!DOCTYPE html>
-                         <html lang="en">
-                          <head>
-                              <meta charset="UTF-8">
-                          </head>
-                          <body>
-                             <div>
-                                <p>Hi ${templateParam.username}，</p>
-                                <p>感谢您的支持！很遗憾，您的内测申请未通过。重新提交申请，请点击<a target="_blank" href="https://console.freelog.com/alpha-test/apply">https://console.freelog.com/alpha-test/apply</a>。</p>
-                                <p>您真诚的，<br/>Freelog团队 </p>
+                        <html lang="en">
+                        <head>
+                            <meta charset="UTF-8">
+                        </head>
+                        <body>
+                            <div style="font-size: 14px;">
+                                <div>Hi ${templateParam.username}，</div>
+                                <br>
+                                <div>感谢您的支持！很遗憾，您的内测申请未通过。重新提交申请，请点击<a style="color: inherit;" href="https://console.freelog.com/alpha-test/apply">https://console.freelog.com/alpha-test/apply</a>。</div>
+                                <br>
+                                <div>您真诚的，<br>Freelog团队</div>
                             </div>
-                          </body>
+                        </body>
                         </html>`
         }
     }

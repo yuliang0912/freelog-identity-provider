@@ -98,6 +98,25 @@ module.exports = class MessageService extends Service {
     getTemplateContent(templateCode, templateParam) {
         switch (templateCode) {
             case 'SMS_157980466':
+                return `<!DOCTYPE html>
+                            <html lang="en">
+                            <head>
+                                <meta charset="UTF-8">
+                            </head>
+                            <body>
+                                <div style="font-size: 14px;">
+                                    <div>您好！</div>
+                                    <br>
+                                    <div>感谢注册FreeLog平台，请回填如下验证码：</div>
+                                    <br>
+                                    <div style="font-size: 18px; font-weight: 600;">${templateParam.code}</div>
+                                    <br>
+                                    <div>如果你有任何问题请联系：<a style="color: inherit;" href="mailto:support@freelog.com">support@freelog.com</a></div>
+                                    <br>
+                                    <div>FreeLog团队</div>
+                                </div>
+                            </body>
+                            </html>`
                 return `验证码${templateParam.code}，您正在注册成为新用户，感谢您的支持！`
             case 'SMS_157980465':
                 return `验证码${templateParam.code}，您正在尝试修改登录密码，请妥善保管账户信息。`
