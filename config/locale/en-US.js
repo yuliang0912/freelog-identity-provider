@@ -44,5 +44,9 @@ module.exports = {
 
     'test-qualification-apply-existing-error': '目前还有未审核的申请记录,不能重复申请',
 
-    'test-qualification-activation-code-invalid': '激活码无效'
+    'test-qualification-activation-code-invalid': '激活码无效',
+
+    'password_length': '密码长度必须为6-24个字符',
+
+    'password_include': '密码必须包含数字和字母'
 }
