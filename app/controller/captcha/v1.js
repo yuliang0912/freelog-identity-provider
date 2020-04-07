@@ -21,47 +21,6 @@ module.exports = class PassPortController extends Controller {
 
         const captcha = ctx.service.captchaService.generateCaptcha(captchaKey, {width, height, size, noise})
 
-        /** 测试代码
-         const params = {
-            Format: 'JSON',
-            Version: "2017-06-22",
-            AccessKeyId: "LTAIy8TOsSnNFfPb",
-            SignatureMethod: 'HMAC-SHA1',
-            Timestamp: new Date().toISOString(),
-            SignatureVersion: "1.0",
-            SignatureNonce: uuid.v4() + uuid.v1(),
-            Action: 'SingleSendMail',
-            AccountName: "webmaster@service.freelog.com",
-            ReplyToAddress: true,
-            AddressType: 1,
-            ToAddress: '4896819@qq.com',
-            Subject: '1',
-            HtmlBody: '2'
-        }
-         const paramString = Object.keys(params).sort().map(key => {
-            return fixedEncodeURIComponent(key) + '=' + fixedEncodeURIComponent(params[key])
-        }).join('&')
-
-         function fixedEncodeURIComponent(str) {
-            return encodeURIComponent(str).replace(/[!'()*]/g, function (c) {
-                return '%' + c.charCodeAt(0).toString(16);
-            });
-        }
-
-         const stringToSign = 'GET&' + encodeURIComponent('/') + '&' + encodeURIComponent(paramString)
-
-         params.Signature = crypto.hmacSha1(stringToSign, 'Bt5yMbW89O7wMTVQsNUfvYfou5GPsL&', 'base64')
-         const urlParams = Object.keys(params).map(item => {
-            return item + '=' + params[item]
-        }).join('&')
-
-         const emailSendUrl = `http://dm.aliyuncs.com/?` + urlParams
-
-         ctx.curl(emailSendUrl).then(res => {
-            console.log(res.data.toString())
-        })
-         **/
-
         ctx.type = 'svg'
         ctx.body = captcha.data
     }
