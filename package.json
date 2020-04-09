@@ -5,10 +5,10 @@
   "private": true,
   "dependencies": {
     "@alicloud/sms-sdk": "^1.1.6",
-    "ali-oss": "^6.5.1",
+    "ali-oss": "^6.6.0",
     "bluebird": "^3.7.2",
     "egg": "^2.26.0",
-    "egg-freelog-base": "^1.2.32",
+    "egg-freelog-base": "^1.2.34",
     "egg-freelog-database": "^1.0.17",
     "egg-scripts": "^2.13.0",
     "file-type": "^11.1.0",
