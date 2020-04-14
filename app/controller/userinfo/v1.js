@@ -7,7 +7,7 @@ const uuid = require('uuid')
 const Controller = require('egg').Controller
 const authCodeType = require('../../enum/auth-code-type-enum')
 const {ArgumentError} = require('egg-freelog-base/error')
-const {LoginUser, InternalClient} = require('egg-freelog-base/app/enum/identity-type')
+const {LoginUser, UnLoginUser, InternalClient} = require('egg-freelog-base/app/enum/identity-type')
 
 module.exports = class UserInfoController extends Controller {
 
@@ -52,7 +52,7 @@ module.exports = class UserInfoController extends Controller {
 
         //手机号,邮箱
         const keywords = ctx.checkQuery('keywords').exist().value
-        ctx.validateParams().validateVisitorIdentity(LoginUser)
+        ctx.validateParams().validateVisitorIdentity(LoginUser | UnLoginUser | InternalClient)
 
         const condition = {}
         if (ctx.helper.commonRegex.mobile86.test(keywords)) {
