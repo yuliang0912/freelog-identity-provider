@@ -52,7 +52,7 @@ module.exports = appInfo => {
                 isCryptographic: true,
                 accessKeyId: "TFRBSTRGcGNBRWdCWm05UHlON3BhY0tU",
                 accessKeySecret: "M2NBYmRwQ1VESnpCa2ZDcnVzN1d2SXc1alhmNDNF",
-                bucket: "freelog-shenzhen",
+                bucket: "freelog-image",
                 internal: false,
                 region: "oss-cn-shenzhen",
                 timeout: 180000
