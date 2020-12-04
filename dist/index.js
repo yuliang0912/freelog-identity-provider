@@ -1,8 +1,0 @@
-'use strict';
-global.Promise = require('bluebird');
-require('egg').startCluster({
-    baseDir: __dirname,
-    port: process.env.PORT || 7011,
-    workers: 1
-});
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5kZXguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi9pbmRleC5qcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQSxZQUFZLENBQUM7QUFFYixNQUFNLENBQUMsT0FBTyxHQUFHLE9BQU8sQ0FBQyxVQUFVLENBQUMsQ0FBQTtBQUVwQyxPQUFPLENBQUMsS0FBSyxDQUFDLENBQUMsWUFBWSxDQUFDO0lBQ3hCLE9BQU8sRUFBRSxTQUFTO0lBQ2xCLElBQUksRUFBRSxPQUFPLENBQUMsR0FBRyxDQUFDLElBQUksSUFBSSxJQUFJO0lBQzlCLE9BQU8sRUFBRSxDQUFDO0NBQ2IsQ0FBQyxDQUFDIn0=
