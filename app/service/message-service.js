@@ -117,7 +117,6 @@ module.exports = class MessageService extends Service {
                                 </div>
                             </body>
                             </html>`
-                return `验证码${templateParam.code}，您正在注册成为新用户，感谢您的支持！`
             case 'SMS_157980465':
                 return `验证码${templateParam.code}，您正在尝试修改登录密码，请妥善保管账户信息。`
             default:

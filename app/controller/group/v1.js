@@ -16,9 +16,9 @@ module.exports = class UserGroupController extends Controller {
      */
     async index(ctx) {
 
-        const page = ctx.checkQuery("page").optional().default(1).gt(0).toInt().value
-        const pageSize = ctx.checkQuery("pageSize").optional().default(10).gt(0).lt(101).toInt().value
-        const groupType = ctx.checkQuery("groupType").optional().toInt().in([1, 2]).value
+        const page = ctx.checkQuery("page").optional().default(1).gt(0).toInt().value;
+        const pageSize = ctx.checkQuery("pageSize").optional().default(10).gt(0).lt(101).toInt().value;
+        const groupType = ctx.checkQuery("groupType").optional().toInt().in([1, 2]).value;
         ctx.validate()
 
         const condition = {userId: ctx.request.userId}
