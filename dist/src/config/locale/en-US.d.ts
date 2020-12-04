@@ -1,0 +1,27 @@
+declare const _exports: {
+    'login-name-or-password-validate-failed': string;
+    'login-name-format-validate-failed': string;
+    'mobile-register-validate-failed': string;
+    'email-register-validate-failed': string;
+    'username-register-validate-failed': string;
+    'user-entity-not-found': string;
+    'user-authentication-failed': string;
+    'user-authorization-failed': string;
+    'login-password-validate-failed': string;
+    'params-required-validate-failed': string;
+    'params-format-validate-failed': string;
+    'params-validate-failed': string;
+    'group-create-duplicate-error': string;
+    'group-member-count-limit-validate-failed': string;
+    'head-image-extension-validate-failed': string;
+    'head-image-size-limit-validate-failed': string;
+    'auth-code-validate-failed': string;
+    'login-name-not-exist-error': string;
+    'auth-code-send-limit-failed': string;
+    'test-qualification-apply-refuse-error': string;
+    'test-qualification-apply-existing-error': string;
+    'test-qualification-activation-code-invalid': string;
+    password_length: string;
+    password_include: string;
+};
+export = _exports;
