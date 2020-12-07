@@ -34,7 +34,7 @@ export class UserInfoController {
         const sort = ctx.checkQuery('sort').optional().value;
         const tagId = ctx.checkQuery('tagId').optional().toInt().gt(0).value;
         const keywords = ctx.checkQuery('keywords').optional().value;
-        const startRegisteredDate = ctx.checkQuery('registeredDate').optional().toDate().value;
+        const startRegisteredDate = ctx.checkQuery('startRegisteredDate').optional().toDate().value;
         const endRegisteredDate = ctx.checkQuery('endRegisteredDate').optional().toDate().value;
         ctx.validateParams().validateOfficialAuditAccount();
 
