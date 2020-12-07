@@ -9,5 +9,7 @@ export default () => {
         url: 'mongodb://mongo-test.common:27017/user'
     };
 
+    config.domain = 'testfreelog.com'
+
     return config;
 };

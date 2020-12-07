@@ -13,9 +13,11 @@ export class UserDetailInfoModel extends MongooseModelBase {
     buildMongooseModel() {
 
         const userDetailInfoSchema = new this.mongoose.Schema({
-            userId: {type: Number, unique: true, required: true}, //用户ID
+            userId: {type: Number, required: true}, //用户ID
+            latestLoginDate: {type: Date, required: true}, // 最新登录日期
+            latestLoginIp: {type: String, default: '', required: false}, // 最新登录IP
+            statusChangeRemark: {type: String, default: '', required: false}, // 状态变更备注
             tagIds: {type: [Number], default: [], required: false}, // tagId,有关联需求.
-            status: {type: Number, default: 0, required: true}
         }, {
             versionKey: false,
             timestamps: {createdAt: 'createDate', updatedAt: 'updateDate'},

@@ -150,4 +150,13 @@ export class UserService implements IUserService {
         })
         return this.tagService.setTagAutoIncrementCount(tagInfo, -1);
     }
+
+    /**
+     * 更新用户详情信息
+     * @param condition
+     * @param model
+     */
+    async updateOneUserDetail(condition: object, model: Partial<UserDetailInfo>): Promise<boolean> {
+        return this.userDetailProvider.updateOne(condition, model).then(t => Boolean(t.ok));
+    }
 }

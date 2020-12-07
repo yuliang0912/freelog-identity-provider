@@ -46,4 +46,10 @@ export declare class UserService implements IUserService {
      * @param tagInfo
      */
     unsetTag(userId: number, tagInfo: TagInfo): Promise<boolean>;
+    /**
+     * 更新用户详情信息
+     * @param condition
+     * @param model
+     */
+    updateOneUserDetail(condition: object, model: Partial<UserDetailInfo>): Promise<boolean>;
 }

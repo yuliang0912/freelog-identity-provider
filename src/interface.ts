@@ -60,11 +60,15 @@ export interface UserInfo extends FreelogUserInfo {
      * 用户状态
      */
     status: UserStatusEnum;
+
+    userDetail?: UserDetailInfo;
 }
 
 export interface UserDetailInfo {
     userId: number;
     tagIds: number[];
+    latestLoginDate: Date;
+    latestLoginIp: string;
 }
 
 export interface ActivationCodeInfo {
@@ -317,6 +321,13 @@ export interface IUserService extends IBaseService<UserInfo> {
     // searchIntervalList(condition: object, tagId?: number, options?: findOptions<UserInfo>): Promise<PageResult<UserInfo>>;
 
     searchIntervalListByTag(condition: object, tagId: number, options?: findOptions<UserInfo>): Promise<PageResult<UserInfo>>;
+
+    /**
+     * 更新用户详情信息
+     * @param condition
+     * @param model
+     */
+    updateOneUserDetail(condition: object, model: Partial<UserDetailInfo>): Promise<boolean>;
 }
 
 export interface IMessageService {

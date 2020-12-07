@@ -67,10 +67,15 @@ export class UserInfoController {
 
         const list = [];
         for (const user of pageResult.dataList) {
-            user.tags = [];
             if (isArray(user?.userDetails) && user.userDetails.length) {
-                const tagIds = (first(user.userDetails) as UserDetailInfo).tagIds;
-                user.tags = tagIds.filter(x => tagMap.has(x.toString())).map(x => tagMap.get(x.toString()));
+                const userDetail: UserDetailInfo = first(user.userDetails);
+                user.tags = userDetail.tagIds.filter(x => tagMap.has(x.toString())).map(x => tagMap.get(x.toString()));
+                user.latestLoginIp = userDetail.latestLoginIp ?? '';
+                user.latestLoginDate = userDetail.latestLoginDate ?? null;
+            } else {
+                user.tags = [];
+                user.latestLoginIp = '';
+                user.latestLoginDate = null;
             }
             list.push(omit(user, ['_id', 'password', 'salt', 'updateDate', 'userDetails', 'tokenSn']))
         }

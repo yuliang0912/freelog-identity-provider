@@ -23,5 +23,6 @@ declare const _exports: {
     'test-qualification-activation-code-invalid': string;
     password_length: string;
     password_include: string;
+    user_account_has_already_freeze: string;
 };
 export = _exports;

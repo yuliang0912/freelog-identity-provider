@@ -47,7 +47,7 @@ var UserStatusEnum;
      */
     UserStatusEnum[UserStatusEnum["Freeze"] = 1] = "Freeze";
     /**
-     * 测试资格审核
+     * 测试资格审核中
      */
     UserStatusEnum[UserStatusEnum["BetaTestToBeAudit"] = 2] = "BetaTestToBeAudit";
     /**

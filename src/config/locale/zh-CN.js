@@ -48,5 +48,7 @@ module.exports = {
 
     'password_length': '密码长度必须为6-24个字符',
 
-    'password_include': '密码必须包含数字和字母'
+    'password_include': '密码必须包含数字和字母',
+
+    'user_account_has_already_freeze': '用户账号已被冻结'
 }

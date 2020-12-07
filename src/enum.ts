@@ -51,7 +51,7 @@ export enum UserStatusEnum {
     Freeze = 1,
 
     /**
-     * 测试资格审核
+     * 测试资格审核中
      */
     BetaTestToBeAudit = 2,
 
