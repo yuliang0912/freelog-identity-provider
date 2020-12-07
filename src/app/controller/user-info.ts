@@ -4,7 +4,7 @@ import {
     FreelogContext, visitorIdentityValidator, CommonRegex, IdentityTypeEnum, ArgumentError, ApplicationError
 } from "egg-freelog-base";
 import headImageGenerator from "../../extend/head-image-generator";
-import {isString, isArray, first, omit} from 'lodash';
+import {isString, isArray, first, omit, isDate} from 'lodash';
 
 @provide()
 @controller('/v2/users')
@@ -34,6 +34,8 @@ export class UserInfoController {
         const sort = ctx.checkQuery('sort').optional().value;
         const tagId = ctx.checkQuery('tagId').optional().toInt().gt(0).value;
         const keywords = ctx.checkQuery('keywords').optional().value;
+        const startRegisteredDate = ctx.checkQuery('registeredDate').optional().toDate().value;
+        const endRegisteredDate = ctx.checkQuery('endRegisteredDate').optional().toDate().value;
         ctx.validateParams().validateOfficialAuditAccount();
 
         const condition: any = {};
@@ -47,6 +49,12 @@ export class UserInfoController {
             condition.userId = parseInt(keywords);
         } else if (isString(keywords)) {
             return ctx.success({skip, limit, totalItem: 0, dataList: []});
+        }
+        if (isDate(startRegisteredDate)) {
+            condition.createDate = {$gte: startRegisteredDate};
+        }
+        if (isDate(endRegisteredDate)) {
+            condition.createDate = {$lte: endRegisteredDate};
         }
 
         const pageResult = await this.userService.searchIntervalListByTag(condition, tagId, {
@@ -251,7 +259,6 @@ export class UserInfoController {
      * 获取用户信息
      */
     @get('/:userIdOrMobileOrUsername')
-    @visitorIdentityValidator(IdentityTypeEnum.InternalClient | IdentityTypeEnum.LoginUser)
     async show() {
 
         const {ctx} = this;
@@ -280,7 +287,7 @@ export class UserInfoController {
         const {ctx} = this;
         const userId = ctx.checkParams('userId').exist().toInt().gt(10000).value;
         const tagId = ctx.checkBody("tagId").exist().toInt().gt(0).value;
-        ctx.validateParams();
+        ctx.validateParams().validateOfficialAuditAccount();
 
         const tagInfo = await this.tagService.findOne({_id: tagId, status: 0})
         ctx.entityNullObjectCheck(tagInfo);
@@ -297,7 +304,7 @@ export class UserInfoController {
         const {ctx} = this;
         const userId = ctx.checkParams('userId').exist().toInt().gt(10000).value;
         const tagId = ctx.checkBody("tagId").exist().toInt().gt(0).value;
-        ctx.validateParams();
+        ctx.validateParams().validateOfficialAuditAccount();
 
         const tagInfo = await this.tagService.findOne({_id: tagId, status: 0})
         ctx.entityNullObjectCheck(tagInfo);

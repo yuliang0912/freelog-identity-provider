@@ -125,6 +125,30 @@ export interface ActivationCodeInfo {
     endEffectiveDate: Date;
 }
 
+export interface ActivationCodeUsedRecord {
+
+    /**
+     * 授权码
+     */
+    code: string;
+
+    /**
+     * 使用者用户ID
+     */
+    userId: number;
+
+    /**
+     * 使用者用户名
+     */
+    username: string;
+
+    /**
+     * 登录IP
+     */
+    loginIp: string;
+
+}
+
 export interface MessageRecordInfo {
     /**
      * 收信地址.邮箱或者短信
@@ -342,5 +366,19 @@ export interface IActivationCodeService extends IBaseService<ActivationCodeInfo>
      * @param codes
      * @param status
      */
-    batchUpdate(codes: string[], status: 0 | 1): Promise<boolean>
+    batchUpdate(codes: string[], status: 0 | 1): Promise<boolean>;
+
+    /**
+     * 使用授权码激活测试资格
+     * @param userId
+     * @param code
+     */
+    activateAuthorizationCode(userInfo: UserInfo, code: string): Promise<boolean>;
+
+    /**
+     * 查询激活码使用记录
+     * @param condition
+     * @param options
+     */
+    findUsedRecordIntervalList(condition: object, options?: findOptions<ActivationCodeUsedRecord>): Promise<PageResult<ActivationCodeUsedRecord>>;
 }

@@ -1,7 +1,15 @@
 import {inject, provide} from "midway";
-import {ActivationCodeInfo, findOptions, IActivationCodeService} from "../../interface";
-import {CryptoHelper, FreelogContext, IMongodbOperation, PageResult} from "egg-freelog-base";
+import {
+    ActivationCodeInfo,
+    ActivationCodeUsedRecord,
+    findOptions,
+    IActivationCodeService, IUserService,
+    UserInfo
+} from "../../interface";
+import {ApplicationError, CryptoHelper, FreelogContext, IMongodbOperation, PageResult} from "egg-freelog-base";
 import {v4} from 'uuid';
+import {ActivationCodeStatusEnum} from "../../enum";
+import {isDate} from 'lodash'
 
 @provide()
 export class ActivationCodeService implements IActivationCodeService {
@@ -9,7 +17,11 @@ export class ActivationCodeService implements IActivationCodeService {
     @inject()
     ctx: FreelogContext;
     @inject()
+    userService: IUserService;
+    @inject()
     activationCodeProvider: IMongodbOperation<ActivationCodeInfo>;
+    @inject()
+    activationCodeUsedRecordProvider: IMongodbOperation<ActivationCodeUsedRecord>;
 
     count(condition: object): Promise<number> {
         return this.activationCodeProvider.count(condition);
@@ -56,6 +68,43 @@ export class ActivationCodeService implements IActivationCodeService {
      */
     batchUpdate(codes: string[], status: 0 | 1): Promise<boolean> {
         return this.activationCodeProvider.updateMany({code: {$in: codes}}, {status}).then(t => Boolean(t.nModified));
+    }
+
+    /**
+     * 使用授权码激活测试资格
+     * @param userId
+     * @param code
+     */
+    async activateAuthorizationCode(userInfo: UserInfo, code: string): Promise<boolean> {
+
+        const activationCodeInfo = await this.activationCodeProvider.findOne({code, codeType: 'beta'});
+        if (!activationCodeInfo || activationCodeInfo.status === ActivationCodeStatusEnum.disabled
+            || (activationCodeInfo.limitCount > 0 && activationCodeInfo.usedCount >= activationCodeInfo.limitCount)) {
+            throw new ApplicationError(this.ctx.gettext('test-qualification-activation-code-invalid'))
+        }
+        if (isDate(activationCodeInfo.startEffectiveDate) && activationCodeInfo.startEffectiveDate > new Date()) {
+            throw new ApplicationError(this.ctx.gettext('test-qualification-activation-code-invalid'))
+        }
+        if (isDate(activationCodeInfo.endEffectiveDate) && activationCodeInfo.endEffectiveDate < new Date()) {
+            throw new ApplicationError(this.ctx.gettext('test-qualification-activation-code-invalid'))
+        }
+
+        const task1 = this.activationCodeProvider.updateOne({code}, {$inc: {usedCount: 1}});
+        const task2 = this.activationCodeUsedRecordProvider.create({
+            code, userId: userInfo.userId, username: userInfo.username, loginIp: this.ctx.ip
+        });
+        const task3 = this.userService.updateOne({userId: userInfo.userId}, {userType: userInfo.userType | 1});
+
+        return Promise.all([task1, task2, task3]).then(() => true);
+    }
+
+    /**
+     * 查询激活码使用记录
+     * @param condition
+     * @param options
+     */
+    findUsedRecordIntervalList(condition: object, options?: findOptions<ActivationCodeUsedRecord>): Promise<PageResult<ActivationCodeUsedRecord>> {
+        return this.activationCodeUsedRecordProvider.findIntervalList(condition, options?.skip, options?.limit, options?.projection, options?.sort);
     }
 }
 

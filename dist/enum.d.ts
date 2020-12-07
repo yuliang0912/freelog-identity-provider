@@ -54,17 +54,13 @@ export declare enum UserStatusEnum {
  */
 export declare enum ActivationCodeStatusEnum {
     /**
-     * 未使用
+     * 禁用
      */
-    Unused = 0,
+    disabled = 0,
     /**
-     * 已分发
+     * 一起用
      */
-    distributed = 1,
-    /**
-     * 已核销
-     */
-    Used = 2
+    enabled = 1
 }
 export declare enum MessageRecordStatusEnum {
     /**

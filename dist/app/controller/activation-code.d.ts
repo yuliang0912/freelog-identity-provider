@@ -1,15 +1,16 @@
 import { FreelogContext } from 'egg-freelog-base';
-import { IActivationCodeService } from "../../interface";
+import { IActivationCodeService, IUserService } from "../../interface";
 export declare class activationCodeController {
     ctx: FreelogContext;
+    userService: IUserService;
     activationCodeService: IActivationCodeService;
     index(): Promise<void>;
-    /**
-     * 查看详情
-     * @param ctx
-     * @returns {Promise<void>}
-     */
-    show(): Promise<void>;
     batchCreate(): Promise<void>;
     batchUpdate(): Promise<void>;
+    /**
+     * 使用授权码激活测试资格
+     */
+    activateTestQualification(): Promise<void>;
+    usedRecords(): Promise<void>;
+    show(): Promise<void>;
 }

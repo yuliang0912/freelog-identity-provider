@@ -1,6 +1,6 @@
 import {controller, get, put, inject, post, provide} from 'midway';
-import {FreelogContext, visitorIdentityValidator, IdentityTypeEnum} from 'egg-freelog-base';
-import {IActivationCodeService} from "../../interface";
+import {FreelogContext, visitorIdentityValidator, IdentityTypeEnum, ApplicationError} from 'egg-freelog-base';
+import {IActivationCodeService, IUserService} from "../../interface";
 import {isString} from 'lodash';
 
 @provide()
@@ -9,6 +9,8 @@ export class activationCodeController {
 
     @inject()
     ctx: FreelogContext;
+    @inject()
+    userService: IUserService;
     @inject()
     activationCodeService: IActivationCodeService;
 
@@ -38,21 +40,6 @@ export class activationCodeController {
         }).then(ctx.success);
     }
 
-    /**
-     * 查看详情
-     * @param ctx
-     * @returns {Promise<void>}
-     */
-    @get('/:code')
-    @visitorIdentityValidator(IdentityTypeEnum.LoginUser)
-    async show() {
-
-        const {ctx} = this;
-        const code = ctx.checkParams("code").type('string').len(8, 8).value;
-        ctx.validateParams();
-
-        await this.activationCodeService.findOne({code}).then(ctx.success);
-    }
 
     @post('/batchCreate')
     @visitorIdentityValidator(IdentityTypeEnum.LoginUser)
@@ -73,11 +60,66 @@ export class activationCodeController {
     @put('/batchUpdate')
     @visitorIdentityValidator(IdentityTypeEnum.LoginUser)
     async batchUpdate() {
+
         const {ctx} = this;
         const codes = ctx.checkBody('codes').exist().isArray().len(1, 100).value;
         const status = ctx.checkBody('status').exist().in([0, 1]).value;
         ctx.validateParams().validateOfficialAuditAccount();
 
         await this.activationCodeService.batchUpdate(codes, status).then(ctx.success);
+    }
+
+    /**
+     * 使用授权码激活测试资格
+     */
+    @post('/activate')
+    @visitorIdentityValidator(IdentityTypeEnum.LoginUser)
+    async activateTestQualification() {
+        const {ctx} = this;
+        const code = ctx.checkBody("code").exist().type('string').len(8, 8).value;
+        ctx.validateParams();
+
+        const userInfo = await this.userService.findOne({userId: ctx.userId});
+        if ((userInfo.userType & 1) === 1) {
+            throw new ApplicationError(ctx.gettext('test-qualification-apply-refuse-error'))
+        }
+
+        await this.activationCodeService.activateAuthorizationCode(userInfo, code).then(ctx.success);
+    }
+
+    @get('/usedRecords')
+    @visitorIdentityValidator(IdentityTypeEnum.LoginUser)
+    async usedRecords() {
+        const {ctx} = this;
+        const skip = ctx.checkQuery('skip').optional().toInt().default(0).ge(0).value;
+        const limit = ctx.checkQuery('limit').optional().toInt().default(10).gt(0).lt(101).value;
+        const sort = ctx.checkQuery('sort').optional().value;
+        const code = ctx.checkQuery('code').optional().type('string').len(8, 8).value;
+        const keywords = ctx.checkQuery("keywords").optional().trim().value;
+        ctx.validateParams();
+
+        const condition: any = {};
+        if (isString(keywords) && keywords.length) {
+            condition.username = keywords.toString();
+        }
+        if (isString(code)) {
+            condition.code = code;
+        }
+
+        await this.activationCodeService.findUsedRecordIntervalList(condition, {
+            skip, limit,
+            sort: sort ?? {createDate: -1}
+        }).then(ctx.success)
+    }
+
+    @get('/:code')
+    @visitorIdentityValidator(IdentityTypeEnum.LoginUser)
+    async show() {
+
+        const {ctx} = this;
+        const code = ctx.checkParams("code").type('string').len(8, 8).value;
+        ctx.validateParams();
+
+        await this.activationCodeService.findOne({code}).then(ctx.success);
     }
 }
