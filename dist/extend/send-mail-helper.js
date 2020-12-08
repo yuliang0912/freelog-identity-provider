@@ -31,7 +31,18 @@ let SendMailHelper = class SendMailHelper {
      * @param authCodeType
      */
     getTemplate(authCodeType, code) {
-        return authCodeType === 'register' ? this.getRegisterHtml(code) : this.getResetPasswordHtml(code);
+        switch (authCodeType) {
+            case "register":
+                return this.getRegisterHtml(code);
+            case "resetPassword":
+                return this.getResetPasswordHtml(code);
+            case "auditPass":
+                return this.getBetaTestAuditPassNoticeHtml(code.toString());
+            case "auditFail":
+                return this.getBetaTestAuditFailedNoticeHtml(code.toString());
+            default:
+                return '';
+        }
     }
     /**
      * 获取注册模板
@@ -59,6 +70,43 @@ let SendMailHelper = class SendMailHelper {
     getResetPasswordHtml(code) {
         return `验证码${code}，您正在尝试修改登录密码，请妥善保管账户信息。`;
     }
+    /**
+     * 内测资格审核通过
+     * @param username
+     */
+    getBetaTestAuditPassNoticeHtml(username) {
+        return `<!DOCTYPE html>
+                <html lang="en">
+                    <head>
+                        <meta charset="UTF-8">
+                    </head>
+                    <body>
+                        <div style="font-size: 14px;">
+                            <div>Hi ${username}，</div><br>
+                            <div>感谢您的支持！您的内测申请已通过。立即体验内测版本，请点击<a style="color: inherit;" href="https://console.freelog.com">https://console.freelog.com/</a>。</div><br>
+                            <div>使用中有任何问题或建议，欢迎您到我们的官方论坛<a style="color: inherit;" href="https://forum.freelog.com">https://forum.freelog.com</a>留言！</div><br>
+                            <div>您真诚的，<br>Freelog团队</div>
+                        </div>
+                    </body>
+                </html>`;
+    }
+    /**
+     * 内测资格审核失败
+     * @param username
+     */
+    getBetaTestAuditFailedNoticeHtml(username) {
+        return `<!DOCTYPE html>
+                <html lang="en">
+                    <head><meta charset="UTF-8"></head>
+                    <body>
+                        <div style="font-size: 14px;">
+                            <div>Hi ${username}，</div><br>
+                            <div>感谢您的支持！很遗憾，您的内测申请未通过。重新提交申请，请点击<a style="color: inherit;" href="https://console.freelog.com/alpha-test/apply">https://console.freelog.com/alpha-test/apply</a>。</div><br>
+                            <div>您真诚的，<br>Freelog团队</div>
+                        </div>
+                    </body>
+                </html>`;
+    }
 };
 __decorate([
     midway_1.config(),
@@ -69,4 +117,4 @@ SendMailHelper = __decorate([
     midway_1.scope('Singleton')
 ], SendMailHelper);
 exports.default = SendMailHelper;
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoic2VuZC1tYWlsLWhlbHBlci5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uL3NyYy9leHRlbmQvc2VuZC1tYWlsLWhlbHBlci50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzs7Ozs7Ozs7OztBQUFBLG1DQUE4QztBQUM5QywyQ0FBMEM7QUFJMUMsSUFBcUIsY0FBYyxHQUFuQyxNQUFxQixjQUFjO0lBSy9COzs7OztPQUtHO0lBQ0gsUUFBUSxDQUFDLE9BQWUsRUFBRSxJQUFZLEVBQUUsVUFBa0IsV0FBVztRQUNqRSxNQUFNLFdBQVcsR0FBRyw0QkFBZSxDQUFDLElBQUksQ0FBQyxtQkFBbUIsQ0FBQyxDQUFDO1FBQzlELE1BQU0sV0FBVyxHQUFHO1lBQ2hCLElBQUksRUFBRSxXQUFXLElBQUksQ0FBQyxtQkFBbUIsQ0FBQyxJQUFJLENBQUMsSUFBSSxHQUFHO1lBQ3RELEVBQUUsRUFBRSxPQUFPLEVBQUUsT0FBTyxFQUFFLElBQUk7U0FDN0IsQ0FBQztRQUNGLE9BQU8sV0FBVyxDQUFDLFFBQVEsQ0FBQyxXQUFXLENBQUMsQ0FBQTtJQUM1QyxDQUFDO0lBR0Q7OztPQUdHO0lBQ0gsV0FBVyxDQUFDLFlBQTBDLEVBQUUsSUFBcUI7UUFDekUsT0FBTyxZQUFZLEtBQUssVUFBVSxDQUFDLENBQUMsQ0FBQyxJQUFJLENBQUMsZUFBZSxDQUFDLElBQUksQ0FBQyxDQUFDLENBQUMsQ0FBQyxJQUFJLENBQUMsb0JBQW9CLENBQUMsSUFBSSxDQUFDLENBQUM7SUFDdEcsQ0FBQztJQUdEOzs7T0FHRztJQUNILGVBQWUsQ0FBQyxJQUFxQjtRQUNqQyxPQUFPOzs7Ozs7OzhFQU8rRCxJQUFJOzs7Ozt3QkFLMUQsQ0FBQTtJQUNwQixDQUFDO0lBRUQ7OztPQUdHO0lBQ0gsb0JBQW9CLENBQUMsSUFBcUI7UUFDdEMsT0FBTyxNQUFNLElBQUkseUJBQXlCLENBQUE7SUFDOUMsQ0FBQztDQUNKLENBQUE7QUF0REc7SUFEQyxlQUFNLEVBQUU7OzJEQUNXO0FBSEgsY0FBYztJQUZsQyxnQkFBTyxFQUFFO0lBQ1QsY0FBSyxDQUFDLFdBQVcsQ0FBQztHQUNFLGNBQWMsQ0F5RGxDO2tCQXpEb0IsY0FBYyJ9
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoic2VuZC1tYWlsLWhlbHBlci5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uL3NyYy9leHRlbmQvc2VuZC1tYWlsLWhlbHBlci50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzs7Ozs7Ozs7OztBQUFBLG1DQUE4QztBQUM5QywyQ0FBMEM7QUFJMUMsSUFBcUIsY0FBYyxHQUFuQyxNQUFxQixjQUFjO0lBSy9COzs7OztPQUtHO0lBQ0gsUUFBUSxDQUFDLE9BQWUsRUFBRSxJQUFZLEVBQUUsVUFBa0IsV0FBVztRQUNqRSxNQUFNLFdBQVcsR0FBRyw0QkFBZSxDQUFDLElBQUksQ0FBQyxtQkFBbUIsQ0FBQyxDQUFDO1FBQzlELE1BQU0sV0FBVyxHQUFHO1lBQ2hCLElBQUksRUFBRSxXQUFXLElBQUksQ0FBQyxtQkFBbUIsQ0FBQyxJQUFJLENBQUMsSUFBSSxHQUFHO1lBQ3RELEVBQUUsRUFBRSxPQUFPLEVBQUUsT0FBTyxFQUFFLElBQUk7U0FDN0IsQ0FBQztRQUNGLE9BQU8sV0FBVyxDQUFDLFFBQVEsQ0FBQyxXQUFXLENBQUMsQ0FBQTtJQUM1QyxDQUFDO0lBR0Q7OztPQUdHO0lBQ0gsV0FBVyxDQUFDLFlBQXNFLEVBQUUsSUFBcUI7UUFFckcsUUFBUSxZQUFZLEVBQUU7WUFDbEIsS0FBSyxVQUFVO2dCQUNYLE9BQU8sSUFBSSxDQUFDLGVBQWUsQ0FBQyxJQUFJLENBQUMsQ0FBQztZQUN0QyxLQUFLLGVBQWU7Z0JBQ2hCLE9BQU8sSUFBSSxDQUFDLG9CQUFvQixDQUFDLElBQUksQ0FBQyxDQUFBO1lBQzFDLEtBQUssV0FBVztnQkFDWixPQUFPLElBQUksQ0FBQyw4QkFBOEIsQ0FBQyxJQUFJLENBQUMsUUFBUSxFQUFFLENBQUMsQ0FBQztZQUNoRSxLQUFLLFdBQVc7Z0JBQ1osT0FBTyxJQUFJLENBQUMsZ0NBQWdDLENBQUMsSUFBSSxDQUFDLFFBQVEsRUFBRSxDQUFDLENBQUM7WUFDbEU7Z0JBQ0ksT0FBTyxFQUFFLENBQUM7U0FDakI7SUFDTCxDQUFDO0lBR0Q7OztPQUdHO0lBQ0gsZUFBZSxDQUFDLElBQXFCO1FBQ2pDLE9BQU87Ozs7Ozs7OEVBTytELElBQUk7Ozs7O3dCQUsxRCxDQUFBO0lBQ3BCLENBQUM7SUFFRDs7O09BR0c7SUFDSCxvQkFBb0IsQ0FBQyxJQUFxQjtRQUN0QyxPQUFPLE1BQU0sSUFBSSx5QkFBeUIsQ0FBQTtJQUM5QyxDQUFDO0lBRUQ7OztPQUdHO0lBQ0gsOEJBQThCLENBQUMsUUFBZ0I7UUFDM0MsT0FBTzs7Ozs7OztzQ0FPdUIsUUFBUTs7Ozs7O3dCQU10QixDQUFBO0lBQ3BCLENBQUM7SUFFRDs7O09BR0c7SUFDSCxnQ0FBZ0MsQ0FBQyxRQUFnQjtRQUM3QyxPQUFPOzs7OztzQ0FLdUIsUUFBUTs7Ozs7d0JBS3RCLENBQUE7SUFDcEIsQ0FBQztDQUNKLENBQUE7QUF6R0c7SUFEQyxlQUFNLEVBQUU7OzJEQUNXO0FBSEgsY0FBYztJQUZsQyxnQkFBTyxFQUFFO0lBQ1QsY0FBSyxDQUFDLFdBQVcsQ0FBQztHQUNFLGNBQWMsQ0E0R2xDO2tCQTVHb0IsY0FBYyJ9

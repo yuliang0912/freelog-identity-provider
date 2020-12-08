@@ -11,7 +11,7 @@ export default class SendMailHelper {
      * 获取模板
      * @param authCodeType
      */
-    getTemplate(authCodeType: 'register' | 'resetPassword', code: string | number): string;
+    getTemplate(authCodeType: 'register' | 'resetPassword' | 'auditPass' | 'auditFail', code: string | number): string;
     /**
      * 获取注册模板
      * @param code
@@ -22,4 +22,14 @@ export default class SendMailHelper {
      * @param code
      */
     getResetPasswordHtml(code: string | number): string;
+    /**
+     * 内测资格审核通过
+     * @param username
+     */
+    getBetaTestAuditPassNoticeHtml(username: string): string;
+    /**
+     * 内测资格审核失败
+     * @param username
+     */
+    getBetaTestAuditFailedNoticeHtml(username: string): string;
 }

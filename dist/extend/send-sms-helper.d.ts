@@ -14,7 +14,7 @@ export default class SendSmsHelper {
      * 获取模板
      * @param authCodeType
      */
-    getTemplate(authCodeType: 'register' | 'resetPassword'): string;
+    getTemplate(authCodeType: 'register' | 'resetPassword' | 'auditPass' | 'auditFail'): string;
     /**
      * 获取注册用户模板编码
      */
@@ -23,4 +23,6 @@ export default class SendSmsHelper {
      * 重置密码模板编码
      */
     getResetPasswordTemplateCode(): string;
+    getBetaTestAuditPassNoticeTemplateCode(): string;
+    getBetaTestAuditFailedNoticeTemplateCode(): string;
 }

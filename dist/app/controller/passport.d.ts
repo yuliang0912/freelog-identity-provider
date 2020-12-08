@@ -12,12 +12,12 @@ export declare class passportController {
      * @param userId
      * @param token
      */
-    _generateJwtPayload(userId: any, token: any): {
+    _generateJwtPayload(userId: number, token: string): {
         iss: string;
-        sub: any;
+        sub: string;
         aud: string;
         exp: number;
         iat: number;
-        jti: any;
+        jti: string;
     };
 }

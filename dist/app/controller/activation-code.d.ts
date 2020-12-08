@@ -7,9 +7,6 @@ export declare class activationCodeController {
     index(): Promise<void>;
     batchCreate(): Promise<void>;
     batchUpdate(): Promise<void>;
-    /**
-     * 使用授权码激活测试资格
-     */
     activateTestQualification(): Promise<void>;
     usedRecords(): Promise<void>;
     show(): Promise<void>;
