@@ -54,7 +54,7 @@ export interface UserInfo extends FreelogUserInfo {
     /**
      * 标签
      */
-    tags: string[]
+    tags: Partial<TagInfo>[];
 
     /**
      * 用户状态
@@ -69,6 +69,7 @@ export interface UserDetailInfo {
     tagIds: number[];
     latestLoginDate: Date;
     latestLoginIp: string;
+    statusChangeRemark: string;
 }
 
 export interface ActivationCodeInfo {
@@ -180,7 +181,14 @@ export interface MessageRecordInfo {
     status: MessageRecordStatusEnum;
 }
 
+export interface TestQualificationAuditHandleInfo {
+    status: 0 | 1;
+    auditMsg: number;
+}
+
 export interface TestQualificationApplyAuditRecordInfo {
+
+    id: string;
 
     /**
      * 申请人ID

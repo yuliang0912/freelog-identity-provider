@@ -42,8 +42,19 @@ export default class SendSmsHelper {
      * 获取模板
      * @param authCodeType
      */
-    getTemplate(authCodeType: 'register' | 'resetPassword') {
-        return authCodeType === 'register' ? this.getRegisterTemplateCode() : this.getResetPasswordTemplateCode();
+    getTemplate(authCodeType: 'register' | 'resetPassword' | 'auditPass' | 'auditFail') {
+        switch (authCodeType) {
+            case "register":
+                return this.getRegisterTemplateCode();
+            case "resetPassword":
+                return this.getResetPasswordTemplateCode()
+            case "auditPass":
+                return this.getBetaTestAuditPassNoticeTemplateCode();
+            case "auditFail":
+                return this.getBetaTestAuditFailedNoticeTemplateCode();
+            default:
+                return '';
+        }
     }
 
     /**
@@ -58,5 +69,13 @@ export default class SendSmsHelper {
      */
     getResetPasswordTemplateCode() {
         return 'SMS_157980465';
+    }
+
+    getBetaTestAuditPassNoticeTemplateCode() {
+        return 'SMS_182385369'
+    }
+
+    getBetaTestAuditFailedNoticeTemplateCode() {
+        return 'SMS_181859961'
     }
 }

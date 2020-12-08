@@ -4,7 +4,8 @@ import {
     FreelogContext, visitorIdentityValidator, CommonRegex, IdentityTypeEnum, ArgumentError, ApplicationError
 } from "egg-freelog-base";
 import headImageGenerator from "../../extend/head-image-generator";
-import {isString, isArray, first, omit, isDate} from 'lodash';
+import {isString, isArray, first, omit, isDate, pick} from 'lodash';
+import {UserStatusEnum} from "../../enum";
 
 @provide()
 @controller('/v2/users')
@@ -33,9 +34,9 @@ export class UserInfoController {
         const limit = ctx.checkQuery('limit').optional().toInt().default(10).gt(0).lt(101).value;
         const sort = ctx.checkQuery('sort').optional().value;
         const tagId = ctx.checkQuery('tagId').optional().toInt().gt(0).value;
-        const keywords = ctx.checkQuery('keywords').optional().value;
-        const startRegisteredDate = ctx.checkQuery('startRegisteredDate').optional().toDate().value;
-        const endRegisteredDate = ctx.checkQuery('endRegisteredDate').optional().toDate().value;
+        const keywords = ctx.checkQuery('keywords').optional().emptyStringAsNothingness().trim().value;
+        const startRegisteredDate = ctx.checkQuery('startRegisteredDate').optional().emptyStringAsNothingness().toDate().value;
+        const endRegisteredDate = ctx.checkQuery('endRegisteredDate').optional().emptyStringAsNothingness().toDate().value;
         ctx.validateParams().validateOfficialAuditAccount();
 
         const condition: any = {};
@@ -62,7 +63,7 @@ export class UserInfoController {
         });
 
         const tagMap = await this.tagService.find({status: 0}).then(list => {
-            return new Map(list.map(x => [x.tagId.toString(), x.tag]));
+            return new Map(list.map(x => [x.tagId.toString(), pick(x, ['tagId', 'tag'])]));
         })
 
         const list = [];
@@ -318,6 +319,29 @@ export class UserInfoController {
         ctx.entityNullObjectCheck(userInfo);
 
         await this.userService.unsetTag(userId, tagInfo).then(ctx.success);
+    }
+
+    // 冻结或恢复用户
+    @put('/:userId/freeOrRecoverUserStatus')
+    async freeOrRecoverUserStatus() {
+
+        const {ctx} = this;
+        const userId = ctx.checkParams('userId').exist().toInt().gt(10000).value;
+        const status = ctx.checkBody("status").exist().toInt().in([UserStatusEnum.Freeze, UserStatusEnum.Normal]).value;
+        const remark = ctx.checkBody("remark").optional().type('string').len(0, 500).default('').value;
+        ctx.validateParams().validateOfficialAuditAccount();
+
+        const userInfo = await this.userService.findOne({userId});
+        ctx.entityNullObjectCheck(userInfo);
+
+        if (userInfo.status === status) {
+            return ctx.success(true);
+        }
+
+        const task1 = this.userService.updateOne({userId}, {status});
+        const task2 = this.userService.updateOneUserDetail({userId}, {statusChangeRemark: status === UserStatusEnum.Normal ? '' : remark ?? ''});
+
+        await Promise.all([task1, task2]).then(t => ctx.success(true));
     }
 
     /**

@@ -25,6 +25,11 @@ export default () => {
         url: "mongodb://localhost:27017/user",
     }
 
+    // config.mongoose = {
+    //     url: "mongodb://39.108.77.211:30772/user",
+    // }
+
+
     config.localIdentity = {
         userId: 50003,
         username: 'yuliang',

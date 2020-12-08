@@ -4,6 +4,7 @@ import {generatePassword} from "../../extend/common-helper";
 import AutoIncrementRecordProvider from "../data-provider/auto-increment-record-provider";
 import {ArgumentError, FreelogContext, MongodbOperation, PageResult} from "egg-freelog-base";
 import {findOptions, ITageService, IUserService, TagInfo, UserDetailInfo, UserInfo} from "../../interface";
+import {UserRoleEnum, UserStatusEnum} from "../../enum";
 
 @provide()
 export class UserService implements IUserService {
@@ -36,10 +37,13 @@ export class UserService implements IUserService {
     }
 
     async create(userInfo: Partial<UserInfo>): Promise<UserInfo> {
+
         userInfo.userId = await this.autoIncrementRecordProvider.getNextUserId();
         userInfo.salt = v4().replace(/-/g, '');
         userInfo.password = generatePassword(userInfo.salt, userInfo.password);
         userInfo.tokenSn = v4().replace(/-/g, '');
+        userInfo.status = UserStatusEnum.Normal;
+        userInfo.userRole = UserRoleEnum.Customer;
 
         return this.userInfoProvider.create(userInfo);
     }

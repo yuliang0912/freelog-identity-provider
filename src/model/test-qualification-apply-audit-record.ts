@@ -33,6 +33,10 @@ export class TestQualificationApplyAuditRecordModel extends MongooseModelBase {
             timestamps: {createdAt: 'createDate', updatedAt: 'updateDate'}
         })
 
+        TestQualificationApplyAuditRecordSchema.virtual('id').get(function (this: any) {
+            return this._id;
+        });
+
         return this.mongoose.model('test-qualification-apply-audit-records', TestQualificationApplyAuditRecordSchema)
     }
 

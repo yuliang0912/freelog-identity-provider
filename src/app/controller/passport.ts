@@ -2,7 +2,6 @@ import {config, controller, get, inject, post, provide} from "midway";
 import {ArgumentError, AuthenticationError, CommonRegex, FreelogContext, JwtHelper} from "egg-freelog-base";
 import {IUserService, UserInfo} from "../../interface";
 import {generatePassword} from "../../extend/common-helper";
-import {UserStatusEnum} from "../../enum";
 import {pick} from 'lodash';
 
 @provide()
@@ -41,12 +40,8 @@ export class passportController {
         }
 
         const userInfo = await this.userService.findOne(condition);
-
         if (!userInfo || generatePassword(userInfo.salt, password) !== userInfo.password) {
             throw new AuthenticationError(ctx.gettext('login-name-or-password-validate-failed'))
-        }
-        if (userInfo.status === UserStatusEnum.Freeze) {
-            throw new AuthenticationError(ctx.gettext('user_account_has_already_freeze'))
         }
 
         this.userService.updateOneUserDetail({userId: userInfo.userId}, {
@@ -94,7 +89,7 @@ export class passportController {
      * @param userId
      * @param token
      */
-    _generateJwtPayload(userId, token) {
+    _generateJwtPayload(userId: number, token: string) {
         {
             const currTime = Math.round(new Date().getTime() / 1000)
             return {

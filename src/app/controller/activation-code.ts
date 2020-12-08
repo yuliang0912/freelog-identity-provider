@@ -40,7 +40,6 @@ export class activationCodeController {
         }).then(ctx.success);
     }
 
-
     @post('/batchCreate')
     @visitorIdentityValidator(IdentityTypeEnum.LoginUser)
     async batchCreate() {
@@ -69,9 +68,7 @@ export class activationCodeController {
         await this.activationCodeService.batchUpdate(codes, status).then(ctx.success);
     }
 
-    /**
-     * 使用授权码激活测试资格
-     */
+    // 使用授权码激活测试资格
     @post('/activate')
     @visitorIdentityValidator(IdentityTypeEnum.LoginUser)
     async activateTestQualification() {

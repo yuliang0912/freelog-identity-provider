@@ -28,8 +28,20 @@ export default class SendMailHelper {
      * 获取模板
      * @param authCodeType
      */
-    getTemplate(authCodeType: 'register' | 'resetPassword', code: string | number) {
-        return authCodeType === 'register' ? this.getRegisterHtml(code) : this.getResetPasswordHtml(code);
+    getTemplate(authCodeType: 'register' | 'resetPassword' | 'auditPass' | 'auditFail', code: string | number) {
+
+        switch (authCodeType) {
+            case "register":
+                return this.getRegisterHtml(code);
+            case "resetPassword":
+                return this.getResetPasswordHtml(code)
+            case "auditPass":
+                return this.getBetaTestAuditPassNoticeHtml(code.toString());
+            case "auditFail":
+                return this.getBetaTestAuditFailedNoticeHtml(code.toString());
+            default:
+                return '';
+        }
     }
 
 
@@ -59,5 +71,44 @@ export default class SendMailHelper {
      */
     getResetPasswordHtml(code: string | number): string {
         return `验证码${code}，您正在尝试修改登录密码，请妥善保管账户信息。`
+    }
+
+    /**
+     * 内测资格审核通过
+     * @param username
+     */
+    getBetaTestAuditPassNoticeHtml(username: string) {
+        return `<!DOCTYPE html>
+                <html lang="en">
+                    <head>
+                        <meta charset="UTF-8">
+                    </head>
+                    <body>
+                        <div style="font-size: 14px;">
+                            <div>Hi ${username}，</div><br>
+                            <div>感谢您的支持！您的内测申请已通过。立即体验内测版本，请点击<a style="color: inherit;" href="https://console.freelog.com">https://console.freelog.com/</a>。</div><br>
+                            <div>使用中有任何问题或建议，欢迎您到我们的官方论坛<a style="color: inherit;" href="https://forum.freelog.com">https://forum.freelog.com</a>留言！</div><br>
+                            <div>您真诚的，<br>Freelog团队</div>
+                        </div>
+                    </body>
+                </html>`
+    }
+
+    /**
+     * 内测资格审核失败
+     * @param username
+     */
+    getBetaTestAuditFailedNoticeHtml(username: string) {
+        return `<!DOCTYPE html>
+                <html lang="en">
+                    <head><meta charset="UTF-8"></head>
+                    <body>
+                        <div style="font-size: 14px;">
+                            <div>Hi ${username}，</div><br>
+                            <div>感谢您的支持！很遗憾，您的内测申请未通过。重新提交申请，请点击<a style="color: inherit;" href="https://console.freelog.com/alpha-test/apply">https://console.freelog.com/alpha-test/apply</a>。</div><br>
+                            <div>您真诚的，<br>Freelog团队</div>
+                        </div>
+                    </body>
+                </html>`
     }
 }
