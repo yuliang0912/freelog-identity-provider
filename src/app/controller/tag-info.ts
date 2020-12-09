@@ -17,6 +17,7 @@ export class TagInfoController {
         const {ctx} = this;
         const tag = ctx.checkBody('tag').exist().type('string').trim().value;
         const type = ctx.checkBody('type').exist().toInt().in([1, 2]).value;
+        console.log(ctx.userId, ctx.identityInfo.userInfo);
         ctx.validateOfficialAuditAccount().validateParams();
 
         await this.tagService.create(tag, type).then(ctx.success);
