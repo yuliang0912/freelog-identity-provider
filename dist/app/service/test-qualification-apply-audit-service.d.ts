@@ -1,8 +1,8 @@
-import { findOptions, IUserService, TestQualificationApplyAuditRecordInfo, TestQualificationAuditHandleInfo, UserInfo } from "../../interface";
+import { findOptions, ITestQualificationApplyAuditService, IUserService, TestQualificationApplyAuditRecordInfo, TestQualificationAuditHandleInfo, UserInfo } from "../../interface";
 import { FreelogContext, MongodbOperation, PageResult } from "egg-freelog-base";
 import SendSmsHelper from "../../extend/send-sms-helper";
 import SendMailHelper from "../../extend/send-mail-helper";
-export declare class TestQualificationApplyAuditService {
+export declare class TestQualificationApplyAuditService implements ITestQualificationApplyAuditService {
     ctx: FreelogContext;
     userService: IUserService;
     sendSmsHelper: SendSmsHelper;
@@ -24,10 +24,22 @@ export declare class TestQualificationApplyAuditService {
      */
     findIntervalList(condition: object, options?: findOptions<UserInfo>): Promise<PageResult<TestQualificationApplyAuditRecordInfo>>;
     /**
+     * 分页查找申请记录
+     * @param condition
+     * @param status
+     * @param options
+     */
+    findSearchIntervalList(condition: Partial<UserInfo>, status?: number, options?: findOptions<UserInfo>): Promise<PageResult<TestQualificationApplyAuditRecordInfo>>;
+    /**
      * 查找一条数据
      * @param condition
      */
-    findOne(condition: Partial<TestQualificationApplyAuditRecordInfo>): Promise<TestQualificationApplyAuditRecordInfo>;
+    findOne(condition: Partial<TestQualificationApplyAuditRecordInfo> | object): Promise<TestQualificationApplyAuditRecordInfo>;
+    /**
+     * 查找多条数据
+     * @param condition
+     */
+    find(condition: Partial<TestQualificationApplyAuditRecordInfo> | object): Promise<TestQualificationApplyAuditRecordInfo[]>;
     /**
      * 申请测试资格
      * @param applyInfo
@@ -50,6 +62,12 @@ export declare class TestQualificationApplyAuditService {
      * @returns {Promise<Boolean>}
      */
     auditTestQualificationApply(applyRecordInfo: TestQualificationApplyAuditRecordInfo, handleInfo: TestQualificationAuditHandleInfo): Promise<boolean>;
+    /**
+     * 批量审核
+     * @param applyRecordList
+     * @param handleInfo
+     */
+    batchAuditTestQualificationApply(applyRecordList: TestQualificationApplyAuditRecordInfo[], handleInfo: TestQualificationAuditHandleInfo): Promise<boolean>;
     /**
      * 发送审核通知消息
      * @returns {Promise<void>}

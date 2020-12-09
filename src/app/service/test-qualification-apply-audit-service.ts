@@ -1,16 +1,19 @@
 import {inject, provide} from "midway";
 import {
     findOptions,
+    ITestQualificationApplyAuditService,
     IUserService,
     TestQualificationApplyAuditRecordInfo,
-    TestQualificationAuditHandleInfo, UserInfo
+    TestQualificationAuditHandleInfo,
+    UserInfo
 } from "../../interface";
 import {ApplicationError, FreelogContext, MongodbOperation, PageResult} from "egg-freelog-base";
 import SendSmsHelper from "../../extend/send-sms-helper";
 import SendMailHelper from "../../extend/send-mail-helper";
+import {AuditStatusEnum} from "../../enum";
 
 @provide()
-export class TestQualificationApplyAuditService {
+export class TestQualificationApplyAuditService implements ITestQualificationApplyAuditService {
 
     @inject()
     ctx: FreelogContext;
@@ -41,27 +44,71 @@ export class TestQualificationApplyAuditService {
     }
 
     /**
+     * 分页查找申请记录
+     * @param condition
+     * @param status
+     * @param options
+     */
+    async findSearchIntervalList(condition: Partial<UserInfo>, status?: number, options?: findOptions<UserInfo>): Promise<PageResult<TestQualificationApplyAuditRecordInfo>> {
+
+        const pipeline: any = [
+            {
+                $lookup: {
+                    from: 'user-infos',
+                    localField: 'userId',
+                    foreignField: 'userId',
+                    as: 'userInfos'
+                }
+            }
+        ];
+        if (status !== undefined) {
+            pipeline.unshift({$match: {status}});
+        }
+        for (const [key, value] of Object.entries(condition)) {
+            pipeline.push({$match: {[`userInfos.${key}`]: value}});
+        }
+
+        const [totalItemInfo] = await this.testQualificationApplyAuditProvider.aggregate([...pipeline, ...[{$count: 'totalItem'}]])
+        const {totalItem = 0} = totalItemInfo ?? {};
+
+        pipeline.push({$sort: options?.sort ?? {userId: -1}}, {$skip: options?.skip ?? 0}, {$limit: options?.limit ?? 10});
+        const dataList = await this.testQualificationApplyAuditProvider.aggregate(pipeline);
+
+        return {
+            skip: options?.skip ?? 0, limit: options?.limit ?? 10, totalItem, dataList
+        }
+    }
+
+    /**
      * 查找一条数据
      * @param condition
      */
-    async findOne(condition: Partial<TestQualificationApplyAuditRecordInfo>) {
+    async findOne(condition: Partial<TestQualificationApplyAuditRecordInfo> | object): Promise<TestQualificationApplyAuditRecordInfo> {
         return this.testQualificationApplyAuditProvider.findOne(condition);
+    }
+
+    /**
+     * 查找多条数据
+     * @param condition
+     */
+    async find(condition: Partial<TestQualificationApplyAuditRecordInfo> | object): Promise<TestQualificationApplyAuditRecordInfo[]> {
+        return this.testQualificationApplyAuditProvider.find(condition);
     }
 
     /**
      * 申请测试资格
      * @param applyInfo
      */
-    async testQualificationApply(applyInfo: Partial<TestQualificationApplyAuditRecordInfo>) {
+    async testQualificationApply(applyInfo: Partial<TestQualificationApplyAuditRecordInfo>): Promise<TestQualificationApplyAuditRecordInfo> {
 
         const userApplyRecord = await this.testQualificationApplyAuditProvider.findOne({
-            userId: this.ctx.userId, status: 0
+            userId: this.ctx.userId, status: AuditStatusEnum.WaitReview
         });
         if (userApplyRecord) {
             throw new ApplicationError(this.ctx.gettext('test-qualification-apply-existing-error'))
         }
-
         applyInfo.userId = this.ctx.userId;
+        applyInfo.status = AuditStatusEnum.WaitReview;
         return this.testQualificationApplyAuditProvider.create(applyInfo);
     }
 
@@ -106,6 +153,33 @@ export class TestQualificationApplyAuditService {
         await Promise.all([task1, task2]).then(() => {
             return this.sendAuditNoticeMessage(userInfo, handleInfo.status)
         })
+
+        return true
+    }
+
+    /**
+     * 批量审核
+     * @param applyRecordList
+     * @param handleInfo
+     */
+    async batchAuditTestQualificationApply(applyRecordList: TestQualificationApplyAuditRecordInfo[], handleInfo: TestQualificationAuditHandleInfo) {
+
+        const task1 = this.testQualificationApplyAuditProvider.updateMany({_id: {$in: applyRecordList.map(x => x['_id'])}}, {
+            operationUserId: this.ctx.userId,
+            status: handleInfo.status,
+            auditMsg: handleInfo.auditMsg
+        })
+
+        let task2 = undefined;
+        if (handleInfo.status === AuditStatusEnum.AuditPass) {
+            task2 = this.userService.updateMany({userId: {$in: applyRecordList.map(x => x.userId)}}, {userType: 1});
+        }
+
+        await Promise.all([task1, task2])
+
+        this.userService.find({userId: {$in: applyRecordList.map(x => x.userId)}}).then(userList => {
+            userList.forEach(userInfo => this.sendAuditNoticeMessage(userInfo, handleInfo.status))
+        });
 
         return true
     }

@@ -33,10 +33,10 @@ export class UserInfoController {
         const skip = ctx.checkQuery('skip').optional().toInt().default(0).ge(0).value;
         const limit = ctx.checkQuery('limit').optional().toInt().default(10).gt(0).lt(101).value;
         const sort = ctx.checkQuery('sort').optional().value;
-        const tagId = ctx.checkQuery('tagId').optional().toInt().gt(0).value;
-        const keywords = ctx.checkQuery('keywords').optional().emptyStringAsNothingness().trim().value;
-        const startRegisteredDate = ctx.checkQuery('startRegisteredDate').optional().emptyStringAsNothingness().toDate().value;
-        const endRegisteredDate = ctx.checkQuery('endRegisteredDate').optional().emptyStringAsNothingness().toDate().value;
+        const tagId = ctx.checkQuery('tagId').ignoreParamWhenEmpty().toInt().gt(0).value;
+        const keywords = ctx.checkQuery('keywords').ignoreParamWhenEmpty().trim().value;
+        const startRegisteredDate = ctx.checkQuery('startRegisteredDate').ignoreParamWhenEmpty().toDate().value;
+        const endRegisteredDate = ctx.checkQuery('endRegisteredDate').ignoreParamWhenEmpty().toDate().value;
         ctx.validateParams().validateOfficialAuditAccount();
 
         const condition: any = {};
@@ -93,7 +93,7 @@ export class UserInfoController {
 
         const {ctx} = this;
         const userIds = ctx.checkQuery('userIds').exist().isSplitUserIds().toSplitArray().len(1, 200).value;
-        const projection = ctx.checkQuery('projection').optional().toSplitArray().default([]).value
+        const projection = ctx.checkQuery('projection').ignoreParamWhenEmpty().toSplitArray().default([]).value
         ctx.validateParams();
 
         await this.userService.find({userId: {$in: userIds}}, {projection: projection?.join(' ')}).then(ctx.success);
@@ -109,29 +109,29 @@ export class UserInfoController {
         await this.userService.findOne({userId: ctx.userId}).then(ctx.success);
     }
 
-    /**
-     * 获取用户详情
-     */
-    @get('/search')
-    @visitorIdentityValidator(IdentityTypeEnum.InternalClient | IdentityTypeEnum.LoginUser | IdentityTypeEnum.UnLoginUser)
-    async searchOne() {
-        //手机号,邮箱
-        const {ctx} = this;
-        const keywords = ctx.checkQuery('keywords').exist().value
-        ctx.validateParams();
-
-        const condition: any = {};
-        if (ctx.helper.commonRegex.mobile86.test(keywords)) {
-            condition.mobile = new RegExp(`^${keywords}$`, 'i')
-        } else if (ctx.helper.commonRegex.email.test(keywords)) {
-            condition.email = new RegExp(`^${keywords}$`, 'i')
-        } else if (ctx.helper.commonRegex.username.test(keywords)) {
-            condition.username = new RegExp(`^${keywords}$`, 'i')
-        } else {
-            throw new ArgumentError(ctx.gettext('params-format-validate-failed', 'keywords'))
-        }
-        await this.userService.findOne(condition).then(ctx.success)
-    }
+    // /**
+    //  * 获取用户详情
+    //  */
+    // @get('/search')
+    // @visitorIdentityValidator(IdentityTypeEnum.InternalClient | IdentityTypeEnum.LoginUser | IdentityTypeEnum.UnLoginUser)
+    // async searchOne() {
+    //     //手机号,邮箱
+    //     const {ctx} = this;
+    //     const keywords = ctx.checkQuery('keywords').exist().value
+    //     ctx.validateParams();
+    //
+    //     const condition: any = {};
+    //     if (ctx.helper.commonRegex.mobile86.test(keywords)) {
+    //         condition.mobile = new RegExp(`^${keywords}$`, 'i')
+    //     } else if (ctx.helper.commonRegex.email.test(keywords)) {
+    //         condition.email = new RegExp(`^${keywords}$`, 'i')
+    //     } else if (ctx.helper.commonRegex.username.test(keywords)) {
+    //         condition.username = new RegExp(`^${keywords}$`, 'i')
+    //     } else {
+    //         throw new ArgumentError(ctx.gettext('params-format-validate-failed', 'keywords'))
+    //     }
+    //     await this.userService.findOne(condition).then(ctx.success)
+    // }
 
     /**
      * 注册用户
@@ -328,7 +328,7 @@ export class UserInfoController {
         const {ctx} = this;
         const userId = ctx.checkParams('userId').exist().toInt().gt(10000).value;
         const status = ctx.checkBody("status").exist().toInt().in([UserStatusEnum.Freeze, UserStatusEnum.Normal]).value;
-        const remark = ctx.checkBody("remark").optional().type('string').len(0, 500).default('').value;
+        const remark = ctx.checkBody("remark").ignoreParamWhenEmpty().type('string').len(0, 500).default('').value;
         ctx.validateParams().validateOfficialAuditAccount();
 
         const userInfo = await this.userService.findOne({userId});

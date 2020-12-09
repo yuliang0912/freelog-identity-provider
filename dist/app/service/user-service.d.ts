@@ -13,6 +13,7 @@ export declare class UserService implements IUserService {
     findOne(condition: object, options?: findOptions<UserInfo>): Promise<UserInfo>;
     create(userInfo: Partial<UserInfo>): Promise<UserInfo>;
     updateOne(condition: object, model: Partial<UserInfo>): Promise<boolean>;
+    updateMany(condition: object, model: Partial<UserInfo>): Promise<boolean>;
     /**
      * 重置密码
      * @param userInfo
@@ -52,4 +53,5 @@ export declare class UserService implements IUserService {
      * @param model
      */
     updateOneUserDetail(condition: object, model: Partial<UserDetailInfo>): Promise<boolean>;
+    findUserDetails(condition: object): Promise<UserDetailInfo[]>;
 }

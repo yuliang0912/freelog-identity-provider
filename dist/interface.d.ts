@@ -191,6 +191,7 @@ export interface TestQualificationApplyAuditRecordInfo {
      * 审核状态
      */
     status: AuditStatusEnum;
+    createDate: Date;
 }
 export interface TagInfo {
     /**
@@ -243,6 +244,7 @@ export interface ITageService extends IBaseService<TagInfo> {
 export interface IUserService extends IBaseService<UserInfo> {
     create(userInfo: Partial<UserInfo>): Promise<UserInfo>;
     updateOne(condition: object, model: Partial<UserInfo>): Promise<boolean>;
+    updateMany(condition: object, model: Partial<UserInfo>): Promise<boolean>;
     resetPassword(userInfo: UserInfo, newPassword: string): Promise<boolean>;
     updatePassword(userInfo: UserInfo, oldPassword: string, newPassword: string): Promise<boolean>;
     setTag(userId: number, tagInfo: TagInfo): Promise<boolean>;
@@ -254,6 +256,7 @@ export interface IUserService extends IBaseService<UserInfo> {
      * @param model
      */
     updateOneUserDetail(condition: object, model: Partial<UserDetailInfo>): Promise<boolean>;
+    findUserDetails(condition: object): Promise<UserDetailInfo[]>;
 }
 export interface IMessageService {
     /**
@@ -309,4 +312,21 @@ export interface IActivationCodeService extends IBaseService<ActivationCodeInfo>
      * @param options
      */
     findUsedRecordIntervalList(condition: object, options?: findOptions<ActivationCodeUsedRecord>): Promise<PageResult<ActivationCodeUsedRecord>>;
+}
+export interface ITestQualificationApplyAuditService {
+    findSearchIntervalList(condition: Partial<UserInfo>, status?: number, options?: findOptions<UserInfo>): Promise<PageResult<TestQualificationApplyAuditRecordInfo>>;
+    findOne(condition: Partial<TestQualificationApplyAuditRecordInfo> | object): Promise<TestQualificationApplyAuditRecordInfo>;
+    testQualificationApply(applyInfo: Partial<TestQualificationApplyAuditRecordInfo>): Promise<TestQualificationApplyAuditRecordInfo>;
+    /**
+     * 批量审核
+     * @param applyRecordList
+     * @param handleInfo
+     */
+    batchAuditTestQualificationApply(applyRecordList: TestQualificationApplyAuditRecordInfo[], handleInfo: TestQualificationAuditHandleInfo): any;
+    auditTestQualificationApply(applyRecordInfo: TestQualificationApplyAuditRecordInfo, handleInfo: TestQualificationAuditHandleInfo): any;
+    /**
+     * 查找多条数据
+     * @param condition
+     */
+    find(condition: Partial<TestQualificationApplyAuditRecordInfo> | object): Promise<TestQualificationApplyAuditRecordInfo[]>;
 }

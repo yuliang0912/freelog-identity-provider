@@ -20,10 +20,6 @@ export declare class UserInfoController {
      */
     current(): Promise<void>;
     /**
-     * 获取用户详情
-     */
-    searchOne(): Promise<void>;
-    /**
      * 注册用户
      */
     create(): Promise<void>;

@@ -25,7 +25,7 @@ export class passportController {
         const password = ctx.checkBody('password').exist().type('string').len(6, 24).value; // isLoginPassword
         const isRemember = ctx.checkBody("isRemember").optional().toInt().in([0, 1]).default(0).value;
         const jwtType = ctx.checkBody('jwtType').optional().in(['cookie', 'header']).default('cookie').value;
-        const returnUrl = ctx.checkBody("returnUrl").optional().value;
+        const returnUrl = ctx.checkBody("returnUrl").optional().emptyStringAsNothingness().value;
         ctx.validateParams();
 
         const condition: Partial<UserInfo> = {};

@@ -16,7 +16,6 @@ export class ActivationCodeUsedRecord extends MongooseModelBase {
             code: {type: String, required: true},
             userId: {type: Number, required: true}, // 使用者ID
             username: {type: String, required: true}, // 邀请码所属人用户名
-            loginIp: {type: String, required: true}, // IP地址
             status: {type: Number, default: 0, required: true}, // 0:正常
         }, {
             versionKey: false,

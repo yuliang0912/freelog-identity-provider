@@ -21,9 +21,9 @@ export class activationCodeController {
         const {ctx} = this;
         const skip = ctx.checkQuery('skip').optional().toInt().default(0).ge(0).value;
         const limit = ctx.checkQuery('limit').optional().toInt().default(10).gt(0).lt(101).value;
-        const sort = ctx.checkQuery('sort').optional().value;
+        const sort = ctx.checkQuery('sort').optional().emptyStringAsNothingness().value;
         const status = ctx.checkQuery("status").optional().toInt().value;
-        const keywords = ctx.checkQuery("keywords").optional().trim().value;
+        const keywords = ctx.checkQuery("keywords").optional().emptyStringAsNothingness().trim().value;
         ctx.validateParams().validateOfficialAuditAccount();
 
         const condition: any = {};
@@ -91,8 +91,8 @@ export class activationCodeController {
         const skip = ctx.checkQuery('skip').optional().toInt().default(0).ge(0).value;
         const limit = ctx.checkQuery('limit').optional().toInt().default(10).gt(0).lt(101).value;
         const sort = ctx.checkQuery('sort').optional().value;
-        const code = ctx.checkQuery('code').optional().type('string').len(8, 8).value;
-        const keywords = ctx.checkQuery("keywords").optional().trim().value;
+        const code = ctx.checkQuery('code').optional().emptyStringAsNothingness().type('string').len(8, 8).value;
+        const keywords = ctx.checkQuery("keywords").optional().emptyStringAsNothingness().trim().value;
         ctx.validateParams();
 
         const condition: any = {};

@@ -40,10 +40,11 @@ export class TestQualificationApplyAuditRecordModel extends MongooseModelBase {
         return this.mongoose.model('test-qualification-apply-audit-records', TestQualificationApplyAuditRecordSchema)
     }
 
-    static toObjectOptions() {
+    static get toObjectOptions() {
         return {
             transform: function (doc, ret, options) {
-                return Object.assign({recordId: doc.id}, omit(ret, ['_id']))
+                const otherInfo = ret.otherInfo;
+                return Object.assign({recordId: doc.id}, otherInfo, omit(ret, ['_id', 'otherInfo']))
             }
         }
     }

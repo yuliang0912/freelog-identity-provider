@@ -52,6 +52,10 @@ export class UserService implements IUserService {
         return this.userInfoProvider.updateOne(condition, model).then(t => Boolean(t.ok));
     }
 
+    async updateMany(condition: object, model: Partial<UserInfo>): Promise<boolean> {
+        return this.userInfoProvider.updateMany(condition, model).then(t => Boolean(t.ok));
+    }
+
     /**
      * 重置密码
      * @param userInfo
@@ -162,5 +166,9 @@ export class UserService implements IUserService {
      */
     async updateOneUserDetail(condition: object, model: Partial<UserDetailInfo>): Promise<boolean> {
         return this.userDetailProvider.updateOne(condition, model).then(t => Boolean(t.ok));
+    }
+
+    async findUserDetails(condition: object): Promise<UserDetailInfo[]> {
+        return this.userDetailProvider.find(condition);
     }
 }
