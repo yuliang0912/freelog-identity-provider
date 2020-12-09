@@ -51,10 +51,12 @@ export class UserInfoController {
         } else if (isString(keywords)) {
             return ctx.success({skip, limit, totalItem: 0, dataList: []});
         }
-        if (isDate(startRegisteredDate)) {
+
+        if (isDate(startRegisteredDate) && isDate(endRegisteredDate)) {
+            condition.createDate = {$gte: startRegisteredDate, $lte: endRegisteredDate};
+        } else if (isDate(startRegisteredDate)) {
             condition.createDate = {$gte: startRegisteredDate};
-        }
-        if (isDate(endRegisteredDate)) {
+        } else if (isDate(endRegisteredDate)) {
             condition.createDate = {$lte: endRegisteredDate};
         }
 
