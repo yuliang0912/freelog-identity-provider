@@ -249,7 +249,7 @@ export interface IUserService extends IBaseService<UserInfo> {
     updatePassword(userInfo: UserInfo, oldPassword: string, newPassword: string): Promise<boolean>;
     setTag(userId: number, tagInfo: TagInfo): Promise<boolean>;
     unsetTag(userId: number, tagInfo: TagInfo): Promise<boolean>;
-    searchIntervalListByTag(condition: object, tagId: number, options?: findOptions<UserInfo>): Promise<PageResult<UserInfo>>;
+    searchIntervalListByTags(condition: object, tagIds: number[], options?: findOptions<UserInfo>): Promise<PageResult<UserInfo>>;
     /**
      * 更新用户详情信息
      * @param condition

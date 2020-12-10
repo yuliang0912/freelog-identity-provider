@@ -33,7 +33,7 @@ export declare class UserService implements IUserService {
      * @param tagId
      * @param options
      */
-    searchIntervalListByTag(condition: object, tagId?: number, options?: findOptions<UserInfo>): Promise<PageResult<UserInfo>>;
+    searchIntervalListByTags(condition: object, tagIds?: number[], options?: findOptions<UserInfo>): Promise<PageResult<UserInfo>>;
     searchIntervalList(condition: object, options?: findOptions<UserInfo>): Promise<PageResult<UserInfo>>;
     /**
      * 设置标签

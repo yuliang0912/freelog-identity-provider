@@ -90,7 +90,7 @@ export class UserService implements IUserService {
      * @param tagId
      * @param options
      */
-    async searchIntervalListByTag(condition: object, tagId?: number, options?: findOptions<UserInfo>): Promise<PageResult<UserInfo>> {
+    async searchIntervalListByTags(condition: object, tagIds?: number[], options?: findOptions<UserInfo>): Promise<PageResult<UserInfo>> {
 
         const pipeline: any = [
             {
@@ -102,8 +102,8 @@ export class UserService implements IUserService {
                 }
             }
         ];
-        if (tagId) {
-            pipeline.push({$match: {'userDetails.tagIds': tagId}});
+        if (Array.isArray(tagIds) && tagIds.length) {
+            pipeline.push({$match: {'userDetails.tagIds': {$in: tagIds}}});
         }
         if (Object.keys(condition).length) {
             pipeline.unshift({$match: condition});

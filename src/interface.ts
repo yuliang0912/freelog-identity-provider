@@ -332,7 +332,7 @@ export interface IUserService extends IBaseService<UserInfo> {
 
     // searchIntervalList(condition: object, tagId?: number, options?: findOptions<UserInfo>): Promise<PageResult<UserInfo>>;
 
-    searchIntervalListByTag(condition: object, tagId: number, options?: findOptions<UserInfo>): Promise<PageResult<UserInfo>>;
+    searchIntervalListByTags(condition: object, tagIds: number[], options?: findOptions<UserInfo>): Promise<PageResult<UserInfo>>;
 
     /**
      * 更新用户详情信息
