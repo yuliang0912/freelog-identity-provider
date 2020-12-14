@@ -303,7 +303,7 @@ export class UserInfoController {
 
         const tagList = await this.tagService.find({_id: {$in: tagIds}, status: 0});
         const invalidTagIds = differenceWith(tagIds, tagList, (x, y) => x.toString() === y.tagId.toString());
-        if (invalidTagIds) {
+        if (invalidTagIds.length) {
             throw new ArgumentError(this.ctx.gettext('params-validate-failed', 'tagIds'), {invalidTagIds})
         }
 
