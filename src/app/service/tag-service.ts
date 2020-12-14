@@ -80,4 +80,13 @@ export class TagService implements ITageService {
     async setTagAutoIncrementCount(tagInfo: TagInfo, number: 1 | -1): Promise<boolean> {
         return this.tagInfoProvider.updateOne({_id: tagInfo.tagId}, {$inc: {totalSetCount: number}}).then(x => Boolean(x.nModified));
     }
+
+    /**
+     * 设置标签自增(自减)数量.
+     * @param tagInfo
+     * @param number
+     */
+    async setTagAutoIncrementCounts(tagIds: number[], number: 1 | -1): Promise<boolean> {
+        return this.tagInfoProvider.updateMany({_id: {$in: tagIds}}, {$inc: {totalSetCount: number}}).then(x => Boolean(x.nModified));
+    }
 }

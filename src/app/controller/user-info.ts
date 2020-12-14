@@ -4,7 +4,7 @@ import {
     FreelogContext, visitorIdentityValidator, CommonRegex, IdentityTypeEnum, ArgumentError, ApplicationError
 } from "egg-freelog-base";
 import headImageGenerator from "../../extend/head-image-generator";
-import {isString, isArray, first, omit, isDate, pick} from 'lodash';
+import {isString, isArray, first, omit, isDate, pick, isNumber, differenceWith} from 'lodash';
 import {UserStatusEnum} from "../../enum";
 
 @provide()
@@ -294,16 +294,23 @@ export class UserInfoController {
     async setUserTag() {
         const {ctx} = this;
         const userId = ctx.checkParams('userId').exist().toInt().gt(10000).value;
-        const tagId = ctx.checkBody("tagId").exist().toInt().gt(0).value;
+        const tagIds = ctx.checkBody("tagIds").exist().isArray().len(1, 100).value;
         ctx.validateParams().validateOfficialAuditAccount();
 
-        const tagInfo = await this.tagService.findOne({_id: tagId, status: 0})
-        ctx.entityNullObjectCheck(tagInfo);
+        if (tagIds.some(x => !isNumber(x) || x < 1)) {
+            throw new ArgumentError(this.ctx.gettext('params-validate-failed', 'tagIds'))
+        }
+
+        const tagList = await this.tagService.find({_id: {$in: tagIds}, status: 0});
+        const invalidTagIds = differenceWith(tagIds, tagList, (x, y) => x.toString() === y.tagId.toString());
+        if (invalidTagIds) {
+            throw new ArgumentError(this.ctx.gettext('params-validate-failed', 'tagIds'), {invalidTagIds})
+        }
 
         const userInfo = await this.userService.findOne({userId});
         ctx.entityNullObjectCheck(userInfo);
 
-        await this.userService.setTag(userId, tagInfo).then(ctx.success);
+        await this.userService.setTag(userId, tagList).then(ctx.success);
     }
 
     @put('/:userId/unsetTag')

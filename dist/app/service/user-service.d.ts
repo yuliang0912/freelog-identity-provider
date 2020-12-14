@@ -40,7 +40,7 @@ export declare class UserService implements IUserService {
      * @param userId
      * @param tagInfo
      */
-    setTag(userId: number, tagInfo: TagInfo): Promise<boolean>;
+    setTag(userId: number, tagInfos: TagInfo[]): Promise<boolean>;
     /**
      * 取消设置Tag
      * @param userId

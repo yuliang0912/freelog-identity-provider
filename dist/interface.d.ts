@@ -240,6 +240,12 @@ export interface ITageService extends IBaseService<TagInfo> {
      * @param number
      */
     setTagAutoIncrementCount(tagInfo: TagInfo, number: 1 | -1): Promise<boolean>;
+    /**
+     * 设置标签自增(自减)数量.
+     * @param tagInfo
+     * @param number
+     */
+    setTagAutoIncrementCounts(tagIds: number[], number: 1 | -1): Promise<boolean>;
 }
 export interface IUserService extends IBaseService<UserInfo> {
     create(userInfo: Partial<UserInfo>): Promise<UserInfo>;
@@ -247,7 +253,7 @@ export interface IUserService extends IBaseService<UserInfo> {
     updateMany(condition: object, model: Partial<UserInfo>): Promise<boolean>;
     resetPassword(userInfo: UserInfo, newPassword: string): Promise<boolean>;
     updatePassword(userInfo: UserInfo, oldPassword: string, newPassword: string): Promise<boolean>;
-    setTag(userId: number, tagInfo: TagInfo): Promise<boolean>;
+    setTag(userId: number, tagInfos: TagInfo[]): Promise<boolean>;
     unsetTag(userId: number, tagInfo: TagInfo): Promise<boolean>;
     searchIntervalListByTags(condition: object, tagIds: number[], options?: findOptions<UserInfo>): Promise<PageResult<UserInfo>>;
     /**

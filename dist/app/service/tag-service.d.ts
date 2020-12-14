@@ -44,4 +44,10 @@ export declare class TagService implements ITageService {
      * @param number
      */
     setTagAutoIncrementCount(tagInfo: TagInfo, number: 1 | -1): Promise<boolean>;
+    /**
+     * 设置标签自增(自减)数量.
+     * @param tagInfo
+     * @param number
+     */
+    setTagAutoIncrementCounts(tagIds: number[], number: 1 | -1): Promise<boolean>;
 }

@@ -5,6 +5,7 @@ import AutoIncrementRecordProvider from "../data-provider/auto-increment-record-
 import {ArgumentError, FreelogContext, MongodbOperation, PageResult} from "egg-freelog-base";
 import {findOptions, ITageService, IUserService, TagInfo, UserDetailInfo, UserInfo} from "../../interface";
 import {UserRoleEnum, UserStatusEnum} from "../../enum";
+import {difference} from 'lodash';
 
 @provide()
 export class UserService implements IUserService {
@@ -128,19 +129,21 @@ export class UserService implements IUserService {
      * @param userId
      * @param tagInfo
      */
-    async setTag(userId: number, tagInfo: TagInfo): Promise<boolean> {
+    async setTag(userId: number, tagInfos: TagInfo[]): Promise<boolean> {
+        
+        const tagIds = tagInfos.map(x => x.tagId);
         const userDetail = await this.userDetailProvider.findOne({userId});
-        if (userDetail?.tagIds?.includes(tagInfo.tagId)) {
-            return true;
-        }
         if (!userDetail) {
-            await this.userDetailProvider.create({userId, tagIds: [tagInfo.tagId]});
+            await this.userDetailProvider.create({userId, tagIds});
         } else {
             await this.userDetailProvider.updateOne({userId}, {
-                $addToSet: {tagIds: [tagInfo.tagId]}
+                $addToSet: {tagIds}
             })
         }
-        return this.tagService.setTagAutoIncrementCount(tagInfo, 1);
+
+        const effectiveTagIds = difference(tagIds, userDetail?.tagIds ?? [])
+
+        return this.tagService.setTagAutoIncrementCounts(effectiveTagIds, 1);
     }
 
     /**
