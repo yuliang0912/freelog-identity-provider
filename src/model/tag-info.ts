@@ -16,7 +16,7 @@ export class TagInfoModel extends MongooseModelBase {
             _id: {type: Number, required: true}, // int,自增ID
             tag: {type: String, required: true},
             type: {type: Number, enum: [1, 2], required: true}, // 1:手动 2:自动
-            totalSetCount: {type: Number, required: true}, //  总设置次数
+            totalSetCount: {type: Number, default: 0, required: false}, //  总设置次数
             status: {type: Number, default: 0, required: true}
         }, {
             versionKey: false,

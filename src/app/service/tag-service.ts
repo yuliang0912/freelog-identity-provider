@@ -17,17 +17,14 @@ export class TagService implements ITageService {
      * @param tag
      * @param type
      */
-    async create(tag: string, type: 1 | 2): Promise<TagInfo> {
+    async create(tags: string[], type: 1 | 2): Promise<TagInfo[]> {
 
-        const tagInfo: Partial<TagInfo> = {
-            tag, type, status: 0, totalSetCount: 0
-        };
-        return this.tagInfoProvider.findOneAndUpdate({tag: tagInfo.tag}, tagInfo).then(model => {
-            return model ?? this.autoIncrementRecordProvider.getNextTagId().then(tagId => {
-                tagInfo['_id'] = tagId;
-                return this.tagInfoProvider.create(tagInfo);
-            })
-        });
+        const tagLists: any[] = [];
+        for (const tag of tags) {
+            tagLists.push({tag, type, status: 0, _id: await this.autoIncrementRecordProvider.getNextTagId()});
+        }
+
+        return this.tagInfoProvider.insertMany(tagLists);
     }
 
     /**

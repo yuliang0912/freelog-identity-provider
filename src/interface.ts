@@ -297,7 +297,7 @@ export interface IBaseService<T> {
 
 export interface ITageService extends IBaseService<TagInfo> {
 
-    create(tag: string, type: 1 | 2): Promise<TagInfo>;
+    create(tags: string[], type: 1 | 2): Promise<TagInfo[]>;
 
     /**
      * 更新tag

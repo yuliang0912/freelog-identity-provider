@@ -227,7 +227,7 @@ export interface IBaseService<T> {
     count(condition: object): Promise<number>;
 }
 export interface ITageService extends IBaseService<TagInfo> {
-    create(tag: string, type: 1 | 2): Promise<TagInfo>;
+    create(tags: string[], type: 1 | 2): Promise<TagInfo[]>;
     /**
      * 更新tag
      * @param tagInfo

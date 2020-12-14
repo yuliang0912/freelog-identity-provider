@@ -10,7 +10,7 @@ export declare class TagService implements ITageService {
      * @param tag
      * @param type
      */
-    create(tag: string, type: 1 | 2): Promise<TagInfo>;
+    create(tags: string[], type: 1 | 2): Promise<TagInfo[]>;
     /**
      * 查询多条
      * @param condition

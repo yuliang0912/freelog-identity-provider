@@ -3,9 +3,10 @@ import {
     IdentityTypeEnum,
     visitorIdentityValidator,
     FreelogContext,
-    ApplicationRouterMatchError
+    ApplicationRouterMatchError, ArgumentError
 } from 'egg-freelog-base';
 import {ITageService} from "../../interface";
+import {isString, uniqBy} from "lodash";
 
 @provide()
 @controller('/v2/users/tags')
@@ -20,11 +21,19 @@ export class TagInfoController {
     async create() {
 
         const {ctx} = this;
-        const tag = ctx.checkBody('tag').exist().type('string').trim().len(1, 80).value;
+        let tags = ctx.checkBody('tags').exist().isArray().len(1, 100).value;
         const type = ctx.checkBody('type').exist().toInt().in([1, 2]).value;
         ctx.validateOfficialAuditAccount().validateParams();
 
-        await this.tagService.create(tag, type).then(ctx.success);
+        if (tags.some(x => !isString(x) || !x.trim().length)) {
+            throw new ArgumentError(this.ctx.gettext('params-validate-failed', 'tags'))
+        }
+        tags = uniqBy<string>(tags, x => x.trim());
+        const existingTags = await this.tagService.find({tag: {$in: tags}});
+        if (existingTags.length) {
+            throw new ArgumentError(this.ctx.gettext('params-validate-failed', 'tags'), {existingTags})
+        }
+        await this.tagService.create(tags, type).then(ctx.success);
     }
 
     @get('/')
@@ -61,7 +70,7 @@ export class TagInfoController {
         const tagId = this.ctx.checkParams("tagId").exist().toInt().gt(0).value;
         const tag = ctx.checkBody('tag').exist().type('string').trim().len(1, 80).value;
         ctx.validateVisitorIdentity().validateOfficialAuditAccount();
-        
+
         const tagInfo = await this.tagService.findOne({_id: tagId});
         ctx.entityNullObjectCheck(tagInfo);
 
