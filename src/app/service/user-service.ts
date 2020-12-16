@@ -130,7 +130,7 @@ export class UserService implements IUserService {
      * @param tagInfo
      */
     async setTag(userId: number, tagInfos: TagInfo[]): Promise<boolean> {
-        
+
         const tagIds = tagInfos.map(x => x.tagId);
         const userDetail = await this.userDetailProvider.findOne({userId});
         if (!userDetail) {

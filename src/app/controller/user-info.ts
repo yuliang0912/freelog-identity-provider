@@ -234,7 +234,6 @@ export class UserInfoController {
         ctx.entityNullObjectCheck(userInfo, {msg: ctx.gettext('login-name-or-password-validate-failed')});
 
         await this.userService.updatePassword(userInfo, oldPassword, newPassword).then(ctx.success);
-
     }
 
     /**
