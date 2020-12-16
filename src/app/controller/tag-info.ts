@@ -6,7 +6,7 @@ import {
 } from 'egg-freelog-base';
 
 @provide()
-@priority(-1)
+@priority(1)
 @controller('/v2/users/tags')
 export class TagInfoController {
 
