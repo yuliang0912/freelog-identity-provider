@@ -75,10 +75,12 @@ export class UserInfoController {
                 user.tags = userDetail.tagIds.filter(x => tagMap.has(x.toString())).map(x => tagMap.get(x.toString()));
                 user.latestLoginIp = userDetail.latestLoginIp ?? '';
                 user.latestLoginDate = userDetail.latestLoginDate ?? null;
+                user.statusChangeRemark = userDetail.statusChangeRemark ?? '';
             } else {
                 user.tags = [];
                 user.latestLoginIp = '';
                 user.latestLoginDate = null;
+                user.statusChangeRemark = '';
             }
             list.push(omit(user, ['_id', 'password', 'salt', 'updateDate', 'userDetails', 'tokenSn']))
         }

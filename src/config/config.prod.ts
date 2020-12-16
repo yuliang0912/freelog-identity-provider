@@ -9,5 +9,7 @@ export default () => {
     //     url: 'mongodb://39.108.77.211:30772/node-beta'
     // };
 
+    config.domain = 'freelog.com'
+
     return config;
 };

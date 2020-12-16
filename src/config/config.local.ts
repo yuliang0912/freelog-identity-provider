@@ -30,6 +30,8 @@ export default () => {
     // }
 
 
+    config.domain = "127.0.0.1";
+
     config.localIdentity = {
         userId: 50003,
         username: 'yuliang',

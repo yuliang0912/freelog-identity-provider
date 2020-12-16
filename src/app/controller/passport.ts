@@ -57,7 +57,7 @@ export class passportController {
             const now = new Date();
             now.setDate(now.getDate() + 7);
             const cookieOptions = {
-                httpOnly: false,
+                httpOnly: true,
                 domain: this.domain,
                 overwrite: true,
                 signed: false,

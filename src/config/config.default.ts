@@ -48,8 +48,6 @@ export default (appInfo: EggAppInfo) => {
         privateKey: readFileSync(join(appInfo.baseDir, '../', 'auth_key/private_key.pem')).toString(),
     };
 
-    config.domain = "freelog.com";
-
     config.smtpTransportConfig = {
         host: 'smtpdm.aliyun.com',
         port: 465,
