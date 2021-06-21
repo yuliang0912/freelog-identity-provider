@@ -88,7 +88,7 @@ export class UserService implements IUserService {
     /**
      * 搜索
      * @param condition
-     * @param tagId
+     * @param tagIds
      * @param options
      */
     async searchIntervalListByTags(condition: object, tagIds?: number[], options?: findOptions<UserInfo>): Promise<PageResult<UserInfo>> {
@@ -127,7 +127,7 @@ export class UserService implements IUserService {
     /**
      * 设置标签
      * @param userId
-     * @param tagInfo
+     * @param tagInfos
      */
     async setTag(userId: number, tagInfos: TagInfo[]): Promise<boolean> {
 

@@ -14,7 +14,7 @@ export class TagService implements ITageService {
 
     /**
      * 创建tag
-     * @param tag
+     * @param tags
      * @param type
      */
     async create(tags: string[], type: 1 | 2): Promise<TagInfo[]> {

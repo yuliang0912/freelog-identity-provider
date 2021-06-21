@@ -30,7 +30,7 @@ export declare class UserService implements IUserService {
     /**
      * 搜索
      * @param condition
-     * @param tagId
+     * @param tagIds
      * @param options
      */
     searchIntervalListByTags(condition: object, tagIds?: number[], options?: findOptions<UserInfo>): Promise<PageResult<UserInfo>>;
@@ -38,7 +38,7 @@ export declare class UserService implements IUserService {
     /**
      * 设置标签
      * @param userId
-     * @param tagInfo
+     * @param tagInfos
      */
     setTag(userId: number, tagInfos: TagInfo[]): Promise<boolean>;
     /**

@@ -1,5 +1,5 @@
 import { FreelogContext } from 'egg-freelog-base';
-import { IActivationCodeService, IUserService } from "../../interface";
+import { IActivationCodeService, IUserService } from '../../interface';
 export declare class activationCodeController {
     ctx: FreelogContext;
     userService: IUserService;

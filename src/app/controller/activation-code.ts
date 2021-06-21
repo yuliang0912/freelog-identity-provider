@@ -1,6 +1,6 @@
 import {controller, get, put, inject, post, provide} from 'midway';
 import {FreelogContext, visitorIdentityValidator, IdentityTypeEnum, ApplicationError} from 'egg-freelog-base';
-import {IActivationCodeService, IUserService} from "../../interface";
+import {IActivationCodeService, IUserService} from '../../interface';
 import {isString} from 'lodash';
 
 @provide()
@@ -22,8 +22,8 @@ export class activationCodeController {
         const skip = ctx.checkQuery('skip').optional().toInt().default(0).ge(0).value;
         const limit = ctx.checkQuery('limit').optional().toInt().default(10).gt(0).lt(101).value;
         const sort = ctx.checkQuery('sort').optional().emptyStringAsNothingness().value;
-        const status = ctx.checkQuery("status").optional().toInt().value;
-        const keywords = ctx.checkQuery("keywords").optional().emptyStringAsNothingness().trim().value;
+        const status = ctx.checkQuery('status').optional().toInt().value;
+        const keywords = ctx.checkQuery('keywords').optional().emptyStringAsNothingness().trim().value;
         ctx.validateParams().validateOfficialAuditAccount();
 
         const condition: any = {};
@@ -73,12 +73,12 @@ export class activationCodeController {
     @visitorIdentityValidator(IdentityTypeEnum.LoginUser)
     async activateTestQualification() {
         const {ctx} = this;
-        const code = ctx.checkBody("code").exist().type('string').len(8, 8).value;
+        const code = ctx.checkBody('code').exist().type('string').len(8, 8).value;
         ctx.validateParams();
 
         const userInfo = await this.userService.findOne({userId: ctx.userId});
         if ((userInfo.userType & 1) === 1) {
-            throw new ApplicationError(ctx.gettext('test-qualification-apply-refuse-error'))
+            throw new ApplicationError(ctx.gettext('test-qualification-apply-refuse-error'));
         }
 
         await this.activationCodeService.activateAuthorizationCode(userInfo, code).then(ctx.success);
@@ -92,7 +92,7 @@ export class activationCodeController {
         const limit = ctx.checkQuery('limit').optional().toInt().default(10).gt(0).lt(101).value;
         const sort = ctx.checkQuery('sort').optional().value;
         const code = ctx.checkQuery('code').optional().emptyStringAsNothingness().type('string').len(8, 8).value;
-        const keywords = ctx.checkQuery("keywords").optional().emptyStringAsNothingness().trim().value;
+        const keywords = ctx.checkQuery('keywords').optional().emptyStringAsNothingness().trim().value;
         ctx.validateParams();
 
         const condition: any = {};
@@ -104,9 +104,8 @@ export class activationCodeController {
         }
 
         await this.activationCodeService.findUsedRecordIntervalList(condition, {
-            skip, limit,
-            sort: sort ?? {createDate: -1}
-        }).then(ctx.success)
+            skip, limit, sort: sort ?? {createDate: -1}
+        }).then(ctx.success);
     }
 
     @get('/:code')
@@ -114,7 +113,7 @@ export class activationCodeController {
     async show() {
 
         const {ctx} = this;
-        const code = ctx.checkParams("code").type('string').len(8, 8).value;
+        const code = ctx.checkParams('code').type('string').len(8, 8).value;
         ctx.validateParams();
 
         await this.activationCodeService.findOne({code}).then(ctx.success);

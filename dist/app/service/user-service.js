@@ -74,7 +74,7 @@ let UserService = class UserService {
     /**
      * 搜索
      * @param condition
-     * @param tagId
+     * @param tagIds
      * @param options
      */
     async searchIntervalListByTags(condition, tagIds, options) {
@@ -108,7 +108,7 @@ let UserService = class UserService {
     /**
      * 设置标签
      * @param userId
-     * @param tagInfo
+     * @param tagInfos
      */
     async setTag(userId, tagInfos) {
         const tagIds = tagInfos.map(x => x.tagId);

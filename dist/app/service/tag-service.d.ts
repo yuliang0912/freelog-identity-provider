@@ -7,7 +7,7 @@ export declare class TagService implements ITageService {
     autoIncrementRecordProvider: AutoIncrementRecordProvider;
     /**
      * 创建tag
-     * @param tag
+     * @param tags
      * @param type
      */
     create(tags: string[], type: 1 | 2): Promise<TagInfo[]>;

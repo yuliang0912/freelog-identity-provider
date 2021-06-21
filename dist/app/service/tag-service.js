@@ -16,7 +16,7 @@ const auto_increment_record_provider_1 = require("../data-provider/auto-incremen
 let TagService = class TagService {
     /**
      * 创建tag
-     * @param tag
+     * @param tags
      * @param type
      */
     async create(tags, type) {

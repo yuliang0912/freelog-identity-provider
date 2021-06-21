@@ -1,5 +1,5 @@
-import { FreelogContext } from "egg-freelog-base";
-import { IUserService } from "../../interface";
+import { FreelogContext } from 'egg-freelog-base';
+import { IUserService } from '../../interface';
 export declare class passportController {
     jwtAuth: any;
     domain: any;

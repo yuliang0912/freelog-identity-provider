@@ -86,3 +86,11 @@ export declare enum AuditStatusEnum {
      */
     AuditNotPass = 2
 }
+/**
+ * 验证码类型
+ */
+export declare enum AuthCodeTypeEnum {
+    Register = "register",
+    ResetPassword = "resetPassword",
+    ActivateTransactionAccount = "activateTransactionAccount"
+}

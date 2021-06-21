@@ -1,5 +1,5 @@
 import { FreelogContext } from 'egg-freelog-base';
-import { IMessageService, IUserService } from "../../interface";
+import { IMessageService, IUserService } from '../../interface';
 export declare class messageController {
     ctx: FreelogContext;
     userService: IUserService;

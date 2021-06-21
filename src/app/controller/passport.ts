@@ -1,7 +1,7 @@
-import {config, controller, get, inject, post, provide} from "midway";
-import {ArgumentError, AuthenticationError, CommonRegex, FreelogContext, JwtHelper} from "egg-freelog-base";
-import {IUserService, UserInfo} from "../../interface";
-import {generatePassword} from "../../extend/common-helper";
+import {config, controller, get, inject, post, provide} from 'midway';
+import {ArgumentError, AuthenticationError, CommonRegex, FreelogContext, JwtHelper} from 'egg-freelog-base';
+import {IUserService, UserInfo} from '../../interface';
+import {generatePassword} from '../../extend/common-helper';
 import {pick} from 'lodash';
 
 @provide()
@@ -21,11 +21,11 @@ export class passportController {
     async login() {
 
         const {ctx} = this;
-        const loginName = ctx.checkBody("loginName").exist().notEmpty().value;
+        const loginName = ctx.checkBody('loginName').exist().notEmpty().value;
         const password = ctx.checkBody('password').exist().type('string').len(6, 24).value; // isLoginPassword
-        const isRemember = ctx.checkBody("isRemember").optional().toInt().in([0, 1]).default(0).value;
+        const isRemember = ctx.checkBody('isRemember').optional().toInt().in([0, 1]).default(0).value;
         const jwtType = ctx.checkBody('jwtType').optional().in(['cookie', 'header']).default('cookie').value;
-        const returnUrl = ctx.checkBody("returnUrl").optional().emptyStringAsNothingness().value;
+        const returnUrl = ctx.checkBody('returnUrl').optional().emptyStringAsNothingness().value;
         ctx.validateParams();
 
         const condition: Partial<UserInfo> = {};
@@ -36,20 +36,20 @@ export class passportController {
         } else if (CommonRegex.username.test(loginName)) {
             condition.username = loginName;
         } else {
-            throw new ArgumentError(ctx.gettext('login-name-format-validate-failed'), {loginName})
+            throw new ArgumentError(ctx.gettext('login-name-format-validate-failed'), {loginName});
         }
 
         const userInfo = await this.userService.findOne(condition);
         if (!userInfo || generatePassword(userInfo.salt, password) !== userInfo.password) {
-            throw new AuthenticationError(ctx.gettext('login-name-or-password-validate-failed'))
+            throw new AuthenticationError(ctx.gettext('login-name-or-password-validate-failed'));
         }
 
         this.userService.updateOneUserDetail({userId: userInfo.userId}, {
             latestLoginDate: new Date(), latestLoginIp: ctx.ip,
-        }).then()
+        }).then();
 
-        const {publicKey, privateKey, cookieName} = this.jwtAuth
-        const payLoad = Object.assign(pick(userInfo, ['userId', 'username', 'userType', 'mobile', 'email']), this._generateJwtPayload(userInfo.userId, userInfo.tokenSn))
+        const {publicKey, privateKey, cookieName} = this.jwtAuth;
+        const payLoad = Object.assign(pick(userInfo, ['userId', 'username', 'userType', 'mobile', 'email']), this._generateJwtPayload(userInfo.userId, userInfo.tokenSn));
 
         const jwtStr = new JwtHelper(publicKey, privateKey).generateToken(payLoad, 1296000);
 
@@ -63,10 +63,10 @@ export class passportController {
                 signed: false,
                 expires: isRemember ? now : undefined
             };
-            ctx.cookies.set(cookieName, jwtStr, cookieOptions)
-            ctx.cookies.set('uid', userInfo.userId.toString(), cookieOptions)
+            ctx.cookies.set(cookieName, jwtStr, cookieOptions);
+            ctx.cookies.set('uid', userInfo.userId.toString(), {...cookieOptions, ...{httpOnly: false}});
         } else {
-            ctx.set('Authorization', `Bearer ${jwtStr}`)
+            ctx.set('Authorization', `Bearer ${jwtStr}`);
         }
 
         returnUrl ? ctx.redirect(returnUrl) : ctx.success(userInfo);
@@ -75,13 +75,13 @@ export class passportController {
     @get('/logout')
     async logout(ctx) {
 
-        const returnUrl = ctx.checkQuery("returnUrl").optional().decodeURIComponent().isUrl().value
-        ctx.validateParams()
+        const returnUrl = ctx.checkQuery('returnUrl').optional().decodeURIComponent().isUrl().value;
+        ctx.validateParams();
 
         ctx.cookies.set(this.jwtAuth.cookieName, null, {domain: this.domain});
         ctx.cookies.set('uid', null, {domain: this.domain});
 
-        returnUrl ? ctx.redirect(returnUrl) : ctx.success(true)
+        returnUrl ? ctx.redirect(returnUrl) : ctx.success(true);
     }
 
     /**
@@ -91,15 +91,15 @@ export class passportController {
      */
     _generateJwtPayload(userId: number, token: string) {
         {
-            const currTime = Math.round(new Date().getTime() / 1000)
+            const currTime = Math.round(new Date().getTime() / 1000);
             return {
-                iss: "https://identity.freelog.com",
+                iss: 'https://identity.freelog.com',
                 sub: userId.toString(),
-                aud: "freelog-website",
+                aud: 'freelog-website',
                 exp: currTime + 1296000,
                 iat: currTime,
                 jti: token
-            }
+            };
         }
     }
 }
