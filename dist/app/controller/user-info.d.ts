@@ -1,6 +1,6 @@
-import { IMessageService, ITageService, IUserService } from "../../interface";
-import { FreelogContext } from "egg-freelog-base";
-import headImageGenerator from "../../extend/head-image-generator";
+import { IMessageService, ITageService, IUserService } from '../../interface';
+import { FreelogContext } from 'egg-freelog-base';
+import headImageGenerator from '../../extend/head-image-generator';
 export declare class UserInfoController {
     ctx: FreelogContext;
     userService: IUserService;
@@ -35,6 +35,10 @@ export declare class UserInfoController {
      * 上传头像
      */
     uploadHeadImg(): Promise<void>;
+    /**
+     * 查询用户详情
+     */
+    detail(): Promise<FreelogContext>;
     /**
      * 获取用户信息
      */

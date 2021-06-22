@@ -1,11 +1,11 @@
-import {controller, get, inject, post, provide, put} from "midway";
-import {IMessageService, ITageService, IUserService, UserDetailInfo, UserInfo} from "../../interface";
+import {controller, get, inject, post, provide, put} from 'midway';
+import {IMessageService, ITageService, IUserService, UserDetailInfo, UserInfo} from '../../interface';
 import {
     FreelogContext, visitorIdentityValidator, CommonRegex, IdentityTypeEnum, ArgumentError, ApplicationError
-} from "egg-freelog-base";
-import headImageGenerator from "../../extend/head-image-generator";
+} from 'egg-freelog-base';
+import headImageGenerator from '../../extend/head-image-generator';
 import {isString, isArray, first, omit, isDate, pick, isNumber, differenceWith} from 'lodash';
-import {UserStatusEnum} from "../../enum";
+import {UserStatusEnum} from '../../enum';
 
 @provide()
 @controller('/v2/users')
@@ -66,7 +66,7 @@ export class UserInfoController {
 
         const tagMap = await this.tagService.find({status: 0}).then(list => {
             return new Map(list.map(x => [x.tagId.toString(), pick(x, ['tagId', 'tag'])]));
-        })
+        });
 
         const list = [];
         for (const user of pageResult.dataList) {
@@ -82,7 +82,7 @@ export class UserInfoController {
                 user.latestLoginDate = null;
                 user.statusChangeRemark = '';
             }
-            list.push(omit(user, ['_id', 'password', 'salt', 'updateDate', 'userDetails', 'tokenSn']))
+            list.push(omit(user, ['_id', 'password', 'salt', 'updateDate', 'userDetails', 'tokenSn']));
         }
         pageResult.dataList = list;
         return ctx.success(pageResult);
@@ -97,7 +97,7 @@ export class UserInfoController {
 
         const {ctx} = this;
         const userIds = ctx.checkQuery('userIds').exist().isSplitUserIds().toSplitArray().len(1, 200).value;
-        const projection = ctx.checkQuery('projection').ignoreParamWhenEmpty().toSplitArray().default([]).value
+        const projection = ctx.checkQuery('projection').ignoreParamWhenEmpty().toSplitArray().default([]).value;
         ctx.validateParams();
 
         await this.userService.find({userId: {$in: userIds}}, {projection: projection?.join(' ')}).then(ctx.success);
@@ -156,7 +156,7 @@ export class UserInfoController {
         } else if (CommonRegex.email.test(loginName)) {
             model.email = loginName;
         } else {
-            throw new ArgumentError(ctx.gettext('login-name-format-validate-failed'), {loginName})
+            throw new ArgumentError(ctx.gettext('login-name-format-validate-failed'), {loginName});
         }
 
         const isVerify = await this.messageService.verify('register', loginName, authCode);
@@ -164,23 +164,23 @@ export class UserInfoController {
             throw new ApplicationError(ctx.gettext('auth-code-validate-failed'));
         }
 
-        const condition = {$or: [{username}, model.mobile ? {mobile: loginName} : {email: loginName}]}
+        const condition = {$or: [{username}, model.mobile ? {mobile: loginName} : {email: loginName}]};
         await this.userService.findOne(condition).then(data => {
             if (data && data.mobile === loginName) {
-                throw new ArgumentError(ctx.gettext('mobile-register-validate-failed'))
+                throw new ArgumentError(ctx.gettext('mobile-register-validate-failed'));
             } else if (data && data.email === loginName) {
-                throw new ArgumentError(ctx.gettext('email-register-validate-failed'))
+                throw new ArgumentError(ctx.gettext('email-register-validate-failed'));
             } else if (data) {
-                throw new ArgumentError(ctx.gettext('username-register-validate-failed'))
+                throw new ArgumentError(ctx.gettext('username-register-validate-failed'));
             }
-        })
+        });
 
-        const userInfo = Object.assign({username, password}, model)
+        const userInfo = Object.assign({username, password}, model);
         const createdUserInfo = await this.userService.create(userInfo);
         ctx.success(createdUserInfo);
 
         try {
-            await this._generateHeadImage()
+            await this._generateHeadImage();
         } catch (e) {
             console.log('用户头像创建失败', e.toString());
         }
@@ -196,7 +196,7 @@ export class UserInfoController {
         const loginName = ctx.checkParams('loginName').exist().notEmpty().trim().value;
         const password = ctx.checkBody('password').exist().isLoginPassword(ctx.gettext('password_length') + ctx.gettext('password_include')).value;
         const authCode = ctx.checkBody('authCode').exist().toInt().value;
-        ctx.validateParams()
+        ctx.validateParams();
 
         const condition: Partial<UserInfo> = {};
         if (CommonRegex.mobile86.test(loginName)) {
@@ -227,8 +227,8 @@ export class UserInfoController {
     async updatePassword() {
 
         const {ctx} = this;
-        const oldPassword = ctx.checkBody('oldPassword').exist().notBlank().trim().len(6, 50).value
-        const newPassword = ctx.checkBody('newPassword').exist().isLoginPassword(ctx.gettext('password_length') + ctx.gettext('password_include')).value
+        const oldPassword = ctx.checkBody('oldPassword').exist().notBlank().trim().len(6, 50).value;
+        const newPassword = ctx.checkBody('newPassword').exist().isLoginPassword(ctx.gettext('password_length') + ctx.gettext('password_include')).value;
         ctx.validateParams();
 
         const userId = ctx.userId;
@@ -246,22 +246,55 @@ export class UserInfoController {
     async uploadHeadImg() {
 
         const {ctx} = this;
-        const fileStream = await ctx.getFileStream()
+        const fileStream = await ctx.getFileStream();
         if (!fileStream || !fileStream.filename) {
             throw new ApplicationError('Can\'t found upload file');
         }
-        ctx.validateParams()
+        ctx.validateParams();
 
         const fileObjectKey = `headImage/${ctx.userId}`;
         const {mime, fileBuffer} = await this.headImageGenerator.checkHeadImage(ctx, fileStream);
         await this.headImageGenerator.ossClient.putBuffer(fileObjectKey, fileBuffer as any, {headers: {'Content-Type': mime}}).catch(error => {
-            throw new ApplicationError('头像上传错误')
+            throw new ApplicationError('头像上传错误');
         });
 
-        const headImageUrl = `https://image.freelog.com/${fileObjectKey}`
+        const headImageUrl = `https://image.freelog.com/${fileObjectKey}`;
         await this.userService.updateOne({userId: ctx.userId}, {headImage: headImageUrl}).then(() => {
-            ctx.success(`${headImageUrl}?x-oss-process=style/head-image`)
-        })
+            ctx.success(`${headImageUrl}?x-oss-process=style/head-image`);
+        });
+    }
+
+    /**
+     * 查询用户详情
+     */
+    @get('/detail')
+    async detail() {
+
+        const {ctx} = this;
+        const userId = ctx.checkQuery('userId').optional().isUserId().toInt().value;
+        const username = ctx.checkQuery('username').optional().isUsername().value;
+        const mobile = ctx.checkQuery('mobile').optional().match(CommonRegex.mobile86).value;
+        const email = ctx.checkQuery('email').optional().isEmail().value;
+        ctx.validateParams();
+
+        const condition: any = {};
+        if (mobile) {
+            condition.mobile = mobile;
+        }
+        if (userId) {
+            condition.userId = userId;
+        }
+        if (username) {
+            condition.username = username;
+        }
+        if (email) {
+            condition.email = email;
+        }
+        if (!Object.keys(condition).length) {
+            return ctx.success(null);
+        }
+
+        await this.userService.findOne(condition).then(ctx.success);
     }
 
     /**
@@ -295,17 +328,17 @@ export class UserInfoController {
     async setUserTag() {
         const {ctx} = this;
         const userId = ctx.checkParams('userId').exist().toInt().gt(10000).value;
-        const tagIds = ctx.checkBody("tagIds").exist().isArray().len(1, 100).value;
+        const tagIds = ctx.checkBody('tagIds').exist().isArray().len(1, 100).value;
         ctx.validateParams().validateOfficialAuditAccount();
 
         if (tagIds.some(x => !isNumber(x) || x < 1)) {
-            throw new ArgumentError(this.ctx.gettext('params-validate-failed', 'tagIds'))
+            throw new ArgumentError(this.ctx.gettext('params-validate-failed', 'tagIds'));
         }
 
         const tagList = await this.tagService.find({_id: {$in: tagIds}, status: 0});
         const invalidTagIds = differenceWith(tagIds, tagList, (x, y) => x.toString() === y.tagId.toString());
         if (invalidTagIds.length) {
-            throw new ArgumentError(this.ctx.gettext('params-validate-failed', 'tagIds'), {invalidTagIds})
+            throw new ArgumentError(this.ctx.gettext('params-validate-failed', 'tagIds'), {invalidTagIds});
         }
 
         const userInfo = await this.userService.findOne({userId});
@@ -319,10 +352,10 @@ export class UserInfoController {
     async unsetUserTag() {
         const {ctx} = this;
         const userId = ctx.checkParams('userId').exist().toInt().gt(10000).value;
-        const tagId = ctx.checkBody("tagId").exist().toInt().gt(0).value;
+        const tagId = ctx.checkBody('tagId').exist().toInt().gt(0).value;
         ctx.validateParams().validateOfficialAuditAccount();
 
-        const tagInfo = await this.tagService.findOne({_id: tagId, status: 0})
+        const tagInfo = await this.tagService.findOne({_id: tagId, status: 0});
         ctx.entityNullObjectCheck(tagInfo);
 
         const userInfo = await this.userService.findOne({userId});
@@ -337,8 +370,8 @@ export class UserInfoController {
 
         const {ctx} = this;
         const userId = ctx.checkParams('userId').exist().toInt().gt(10000).value;
-        const status = ctx.checkBody("status").exist().toInt().in([UserStatusEnum.Freeze, UserStatusEnum.Normal]).value;
-        const remark = ctx.checkBody("remark").ignoreParamWhenEmpty().type('string').len(0, 500).default('').value;
+        const status = ctx.checkBody('status').exist().toInt().in([UserStatusEnum.Freeze, UserStatusEnum.Normal]).value;
+        const remark = ctx.checkBody('remark').ignoreParamWhenEmpty().type('string').len(0, 500).default('').value;
         ctx.validateParams().validateOfficialAuditAccount();
 
         const userInfo = await this.userService.findOne({userId});
@@ -359,7 +392,7 @@ export class UserInfoController {
      */
     async _generateHeadImage() {
         const userId = this.ctx.userId;
-        const headImageUrl = await this.headImageGenerator.generateAndUploadHeadImage(userId.toString())
+        const headImageUrl = await this.headImageGenerator.generateAndUploadHeadImage(userId.toString());
         await this.userService.updateOne({userId: userId}, {headImage: headImageUrl});
     }
 }
