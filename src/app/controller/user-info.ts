@@ -180,7 +180,7 @@ export class UserInfoController {
         ctx.success(createdUserInfo);
 
         try {
-            await this._generateHeadImage();
+            await this._generateHeadImage(userInfo.userId);
         } catch (e) {
             console.log('用户头像创建失败', e.toString());
         }
@@ -312,8 +312,6 @@ export class UserInfoController {
             condition.mobile = userIdOrMobileOrUsername;
         } else if (CommonRegex.userId.test(userIdOrMobileOrUsername)) {
             condition.userId = parseInt(userIdOrMobileOrUsername);
-        } else if (CommonRegex.username.test(userIdOrMobileOrUsername)) {
-            condition.username = userIdOrMobileOrUsername;
         } else if (CommonRegex.email.test(userIdOrMobileOrUsername)) {
             condition.email = userIdOrMobileOrUsername;
         } else {
@@ -387,11 +385,19 @@ export class UserInfoController {
         await Promise.all([task1, task2]).then(t => ctx.success(true));
     }
 
+    @get('/allUsers/checkHeadImage')
+    async checkHeadImage() {
+        const userList = await this.userService.find({headImage: ''});
+
+        const tasks = userList.map(x => this._generateHeadImage(x.userId));
+
+        await Promise.all(tasks).then(this.ctx.success);
+    }
+
     /**
      * 生成头像并保存
      */
-    async _generateHeadImage() {
-        const userId = this.ctx.userId;
+    async _generateHeadImage(userId: number) {
         const headImageUrl = await this.headImageGenerator.generateAndUploadHeadImage(userId.toString());
         await this.userService.updateOne({userId: userId}, {headImage: headImageUrl});
     }

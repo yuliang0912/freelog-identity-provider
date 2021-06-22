@@ -46,8 +46,9 @@ export declare class UserInfoController {
     setUserTag(): Promise<void>;
     unsetUserTag(): Promise<void>;
     freeOrRecoverUserStatus(): Promise<FreelogContext>;
+    checkHeadImage(): Promise<void>;
     /**
      * 生成头像并保存
      */
-    _generateHeadImage(): Promise<void>;
+    _generateHeadImage(userId: number): Promise<void>;
 }
