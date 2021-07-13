@@ -12,6 +12,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const midway_1 = require("midway");
 const nodemailer_1 = require("nodemailer");
 let SendMailHelper = class SendMailHelper {
+    smtpTransportConfig;
+    htmlTemplateContentMap;
+    constructor() {
+        this.htmlTemplateContentMap = this.getHtmlTemplateContents();
+    }
     /**
      * 发送email
      * @param address
@@ -19,6 +24,7 @@ let SendMailHelper = class SendMailHelper {
      * @param html
      */
     sendMail(address, html, subject = '【飞致网络】验证码') {
+        // 如果发送失败,请检查服务器IP地址是否在白名单内.
         const transporter = nodemailer_1.createTransport(this.smtpTransportConfig);
         const mailOptions = {
             from: `"飞致网络" <${this.smtpTransportConfig.auth.user}>`,
@@ -29,27 +35,23 @@ let SendMailHelper = class SendMailHelper {
     /**
      * 获取模板
      * @param authCodeType
-     */
-    getTemplate(authCodeType, code) {
-        switch (authCodeType) {
-            case "register":
-                return this.getRegisterHtml(code);
-            case "resetPassword":
-                return this.getResetPasswordHtml(code);
-            case "auditPass":
-                return this.getBetaTestAuditPassNoticeHtml(code.toString());
-            case "auditFail":
-                return this.getBetaTestAuditFailedNoticeHtml(code.toString());
-            default:
-                return '';
-        }
-    }
-    /**
-     * 获取注册模板
      * @param code
      */
-    getRegisterHtml(code) {
-        return `<!DOCTYPE html>
+    getTemplate(authCodeType, code) {
+        if (!this.htmlTemplateContentMap.has(authCodeType)) {
+            return '';
+        }
+        return this.htmlTemplateContentMap.get(authCodeType).call(null, code);
+    }
+    /**
+     * 获取模板内容
+     */
+    getHtmlTemplateContents() {
+        const htmlTemplateContentMap = new Map();
+        htmlTemplateContentMap.set('resetPassword', (code) => `验证码${code}，您正在尝试修改登录密码，请妥善保管账户信息。`);
+        htmlTemplateContentMap.set('activateTransactionAccount', (code) => `验证码为：${code}，您正在进行账户激活操作，如非本人操作，请忽略本短信！`);
+        htmlTemplateContentMap.set('updateTransactionAccountPwd', (code) => `验证码为：${code}，您正在进行修改账户交易密码操作，如非本人操作，请忽略本短信！`);
+        htmlTemplateContentMap.set('register', (code) => `<!DOCTYPE html>
                 <html lang="en">
                     <head><meta charset="UTF-8"></head>
                     <body>
@@ -61,21 +63,8 @@ let SendMailHelper = class SendMailHelper {
                             <div>FreeLog团队</div>
                         </div>
                     </body>
-                </html>`;
-    }
-    /**
-     * 获取更改密码html发送内容
-     * @param code
-     */
-    getResetPasswordHtml(code) {
-        return `验证码${code}，您正在尝试修改登录密码，请妥善保管账户信息。`;
-    }
-    /**
-     * 内测资格审核通过
-     * @param username
-     */
-    getBetaTestAuditPassNoticeHtml(username) {
-        return `<!DOCTYPE html>
+                </html>`);
+        htmlTemplateContentMap.set('auditPass', (username) => `<!DOCTYPE html>
                 <html lang="en">
                     <head>
                         <meta charset="UTF-8">
@@ -88,14 +77,8 @@ let SendMailHelper = class SendMailHelper {
                             <div>您真诚的，<br>Freelog团队</div>
                         </div>
                     </body>
-                </html>`;
-    }
-    /**
-     * 内测资格审核失败
-     * @param username
-     */
-    getBetaTestAuditFailedNoticeHtml(username) {
-        return `<!DOCTYPE html>
+                </html>`);
+        htmlTemplateContentMap.set('auditFail', (username) => `<!DOCTYPE html>
                 <html lang="en">
                     <head><meta charset="UTF-8"></head>
                     <body>
@@ -105,7 +88,8 @@ let SendMailHelper = class SendMailHelper {
                             <div>您真诚的，<br>Freelog团队</div>
                         </div>
                     </body>
-                </html>`;
+                </html>`);
+        return htmlTemplateContentMap;
     }
 };
 __decorate([
@@ -114,7 +98,8 @@ __decorate([
 ], SendMailHelper.prototype, "smtpTransportConfig", void 0);
 SendMailHelper = __decorate([
     midway_1.provide(),
-    midway_1.scope('Singleton')
+    midway_1.scope('Singleton'),
+    __metadata("design:paramtypes", [])
 ], SendMailHelper);
 exports.default = SendMailHelper;
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoic2VuZC1tYWlsLWhlbHBlci5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uL3NyYy9leHRlbmQvc2VuZC1tYWlsLWhlbHBlci50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzs7Ozs7Ozs7OztBQUFBLG1DQUE4QztBQUM5QywyQ0FBMEM7QUFJMUMsSUFBcUIsY0FBYyxHQUFuQyxNQUFxQixjQUFjO0lBSy9COzs7OztPQUtHO0lBQ0gsUUFBUSxDQUFDLE9BQWUsRUFBRSxJQUFZLEVBQUUsVUFBa0IsV0FBVztRQUNqRSxNQUFNLFdBQVcsR0FBRyw0QkFBZSxDQUFDLElBQUksQ0FBQyxtQkFBbUIsQ0FBQyxDQUFDO1FBQzlELE1BQU0sV0FBVyxHQUFHO1lBQ2hCLElBQUksRUFBRSxXQUFXLElBQUksQ0FBQyxtQkFBbUIsQ0FBQyxJQUFJLENBQUMsSUFBSSxHQUFHO1lBQ3RELEVBQUUsRUFBRSxPQUFPLEVBQUUsT0FBTyxFQUFFLElBQUk7U0FDN0IsQ0FBQztRQUNGLE9BQU8sV0FBVyxDQUFDLFFBQVEsQ0FBQyxXQUFXLENBQUMsQ0FBQTtJQUM1QyxDQUFDO0lBR0Q7OztPQUdHO0lBQ0gsV0FBVyxDQUFDLFlBQXNFLEVBQUUsSUFBcUI7UUFFckcsUUFBUSxZQUFZLEVBQUU7WUFDbEIsS0FBSyxVQUFVO2dCQUNYLE9BQU8sSUFBSSxDQUFDLGVBQWUsQ0FBQyxJQUFJLENBQUMsQ0FBQztZQUN0QyxLQUFLLGVBQWU7Z0JBQ2hCLE9BQU8sSUFBSSxDQUFDLG9CQUFvQixDQUFDLElBQUksQ0FBQyxDQUFBO1lBQzFDLEtBQUssV0FBVztnQkFDWixPQUFPLElBQUksQ0FBQyw4QkFBOEIsQ0FBQyxJQUFJLENBQUMsUUFBUSxFQUFFLENBQUMsQ0FBQztZQUNoRSxLQUFLLFdBQVc7Z0JBQ1osT0FBTyxJQUFJLENBQUMsZ0NBQWdDLENBQUMsSUFBSSxDQUFDLFFBQVEsRUFBRSxDQUFDLENBQUM7WUFDbEU7Z0JBQ0ksT0FBTyxFQUFFLENBQUM7U0FDakI7SUFDTCxDQUFDO0lBR0Q7OztPQUdHO0lBQ0gsZUFBZSxDQUFDLElBQXFCO1FBQ2pDLE9BQU87Ozs7Ozs7OEVBTytELElBQUk7Ozs7O3dCQUsxRCxDQUFBO0lBQ3BCLENBQUM7SUFFRDs7O09BR0c7SUFDSCxvQkFBb0IsQ0FBQyxJQUFxQjtRQUN0QyxPQUFPLE1BQU0sSUFBSSx5QkFBeUIsQ0FBQTtJQUM5QyxDQUFDO0lBRUQ7OztPQUdHO0lBQ0gsOEJBQThCLENBQUMsUUFBZ0I7UUFDM0MsT0FBTzs7Ozs7OztzQ0FPdUIsUUFBUTs7Ozs7O3dCQU10QixDQUFBO0lBQ3BCLENBQUM7SUFFRDs7O09BR0c7SUFDSCxnQ0FBZ0MsQ0FBQyxRQUFnQjtRQUM3QyxPQUFPOzs7OztzQ0FLdUIsUUFBUTs7Ozs7d0JBS3RCLENBQUE7SUFDcEIsQ0FBQztDQUNKLENBQUE7QUF6R0c7SUFEQyxlQUFNLEVBQUU7OzJEQUNXO0FBSEgsY0FBYztJQUZsQyxnQkFBTyxFQUFFO0lBQ1QsY0FBSyxDQUFDLFdBQVcsQ0FBQztHQUNFLGNBQWMsQ0E0R2xDO2tCQTVHb0IsY0FBYyJ9
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoic2VuZC1tYWlsLWhlbHBlci5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uL3NyYy9leHRlbmQvc2VuZC1tYWlsLWhlbHBlci50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzs7Ozs7Ozs7OztBQUFBLG1DQUE4QztBQUM5QywyQ0FBMkM7QUFJM0MsSUFBcUIsY0FBYyxHQUFuQyxNQUFxQixjQUFjO0lBRy9CLG1CQUFtQixDQUFDO0lBRXBCLHNCQUFzQixDQUFtQztJQUV6RDtRQUNJLElBQUksQ0FBQyxzQkFBc0IsR0FBRyxJQUFJLENBQUMsdUJBQXVCLEVBQUUsQ0FBQztJQUNqRSxDQUFDO0lBRUQ7Ozs7O09BS0c7SUFDSCxRQUFRLENBQUMsT0FBZSxFQUFFLElBQVksRUFBRSxVQUFrQixXQUFXO1FBQ2pFLDRCQUE0QjtRQUM1QixNQUFNLFdBQVcsR0FBRyw0QkFBZSxDQUFDLElBQUksQ0FBQyxtQkFBbUIsQ0FBQyxDQUFDO1FBQzlELE1BQU0sV0FBVyxHQUFHO1lBQ2hCLElBQUksRUFBRSxXQUFXLElBQUksQ0FBQyxtQkFBbUIsQ0FBQyxJQUFJLENBQUMsSUFBSSxHQUFHO1lBQ3RELEVBQUUsRUFBRSxPQUFPLEVBQUUsT0FBTyxFQUFFLElBQUk7U0FDN0IsQ0FBQztRQUNGLE9BQU8sV0FBVyxDQUFDLFFBQVEsQ0FBQyxXQUFXLENBQUMsQ0FBQztJQUM3QyxDQUFDO0lBR0Q7Ozs7T0FJRztJQUNILFdBQVcsQ0FBQyxZQUFvQixFQUFFLElBQXFCO1FBRW5ELElBQUksQ0FBQyxJQUFJLENBQUMsc0JBQXNCLENBQUMsR0FBRyxDQUFDLFlBQVksQ0FBQyxFQUFFO1lBQ2hELE9BQU8sRUFBRSxDQUFDO1NBQ2I7UUFFRCxPQUFPLElBQUksQ0FBQyxzQkFBc0IsQ0FBQyxHQUFHLENBQUMsWUFBWSxDQUFDLENBQUMsSUFBSSxDQUFDLElBQUksRUFBRSxJQUFJLENBQUMsQ0FBQztJQUMxRSxDQUFDO0lBR0Q7O09BRUc7SUFDSCx1QkFBdUI7UUFFbkIsTUFBTSxzQkFBc0IsR0FBRyxJQUFJLEdBQUcsRUFBK0IsQ0FBQztRQUV0RSxzQkFBc0IsQ0FBQyxHQUFHLENBQUMsZUFBZSxFQUFFLENBQUMsSUFBWSxFQUFFLEVBQUUsQ0FBQyxNQUFNLElBQUkseUJBQXlCLENBQUMsQ0FBQztRQUNuRyxzQkFBc0IsQ0FBQyxHQUFHLENBQUMsNEJBQTRCLEVBQUUsQ0FBQyxJQUFZLEVBQUUsRUFBRSxDQUFDLFFBQVEsSUFBSSw2QkFBNkIsQ0FBQyxDQUFDO1FBQ3RILHNCQUFzQixDQUFDLEdBQUcsQ0FBQyw2QkFBNkIsRUFBRSxDQUFDLElBQVksRUFBRSxFQUFFLENBQUMsUUFBUSxJQUFJLGlDQUFpQyxDQUFDLENBQUM7UUFFM0gsc0JBQXNCLENBQUMsR0FBRyxDQUFDLFVBQVUsRUFBRSxDQUFDLElBQVksRUFBRSxFQUFFLENBQUM7Ozs7Ozs7OEVBT2EsSUFBSTs7Ozs7d0JBSzFELENBQUMsQ0FBQztRQUNsQixzQkFBc0IsQ0FBQyxHQUFHLENBQUMsV0FBVyxFQUFFLENBQUMsUUFBZ0IsRUFBRSxFQUFFLENBQUM7Ozs7Ozs7c0NBT2hDLFFBQVE7Ozs7Ozt3QkFNdEIsQ0FBQyxDQUFDO1FBQ2xCLHNCQUFzQixDQUFDLEdBQUcsQ0FBQyxXQUFXLEVBQUUsQ0FBQyxRQUFnQixFQUFFLEVBQUUsQ0FBQzs7Ozs7c0NBS2hDLFFBQVE7Ozs7O3dCQUt0QixDQUFDLENBQUM7UUFFbEIsT0FBTyxzQkFBc0IsQ0FBQztJQUNsQyxDQUFDO0NBQ0osQ0FBQTtBQTVGRztJQURDLGVBQU0sRUFBRTs7MkRBQ1c7QUFISCxjQUFjO0lBRmxDLGdCQUFPLEVBQUU7SUFDVCxjQUFLLENBQUMsV0FBVyxDQUFDOztHQUNFLGNBQWMsQ0ErRmxDO2tCQS9Gb0IsY0FBYyJ9

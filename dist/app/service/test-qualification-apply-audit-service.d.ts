@@ -1,7 +1,7 @@
-import { findOptions, ITestQualificationApplyAuditService, IUserService, TestQualificationApplyAuditRecordInfo, TestQualificationAuditHandleInfo, UserInfo } from "../../interface";
-import { FreelogContext, MongodbOperation, PageResult } from "egg-freelog-base";
-import SendSmsHelper from "../../extend/send-sms-helper";
-import SendMailHelper from "../../extend/send-mail-helper";
+import { findOptions, ITestQualificationApplyAuditService, IUserService, TestQualificationApplyAuditRecordInfo, TestQualificationAuditHandleInfo, UserInfo } from '../../interface';
+import { FreelogContext, MongodbOperation, PageResult } from 'egg-freelog-base';
+import SendSmsHelper from '../../extend/send-sms-helper';
+import SendMailHelper from '../../extend/send-mail-helper';
 export declare class TestQualificationApplyAuditService implements ITestQualificationApplyAuditService {
     ctx: FreelogContext;
     userService: IUserService;

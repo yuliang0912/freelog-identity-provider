@@ -1,6 +1,6 @@
 import {controller, get, inject, provide} from 'midway';
 import {FreelogContext} from 'egg-freelog-base';
-import {ICaptchaService} from "../../interface";
+import {ICaptchaService} from '../../interface';
 
 @provide()
 @controller('/v2/captchas')

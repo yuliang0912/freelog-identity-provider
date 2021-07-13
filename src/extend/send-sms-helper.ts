@@ -1,7 +1,7 @@
-import {config, provide, scope} from "midway";
-import {CryptoHelper} from 'egg-freelog-base'
+import {config, provide, scope} from 'midway';
+import {CryptoHelper} from 'egg-freelog-base';
 
-const SMSClient = require('@alicloud/sms-sdk')
+const SMSClient = require('@alicloud/sms-sdk');
 
 @provide()
 @scope('Singleton')
@@ -10,6 +10,19 @@ export default class SendSmsHelper {
     @config()
     aliYunSecret;
     _smsClient: any;
+
+    templateCodeMap = new Map<string, string>();
+
+    constructor() {
+        this.templateCodeMap = new Map<string, string>([
+            ['register', 'SMS_157980466'],
+            ['resetPassword', 'SMS_157980465'],
+            ['auditPass', 'SMS_182385369'],
+            ['auditFail', 'SMS_181859961'],
+            ['activateTransactionAccount', 'SMS_217427807'],
+            ['updateTransactionAccountPwd', 'SMS_218547345']
+        ]);
+    }
 
     get smsClient() {
         if (!this._smsClient) {
@@ -35,47 +48,17 @@ export default class SendSmsHelper {
             PhoneNumbers: phoneNumbers,
             TemplateCode: templateCode,
             TemplateParam: JSON.stringify(templateParam)
-        })
+        });
     }
 
     /**
      * 获取模板
      * @param authCodeType
      */
-    getTemplate(authCodeType: 'register' | 'resetPassword' | 'auditPass' | 'auditFail') {
-        switch (authCodeType) {
-            case "register":
-                return this.getRegisterTemplateCode();
-            case "resetPassword":
-                return this.getResetPasswordTemplateCode()
-            case "auditPass":
-                return this.getBetaTestAuditPassNoticeTemplateCode();
-            case "auditFail":
-                return this.getBetaTestAuditFailedNoticeTemplateCode();
-            default:
-                return '';
+    getTemplate(authCodeType: string) {
+        if (!this.templateCodeMap.has(authCodeType)) {
+            return '';
         }
-    }
-
-    /**
-     * 获取注册用户模板编码
-     */
-    getRegisterTemplateCode() {
-        return 'SMS_157980466'
-    }
-
-    /**
-     * 重置密码模板编码
-     */
-    getResetPasswordTemplateCode() {
-        return 'SMS_157980465';
-    }
-
-    getBetaTestAuditPassNoticeTemplateCode() {
-        return 'SMS_182385369'
-    }
-
-    getBetaTestAuditFailedNoticeTemplateCode() {
-        return 'SMS_181859961'
+        return this.templateCodeMap.get(authCodeType);
     }
 }

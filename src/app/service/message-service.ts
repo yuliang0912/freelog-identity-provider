@@ -1,8 +1,8 @@
 import {random} from 'lodash';
-import {inject, provide} from "midway";
-import SendMailHelper from "../../extend/send-mail-helper";
-import SendSmsHelper from "../../extend/send-sms-helper";
-import {IMessageService, MessageRecordInfo} from "../../interface";
+import {inject, provide} from 'midway';
+import SendMailHelper from '../../extend/send-mail-helper';
+import SendSmsHelper from '../../extend/send-sms-helper';
+import {IMessageService, MessageRecordInfo} from '../../interface';
 import {ApplicationError, CommonRegex, FreelogContext, IMongodbOperation} from 'egg-freelog-base';
 
 @provide()
@@ -22,7 +22,7 @@ export class MessageService implements IMessageService {
      * @param authCodeType
      * @param toAddress 手机或email
      */
-    async sendMessage(authCodeType: 'register' | 'resetPassword', toAddress: string): Promise<void> {
+    async sendMessage(authCodeType: 'register' | 'resetPassword' | 'activateTransactionAccount' | 'updateTransactionAccountPwd', toAddress: string): Promise<void> {
 
         const expireDate = new Date();
         expireDate.setMinutes(expireDate.getMinutes() - 1);
@@ -31,7 +31,7 @@ export class MessageService implements IMessageService {
             authCodeType, toAddress, createDate: {$gt: expireDate}
         });
         if (count) {
-            throw new ApplicationError(this.ctx.gettext('auth-code-send-limit-failed'))
+            throw new ApplicationError(this.ctx.gettext('auth-code-send-limit-failed'));
         }
 
         const templateParams = {code: random(100000, 999999)};
@@ -51,16 +51,11 @@ export class MessageService implements IMessageService {
 
     /**
      * 校验验证码是否正确
-     * @param type
-     * @param verificationCode
-     * @returns {Promise<void>}
+     * @param authCodeType
+     * @param address
+     * @param authCode
      */
-    async verify(authCodeType: 'register' | 'resetPassword', address: string, authCode: number): Promise<boolean> {
-        console.log({
-            authCodeType, toAddress: address,
-            'templateParams.code': authCode,
-            expireDate: {$gt: new Date()}
-        })
+    async verify(authCodeType: 'register' | 'resetPassword' | 'activateTransactionAccount' | 'updateTransactionAccountPwd', address: string, authCode: number): Promise<boolean> {
         return this.messageProvider.count({
             authCodeType, toAddress: address,
             'templateParams.code': authCode,

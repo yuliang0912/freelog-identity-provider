@@ -1,5 +1,5 @@
-import {config, provide, scope} from "midway";
-import {createTransport} from 'nodemailer'
+import {config, provide, scope} from 'midway';
+import {createTransport} from 'nodemailer';
 
 @provide()
 @scope('Singleton')
@@ -8,6 +8,12 @@ export default class SendMailHelper {
     @config()
     smtpTransportConfig;
 
+    htmlTemplateContentMap: Map<string, (...args) => string>;
+
+    constructor() {
+        this.htmlTemplateContentMap = this.getHtmlTemplateContents();
+    }
+
     /**
      * 发送email
      * @param address
@@ -15,42 +21,43 @@ export default class SendMailHelper {
      * @param html
      */
     sendMail(address: string, html: string, subject: string = '【飞致网络】验证码') {
+        // 如果发送失败,请检查服务器IP地址是否在白名单内.
         const transporter = createTransport(this.smtpTransportConfig);
         const mailOptions = {
             from: `"飞致网络" <${this.smtpTransportConfig.auth.user}>`,
             to: address, subject, html
         };
-        return transporter.sendMail(mailOptions)
+        return transporter.sendMail(mailOptions);
     }
 
 
     /**
      * 获取模板
      * @param authCodeType
+     * @param code
      */
-    getTemplate(authCodeType: 'register' | 'resetPassword' | 'auditPass' | 'auditFail', code: string | number) {
+    getTemplate(authCodeType: string, code: string | number) {
 
-        switch (authCodeType) {
-            case "register":
-                return this.getRegisterHtml(code);
-            case "resetPassword":
-                return this.getResetPasswordHtml(code)
-            case "auditPass":
-                return this.getBetaTestAuditPassNoticeHtml(code.toString());
-            case "auditFail":
-                return this.getBetaTestAuditFailedNoticeHtml(code.toString());
-            default:
-                return '';
+        if (!this.htmlTemplateContentMap.has(authCodeType)) {
+            return '';
         }
+
+        return this.htmlTemplateContentMap.get(authCodeType).call(null, code);
     }
 
 
     /**
-     * 获取注册模板
-     * @param code
+     * 获取模板内容
      */
-    getRegisterHtml(code: string | number): string {
-        return `<!DOCTYPE html>
+    getHtmlTemplateContents(): Map<string, (...args) => string> {
+
+        const htmlTemplateContentMap = new Map<string, (...args) => string>();
+
+        htmlTemplateContentMap.set('resetPassword', (code: string) => `验证码${code}，您正在尝试修改登录密码，请妥善保管账户信息。`);
+        htmlTemplateContentMap.set('activateTransactionAccount', (code: string) => `验证码为：${code}，您正在进行账户激活操作，如非本人操作，请忽略本短信！`);
+        htmlTemplateContentMap.set('updateTransactionAccountPwd', (code: string) => `验证码为：${code}，您正在进行修改账户交易密码操作，如非本人操作，请忽略本短信！`);
+
+        htmlTemplateContentMap.set('register', (code: string) => `<!DOCTYPE html>
                 <html lang="en">
                     <head><meta charset="UTF-8"></head>
                     <body>
@@ -62,23 +69,8 @@ export default class SendMailHelper {
                             <div>FreeLog团队</div>
                         </div>
                     </body>
-                </html>`
-    }
-
-    /**
-     * 获取更改密码html发送内容
-     * @param code
-     */
-    getResetPasswordHtml(code: string | number): string {
-        return `验证码${code}，您正在尝试修改登录密码，请妥善保管账户信息。`
-    }
-
-    /**
-     * 内测资格审核通过
-     * @param username
-     */
-    getBetaTestAuditPassNoticeHtml(username: string) {
-        return `<!DOCTYPE html>
+                </html>`);
+        htmlTemplateContentMap.set('auditPass', (username: string) => `<!DOCTYPE html>
                 <html lang="en">
                     <head>
                         <meta charset="UTF-8">
@@ -91,15 +83,8 @@ export default class SendMailHelper {
                             <div>您真诚的，<br>Freelog团队</div>
                         </div>
                     </body>
-                </html>`
-    }
-
-    /**
-     * 内测资格审核失败
-     * @param username
-     */
-    getBetaTestAuditFailedNoticeHtml(username: string) {
-        return `<!DOCTYPE html>
+                </html>`);
+        htmlTemplateContentMap.set('auditFail', (username: string) => `<!DOCTYPE html>
                 <html lang="en">
                     <head><meta charset="UTF-8"></head>
                     <body>
@@ -109,6 +94,8 @@ export default class SendMailHelper {
                             <div>您真诚的，<br>Freelog团队</div>
                         </div>
                     </body>
-                </html>`
+                </html>`);
+
+        return htmlTemplateContentMap;
     }
 }

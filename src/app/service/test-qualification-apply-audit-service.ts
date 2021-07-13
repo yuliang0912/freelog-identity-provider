@@ -1,4 +1,4 @@
-import {inject, provide} from "midway";
+import {inject, provide} from 'midway';
 import {
     findOptions,
     ITestQualificationApplyAuditService,
@@ -6,11 +6,11 @@ import {
     TestQualificationApplyAuditRecordInfo,
     TestQualificationAuditHandleInfo,
     UserInfo
-} from "../../interface";
-import {ApplicationError, FreelogContext, MongodbOperation, PageResult} from "egg-freelog-base";
-import SendSmsHelper from "../../extend/send-sms-helper";
-import SendMailHelper from "../../extend/send-mail-helper";
-import {AuditStatusEnum} from "../../enum";
+} from '../../interface';
+import {ApplicationError, FreelogContext, MongodbOperation, PageResult} from 'egg-freelog-base';
+import SendSmsHelper from '../../extend/send-sms-helper';
+import SendMailHelper from '../../extend/send-mail-helper';
+import {AuditStatusEnum} from '../../enum';
 
 @provide()
 export class TestQualificationApplyAuditService implements ITestQualificationApplyAuditService {
@@ -68,7 +68,7 @@ export class TestQualificationApplyAuditService implements ITestQualificationApp
             pipeline.push({$match: {[`userInfos.${key}`]: value}});
         }
 
-        const [totalItemInfo] = await this.testQualificationApplyAuditProvider.aggregate([...pipeline, ...[{$count: 'totalItem'}]])
+        const [totalItemInfo] = await this.testQualificationApplyAuditProvider.aggregate([...pipeline, ...[{$count: 'totalItem'}]]);
         const {totalItem = 0} = totalItemInfo ?? {};
 
         pipeline.push({$sort: options?.sort ?? {userId: -1}}, {$skip: options?.skip ?? 0}, {$limit: options?.limit ?? 10});
@@ -76,7 +76,7 @@ export class TestQualificationApplyAuditService implements ITestQualificationApp
 
         return {
             skip: options?.skip ?? 0, limit: options?.limit ?? 10, totalItem, dataList
-        }
+        };
     }
 
     /**
@@ -105,7 +105,7 @@ export class TestQualificationApplyAuditService implements ITestQualificationApp
             userId: this.ctx.userId, status: AuditStatusEnum.WaitReview
         });
         if (userApplyRecord) {
-            throw new ApplicationError(this.ctx.gettext('test-qualification-apply-existing-error'))
+            throw new ApplicationError(this.ctx.gettext('test-qualification-apply-existing-error'));
         }
         applyInfo.userId = this.ctx.userId;
         applyInfo.status = AuditStatusEnum.WaitReview;
@@ -122,7 +122,7 @@ export class TestQualificationApplyAuditService implements ITestQualificationApp
             operationUserId: this.ctx.userId,
             status: handleInfo.status,
             auditMsg: handleInfo.auditMsg
-        })
+        });
     }
 
     /**
@@ -136,14 +136,14 @@ export class TestQualificationApplyAuditService implements ITestQualificationApp
         const {ctx} = this;
         const userInfo = await this.userService.findOne({userId: applyRecordInfo.userId});
         if ((userInfo.userType & 1) === 1) {
-            throw new ApplicationError(ctx.gettext('test-qualification-apply-refuse-error'))
+            throw new ApplicationError(ctx.gettext('test-qualification-apply-refuse-error'));
         }
 
         const task1 = this.testQualificationApplyAuditProvider.updateOne({_id: applyRecordInfo.id}, {
             operationUserId: ctx.userId,
             status: handleInfo.status,
             auditMsg: handleInfo.auditMsg
-        })
+        });
 
         let task2 = undefined;
         if (handleInfo.status === 1) {
@@ -151,10 +151,10 @@ export class TestQualificationApplyAuditService implements ITestQualificationApp
         }
 
         await Promise.all([task1, task2]).then(() => {
-            return this.sendAuditNoticeMessage(userInfo, handleInfo.status)
-        })
+            return this.sendAuditNoticeMessage(userInfo, handleInfo.status);
+        });
 
-        return true
+        return true;
     }
 
     /**
@@ -168,20 +168,20 @@ export class TestQualificationApplyAuditService implements ITestQualificationApp
             operationUserId: this.ctx.userId,
             status: handleInfo.status,
             auditMsg: handleInfo.auditMsg
-        })
+        });
 
         let task2 = undefined;
         if (handleInfo.status === AuditStatusEnum.AuditPass) {
             task2 = this.userService.updateMany({userId: {$in: applyRecordList.map(x => x.userId)}}, {userType: 1});
         }
 
-        await Promise.all([task1, task2])
+        await Promise.all([task1, task2]);
 
         this.userService.find({userId: {$in: applyRecordList.map(x => x.userId)}}).then(userList => {
-            userList.forEach(userInfo => this.sendAuditNoticeMessage(userInfo, handleInfo.status))
+            userList.forEach(userInfo => this.sendAuditNoticeMessage(userInfo, handleInfo.status));
         });
 
-        return true
+        return true;
     }
 
     /**
@@ -190,15 +190,15 @@ export class TestQualificationApplyAuditService implements ITestQualificationApp
      */
     async sendAuditNoticeMessage(userInfo: UserInfo, auditStatus: 0 | 1) {
 
-        const {mobile, username, email} = userInfo
-        const templateCodeType = auditStatus === 1 ? "auditPass" : "auditFail"
+        const {mobile, username, email} = userInfo;
+        const templateCodeType = auditStatus === 1 ? 'auditPass' : 'auditFail';
 
         if (mobile) {
             return this.sendSmsHelper.sendSMS(mobile, this.sendSmsHelper.getTemplate(templateCodeType), {
                 username,
                 phone: mobile.substr(mobile.length - 4),
                 path: auditStatus === 1 ? '' : 'alpha-test/apply'
-            })
+            });
         } else if (email) {
             return this.sendMailHelper.sendMail(email, this.sendMailHelper.getTemplate(templateCodeType, userInfo.username));
         }

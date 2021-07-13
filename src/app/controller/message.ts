@@ -21,7 +21,7 @@ export class messageController {
 
         const {ctx} = this;
         const loginName = ctx.checkBody('loginName').exist().trim().value;
-        const authCodeType = ctx.checkBody('authCodeType').exist().in(['register', 'resetPassword', 'activateTransactionAccount']).value;
+        const authCodeType = ctx.checkBody('authCodeType').exist().in(['register', 'resetPassword', 'activateTransactionAccount', 'updateTransactionAccountPwd']).value;
         ctx.validateParams();
 
         const condition: Partial<UserInfo> = {};
@@ -40,7 +40,7 @@ export class messageController {
         if (authCodeType === 'register' && isExistLoginName) {
             throw new ApplicationError(ctx.gettext(isMobile86 ? 'mobile-register-validate-failed' : 'email-register-validate-failed'));
         }
-        if (authCodeType === 'resetPassword' && !isExistLoginName) {
+        if (['resetPassword', 'activateTransactionAccount', 'updateTransactionAccountPwd'].includes(authCodeType) && !isExistLoginName) {
             throw new ApplicationError(ctx.gettext('login-name-not-exist-error'));
         }
 
@@ -54,7 +54,7 @@ export class messageController {
     async verify() {
 
         const {ctx} = this;
-        const authCodeType = ctx.checkQuery('authCodeType').exist().in(['register', 'resetPassword']).value;
+        const authCodeType = ctx.checkQuery('authCodeType').exist().in(['register', 'resetPassword', 'activateTransactionAccount', 'updateTransactionAccountPwd']).value;
         const authCode = ctx.checkQuery('authCode').exist().toInt().value;
         const mobileOrEmailRegex = /^(1[34578]\d{9})|([A-Za-z\d]+([-_.][A-Za-z\d]+)*@([A-Za-z\d]+[-.])+[A-Za-z\d]{2,4})$/;
         const address = ctx.checkQuery('address').exist().match(mobileOrEmailRegex, ctx.gettext('login-name-format-validate-failed')).value;

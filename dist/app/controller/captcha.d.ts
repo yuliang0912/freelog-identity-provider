@@ -1,5 +1,5 @@
 import { FreelogContext } from 'egg-freelog-base';
-import { ICaptchaService } from "../../interface";
+import { ICaptchaService } from '../../interface';
 export declare class captchaController {
     ctx: FreelogContext;
     captchaService: ICaptchaService;
