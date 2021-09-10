@@ -1,6 +1,6 @@
-import AutoIncrementRecordProvider from "../data-provider/auto-increment-record-provider";
-import { FreelogContext, MongodbOperation, PageResult } from "egg-freelog-base";
-import { findOptions, ITageService, IUserService, TagInfo, UserDetailInfo, UserInfo } from "../../interface";
+import AutoIncrementRecordProvider from '../data-provider/auto-increment-record-provider';
+import { FreelogContext, MongodbOperation, PageResult } from 'egg-freelog-base';
+import { findOptions, ITageService, IUserService, TagInfo, UserDetailInfo, UserInfo } from '../../interface';
 export declare class UserService implements IUserService {
     ctx: FreelogContext;
     tagService: ITageService;

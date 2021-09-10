@@ -6,6 +6,7 @@ import {
 import headImageGenerator from '../../extend/head-image-generator';
 import {isString, isArray, first, omit, isDate, pick, isNumber, differenceWith} from 'lodash';
 import {UserStatusEnum} from '../../enum';
+import {generatePassword} from '../../extend/common-helper';
 
 @provide()
 @controller('/v2/users')
@@ -111,6 +112,23 @@ export class UserInfoController {
     async current() {
         const {ctx} = this;
         await this.userService.findOne({userId: ctx.userId}).then(ctx.success);
+    }
+
+    /**
+     * 验证登录密码
+     */
+    @get('/verifyLoginPassword')
+    @visitorIdentityValidator(IdentityTypeEnum.LoginUser)
+    async verifyLoginPassword() {
+
+        const {ctx} = this;
+        const password = ctx.checkQuery('password').exist().isLoginPassword(ctx.gettext('password_length') + ctx.gettext('password_include')).value;
+        ctx.validateParams();
+
+        const userInfo = await this.userService.findOne({userId: ctx.userId});
+        const isVerifySuccessful = generatePassword(userInfo.salt, password) === userInfo.password;
+
+        ctx.success({userId: userInfo.userId, isVerifySuccessful});
     }
 
     // /**

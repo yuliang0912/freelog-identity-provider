@@ -1,10 +1,10 @@
 import {v4} from 'uuid';
-import {inject, provide} from "midway";
-import {generatePassword} from "../../extend/common-helper";
-import AutoIncrementRecordProvider from "../data-provider/auto-increment-record-provider";
-import {ArgumentError, FreelogContext, MongodbOperation, PageResult} from "egg-freelog-base";
-import {findOptions, ITageService, IUserService, TagInfo, UserDetailInfo, UserInfo} from "../../interface";
-import {UserRoleEnum, UserStatusEnum} from "../../enum";
+import {inject, provide} from 'midway';
+import {generatePassword} from '../../extend/common-helper';
+import AutoIncrementRecordProvider from '../data-provider/auto-increment-record-provider';
+import {ArgumentError, FreelogContext, MongodbOperation, PageResult} from 'egg-freelog-base';
+import {findOptions, ITageService, IUserService, TagInfo, UserDetailInfo, UserInfo} from '../../interface';
+import {UserRoleEnum, UserStatusEnum} from '../../enum';
 import {difference} from 'lodash';
 
 @provide()
@@ -34,7 +34,7 @@ export class UserService implements IUserService {
     }
 
     async findOne(condition: object, options?: findOptions<UserInfo>): Promise<UserInfo> {
-        return this.userInfoProvider.findOne(condition, options?.projection, options)
+        return this.userInfoProvider.findOne(condition, options?.projection, options);
     }
 
     async create(userInfo: Partial<UserInfo>): Promise<UserInfo> {
@@ -109,7 +109,7 @@ export class UserService implements IUserService {
         if (Object.keys(condition).length) {
             pipeline.unshift({$match: condition});
         }
-        const [totalItemInfo] = await this.userInfoProvider.aggregate([...pipeline, ...[{$count: 'totalItem'}]])
+        const [totalItemInfo] = await this.userInfoProvider.aggregate([...pipeline, ...[{$count: 'totalItem'}]]);
         const {totalItem = 0} = totalItemInfo ?? {};
 
         pipeline.push({$sort: options?.sort ?? {userId: -1}}, {$skip: options?.skip ?? 0}, {$limit: options?.limit ?? 10});
@@ -117,11 +117,11 @@ export class UserService implements IUserService {
 
         return {
             skip: options?.skip ?? 0, limit: options?.limit ?? 10, totalItem, dataList
-        }
+        };
     }
 
     async searchIntervalList(condition: object, options?: findOptions<UserInfo>): Promise<PageResult<UserInfo>> {
-        return this.userInfoProvider.findIntervalList(condition, options?.skip, options?.limit, null, options?.sort ?? {userId: -1})
+        return this.userInfoProvider.findIntervalList(condition, options?.skip, options?.limit, null, options?.sort ?? {userId: -1});
     }
 
     /**
@@ -138,10 +138,10 @@ export class UserService implements IUserService {
         } else {
             await this.userDetailProvider.updateOne({userId}, {
                 $addToSet: {tagIds}
-            })
+            });
         }
 
-        const effectiveTagIds = difference(tagIds, userDetail?.tagIds ?? [])
+        const effectiveTagIds = difference(tagIds, userDetail?.tagIds ?? []);
 
         return this.tagService.setTagAutoIncrementCounts(effectiveTagIds, 1);
     }
@@ -158,7 +158,7 @@ export class UserService implements IUserService {
         }
         await this.userDetailProvider.updateOne({userId}, {
             tagIds: userDetail.tagIds.filter(x => x !== tagInfo.tagId)
-        })
+        });
         return this.tagService.setTagAutoIncrementCount(tagInfo, -1);
     }
 

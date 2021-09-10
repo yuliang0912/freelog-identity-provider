@@ -1,6 +1,6 @@
 import {EggAppInfo} from 'midway';
 import {readFileSync} from 'fs';
-import {join} from "path";
+import {join} from 'path';
 
 export default (appInfo: EggAppInfo) => {
     const config: any = {};
@@ -12,7 +12,6 @@ export default (appInfo: EggAppInfo) => {
             port: 7111
         }
     };
-
 
     config.i18n = {
         enable: true,
@@ -60,19 +59,19 @@ export default (appInfo: EggAppInfo) => {
 
     config.aliYunSecret = {
         isCryptographic: true,
-        accessKeyId: "TFRBSTRGcGNBRWdCWm05UHlON3BhY0tU",
-        accessKeySecret: "M2NBYmRwQ1VESnpCa2ZDcnVzN1d2SXc1alhmNDNF"
+        accessKeyId: 'TFRBSTRGcGNBRWdCWm05UHlON3BhY0tU',
+        accessKeySecret: 'M2NBYmRwQ1VESnpCa2ZDcnVzN1d2SXc1alhmNDNF'
     };
 
     config.uploadConfig = {
         aliOss: {
             enable: true,
             isCryptographic: true,
-            accessKeyId: "TFRBSTRGcGNBRWdCWm05UHlON3BhY0tU",
-            accessKeySecret: "M2NBYmRwQ1VESnpCa2ZDcnVzN1d2SXc1alhmNDNF",
-            bucket: "freelog-image",
+            accessKeyId: 'TFRBSTRGcGNBRWdCWm05UHlON3BhY0tU',
+            accessKeySecret: 'M2NBYmRwQ1VESnpCa2ZDcnVzN1d2SXc1alhmNDNF',
+            bucket: 'freelog-image',
             internal: false,
-            region: "oss-cn-shenzhen",
+            region: 'oss-cn-shenzhen',
             timeout: 180000
         },
         amzS3: {}

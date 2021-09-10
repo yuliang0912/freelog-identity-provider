@@ -20,6 +20,10 @@ export declare class UserInfoController {
      */
     current(): Promise<void>;
     /**
+     * 验证登录密码
+     */
+    verifyLoginPassword(): Promise<void>;
+    /**
      * 注册用户
      */
     create(): Promise<void>;
