@@ -20,10 +20,10 @@ let TagInfoProvider = class TagInfoProvider extends egg_freelog_base_1.MongodbOp
     }
 };
 TagInfoProvider = __decorate([
-    midway_1.provide(),
-    midway_1.scope('Singleton'),
-    __param(0, midway_1.inject('model.tagInfo')),
+    (0, midway_1.provide)(),
+    (0, midway_1.scope)('Singleton'),
+    __param(0, (0, midway_1.inject)('model.tagInfo')),
     __metadata("design:paramtypes", [Object])
 ], TagInfoProvider);
 exports.default = TagInfoProvider;
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoidGFnLXByb3ZpZGVyLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiLi4vLi4vLi4vc3JjL2FwcC9kYXRhLXByb3ZpZGVyL3RhZy1wcm92aWRlci50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzs7Ozs7Ozs7Ozs7OztBQUFBLG1DQUE4QztBQUM5Qyx1REFBaUQ7QUFLakQsSUFBcUIsZUFBZSxHQUFwQyxNQUFxQixlQUFnQixTQUFRLG1DQUF5QjtJQUVsRSxZQUFxQyxLQUFLO1FBQ3RDLEtBQUssQ0FBQyxLQUFLLENBQUMsQ0FBQztJQUNqQixDQUFDO0NBQ0osQ0FBQTtBQUxvQixlQUFlO0lBRm5DLGdCQUFPLEVBQUU7SUFDVCxjQUFLLENBQUMsV0FBVyxDQUFDO0lBR0YsV0FBQSxlQUFNLENBQUMsZUFBZSxDQUFDLENBQUE7O0dBRm5CLGVBQWUsQ0FLbkM7a0JBTG9CLGVBQWUifQ==
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoidGFnLXByb3ZpZGVyLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiLi4vLi4vLi4vc3JjL2FwcC9kYXRhLXByb3ZpZGVyL3RhZy1wcm92aWRlci50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzs7Ozs7Ozs7Ozs7OztBQUFBLG1DQUE4QztBQUM5Qyx1REFBaUQ7QUFLakQsSUFBcUIsZUFBZSxHQUFwQyxNQUFxQixlQUFnQixTQUFRLG1DQUF5QjtJQUVsRSxZQUFxQyxLQUFLO1FBQ3RDLEtBQUssQ0FBQyxLQUFLLENBQUMsQ0FBQztJQUNqQixDQUFDO0NBQ0osQ0FBQTtBQUxvQixlQUFlO0lBRm5DLElBQUEsZ0JBQU8sR0FBRTtJQUNULElBQUEsY0FBSyxFQUFDLFdBQVcsQ0FBQztJQUdGLFdBQUEsSUFBQSxlQUFNLEVBQUMsZUFBZSxDQUFDLENBQUE7O0dBRm5CLGVBQWUsQ0FLbkM7a0JBTG9CLGVBQWUifQ==

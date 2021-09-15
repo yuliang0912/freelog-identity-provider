@@ -56,10 +56,10 @@ export class messageController {
         const {ctx} = this;
         const authCodeType = ctx.checkQuery('authCodeType').exist().in(['register', 'resetPassword', 'activateTransactionAccount', 'updateTransactionAccountPwd']).value;
         const authCode = ctx.checkQuery('authCode').exist().toInt().value;
-        const mobileOrEmailRegex = /^(1[34578]\d{9})|([A-Za-z\d]+([-_.][A-Za-z\d]+)*@([A-Za-z\d]+[-.])+[A-Za-z\d]{2,4})$/;
-        const address = ctx.checkQuery('address').exist().match(mobileOrEmailRegex, ctx.gettext('login-name-format-validate-failed')).value;
+        const address = ctx.checkQuery('address').exist().isEmailOrMobile86().value;
         ctx.validateParams();
 
+        // 后续要加上用户调用频率限制
         const isVerify = await this.messageService.verify(authCodeType, address, authCode);
 
         ctx.success(isVerify);

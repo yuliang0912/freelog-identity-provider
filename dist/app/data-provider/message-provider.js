@@ -20,10 +20,10 @@ let MessageProvider = class MessageProvider extends egg_freelog_base_1.MongodbOp
     }
 };
 MessageProvider = __decorate([
-    midway_1.provide(),
-    midway_1.scope('Singleton'),
-    __param(0, midway_1.inject('model.messageRecord')),
+    (0, midway_1.provide)(),
+    (0, midway_1.scope)('Singleton'),
+    __param(0, (0, midway_1.inject)('model.messageRecord')),
     __metadata("design:paramtypes", [Object])
 ], MessageProvider);
 exports.default = MessageProvider;
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoibWVzc2FnZS1wcm92aWRlci5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uLy4uL3NyYy9hcHAvZGF0YS1wcm92aWRlci9tZXNzYWdlLXByb3ZpZGVyLnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7Ozs7Ozs7Ozs7Ozs7O0FBQUEsbUNBQThDO0FBQzlDLHVEQUFpRDtBQUtqRCxJQUFxQixlQUFlLEdBQXBDLE1BQXFCLGVBQWdCLFNBQVEsbUNBQW1DO0lBRTVFLFlBQTJDLEtBQUs7UUFDNUMsS0FBSyxDQUFDLEtBQUssQ0FBQyxDQUFDO0lBQ2pCLENBQUM7Q0FDSixDQUFBO0FBTG9CLGVBQWU7SUFGbkMsZ0JBQU8sRUFBRTtJQUNULGNBQUssQ0FBQyxXQUFXLENBQUM7SUFHRixXQUFBLGVBQU0sQ0FBQyxxQkFBcUIsQ0FBQyxDQUFBOztHQUZ6QixlQUFlLENBS25DO2tCQUxvQixlQUFlIn0=
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoibWVzc2FnZS1wcm92aWRlci5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uLy4uL3NyYy9hcHAvZGF0YS1wcm92aWRlci9tZXNzYWdlLXByb3ZpZGVyLnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7Ozs7Ozs7Ozs7Ozs7O0FBQUEsbUNBQThDO0FBQzlDLHVEQUFpRDtBQUtqRCxJQUFxQixlQUFlLEdBQXBDLE1BQXFCLGVBQWdCLFNBQVEsbUNBQW1DO0lBRTVFLFlBQTJDLEtBQUs7UUFDNUMsS0FBSyxDQUFDLEtBQUssQ0FBQyxDQUFDO0lBQ2pCLENBQUM7Q0FDSixDQUFBO0FBTG9CLGVBQWU7SUFGbkMsSUFBQSxnQkFBTyxHQUFFO0lBQ1QsSUFBQSxjQUFLLEVBQUMsV0FBVyxDQUFDO0lBR0YsV0FBQSxJQUFBLGVBQU0sRUFBQyxxQkFBcUIsQ0FBQyxDQUFBOztHQUZ6QixlQUFlLENBS25DO2tCQUxvQixlQUFlIn0=

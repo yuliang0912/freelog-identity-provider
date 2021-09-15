@@ -20,7 +20,8 @@ export default class SendSmsHelper {
             ['auditPass', 'SMS_182385369'],
             ['auditFail', 'SMS_181859961'],
             ['activateTransactionAccount', 'SMS_217427807'],
-            ['updateTransactionAccountPwd', 'SMS_218547345']
+            ['updateTransactionAccountPwd', 'SMS_218547345'],
+            ['updateMobileOrEmail', '']
         ]);
     }
 

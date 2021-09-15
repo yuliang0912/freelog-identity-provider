@@ -20,10 +20,10 @@ let UserInfoProvider = class UserInfoProvider extends egg_freelog_base_1.Mongodb
     }
 };
 UserInfoProvider = __decorate([
-    midway_1.provide(),
-    midway_1.scope('Singleton'),
-    __param(0, midway_1.inject('model.userInfo')),
+    (0, midway_1.provide)(),
+    (0, midway_1.scope)('Singleton'),
+    __param(0, (0, midway_1.inject)('model.userInfo')),
     __metadata("design:paramtypes", [Object])
 ], UserInfoProvider);
 exports.default = UserInfoProvider;
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoidXNlci1wcm92aWRlci5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uLy4uL3NyYy9hcHAvZGF0YS1wcm92aWRlci91c2VyLXByb3ZpZGVyLnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7Ozs7Ozs7Ozs7Ozs7O0FBQ0EsbUNBQThDO0FBQzlDLHVEQUFpRDtBQUtqRCxJQUFxQixnQkFBZ0IsR0FBckMsTUFBcUIsZ0JBQWlCLFNBQVEsbUNBQTBCO0lBRXBFLFlBQXNDLEtBQUs7UUFDdkMsS0FBSyxDQUFDLEtBQUssQ0FBQyxDQUFDO0lBQ2pCLENBQUM7Q0FDSixDQUFBO0FBTG9CLGdCQUFnQjtJQUZwQyxnQkFBTyxFQUFFO0lBQ1QsY0FBSyxDQUFDLFdBQVcsQ0FBQztJQUdGLFdBQUEsZUFBTSxDQUFDLGdCQUFnQixDQUFDLENBQUE7O0dBRnBCLGdCQUFnQixDQUtwQztrQkFMb0IsZ0JBQWdCIn0=
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoidXNlci1wcm92aWRlci5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uLy4uL3NyYy9hcHAvZGF0YS1wcm92aWRlci91c2VyLXByb3ZpZGVyLnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7Ozs7Ozs7Ozs7Ozs7O0FBQ0EsbUNBQThDO0FBQzlDLHVEQUFpRDtBQUtqRCxJQUFxQixnQkFBZ0IsR0FBckMsTUFBcUIsZ0JBQWlCLFNBQVEsbUNBQTBCO0lBRXBFLFlBQXNDLEtBQUs7UUFDdkMsS0FBSyxDQUFDLEtBQUssQ0FBQyxDQUFDO0lBQ2pCLENBQUM7Q0FDSixDQUFBO0FBTG9CLGdCQUFnQjtJQUZwQyxJQUFBLGdCQUFPLEdBQUU7SUFDVCxJQUFBLGNBQUssRUFBQyxXQUFXLENBQUM7SUFHRixXQUFBLElBQUEsZUFBTSxFQUFDLGdCQUFnQixDQUFDLENBQUE7O0dBRnBCLGdCQUFnQixDQUtwQztrQkFMb0IsZ0JBQWdCIn0=

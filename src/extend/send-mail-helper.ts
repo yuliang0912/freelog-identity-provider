@@ -24,8 +24,7 @@ export default class SendMailHelper {
         // 如果发送失败,请检查服务器IP地址是否在白名单内.
         const transporter = createTransport(this.smtpTransportConfig);
         const mailOptions = {
-            from: `"飞致网络" <${this.smtpTransportConfig.auth.user}>`,
-            to: address, subject, html
+            from: `"飞致网络" <${this.smtpTransportConfig.auth.user}>`, to: address, subject, html
         };
         return transporter.sendMail(mailOptions);
     }
@@ -92,6 +91,18 @@ export default class SendMailHelper {
                             <div>Hi ${username}，</div><br>
                             <div>感谢您的支持！很遗憾，您的内测申请未通过。重新提交申请，请点击<a style="color: inherit;" href="https://console.freelog.com/alpha-test/apply">https://console.freelog.com/alpha-test/apply</a>。</div><br>
                             <div>您真诚的，<br>Freelog团队</div>
+                        </div>
+                    </body>
+                </html>`);
+        htmlTemplateContentMap.set('updateMobileOrEmail', (code: string) => `<!DOCTYPE html>
+                <html lang="en">
+                    <head><meta charset="UTF-8"></head>
+                    <body>
+                        <div style="font-size: 14px;">
+                            <div>【Freelog】您正在更改登录邮箱，请回填以下验证码: </div><br>
+                            <div style="font-size: 18px; font-weight: 600;">${code}</div><br>
+                            <div>如果你有任何问题请联系：<a style="color: inherit;" href="mailto:support@freelog.com">support@freelog.com</a></div><br>
+                            <div>FreeLog团队</div>
                         </div>
                     </body>
                 </html>`);

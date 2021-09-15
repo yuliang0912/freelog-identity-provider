@@ -2,6 +2,8 @@ import {EggAppInfo} from 'midway';
 import {readFileSync} from 'fs';
 import {join} from 'path';
 
+const areaList = require('./pcas-code.json');
+
 export default (appInfo: EggAppInfo) => {
     const config: any = {};
 
@@ -82,6 +84,8 @@ export default (appInfo: EggAppInfo) => {
         publicKey: 'c2390e26867d04fbcf1f07bec47ba779',
         privateKey: '96d8bd08230d2f3052f4df986c2b8ce9'
     };
+
+    config.areaList = areaList;
 
     return config;
 };

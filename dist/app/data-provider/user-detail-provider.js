@@ -20,10 +20,10 @@ let UserDetailProvider = class UserDetailProvider extends egg_freelog_base_1.Mon
     }
 };
 UserDetailProvider = __decorate([
-    midway_1.provide(),
-    midway_1.scope('Singleton'),
-    __param(0, midway_1.inject('model.userDetailInfo')),
+    (0, midway_1.provide)(),
+    (0, midway_1.scope)('Singleton'),
+    __param(0, (0, midway_1.inject)('model.userDetailInfo')),
     __metadata("design:paramtypes", [Object])
 ], UserDetailProvider);
 exports.default = UserDetailProvider;
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoidXNlci1kZXRhaWwtcHJvdmlkZXIuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi9zcmMvYXBwL2RhdGEtcHJvdmlkZXIvdXNlci1kZXRhaWwtcHJvdmlkZXIudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7Ozs7Ozs7Ozs7Ozs7QUFDQSxtQ0FBOEM7QUFDOUMsdURBQWlEO0FBSWpELElBQXFCLGtCQUFrQixHQUF2QyxNQUFxQixrQkFBbUIsU0FBUSxtQ0FBZ0M7SUFFNUUsWUFBNEMsS0FBSztRQUM3QyxLQUFLLENBQUMsS0FBSyxDQUFDLENBQUM7SUFDakIsQ0FBQztDQUNKLENBQUE7QUFMb0Isa0JBQWtCO0lBRnRDLGdCQUFPLEVBQUU7SUFDVCxjQUFLLENBQUMsV0FBVyxDQUFDO0lBR0YsV0FBQSxlQUFNLENBQUMsc0JBQXNCLENBQUMsQ0FBQTs7R0FGMUIsa0JBQWtCLENBS3RDO2tCQUxvQixrQkFBa0IifQ==
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoidXNlci1kZXRhaWwtcHJvdmlkZXIuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi9zcmMvYXBwL2RhdGEtcHJvdmlkZXIvdXNlci1kZXRhaWwtcHJvdmlkZXIudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7Ozs7Ozs7Ozs7Ozs7QUFDQSxtQ0FBOEM7QUFDOUMsdURBQWlEO0FBSWpELElBQXFCLGtCQUFrQixHQUF2QyxNQUFxQixrQkFBbUIsU0FBUSxtQ0FBZ0M7SUFFNUUsWUFBNEMsS0FBSztRQUM3QyxLQUFLLENBQUMsS0FBSyxDQUFDLENBQUM7SUFDakIsQ0FBQztDQUNKLENBQUE7QUFMb0Isa0JBQWtCO0lBRnRDLElBQUEsZ0JBQU8sR0FBRTtJQUNULElBQUEsY0FBSyxFQUFDLFdBQVcsQ0FBQztJQUdGLFdBQUEsSUFBQSxlQUFNLEVBQUMsc0JBQXNCLENBQUMsQ0FBQTs7R0FGMUIsa0JBQWtCLENBS3RDO2tCQUxvQixrQkFBa0IifQ==
