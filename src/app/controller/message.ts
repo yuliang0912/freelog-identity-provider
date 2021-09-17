@@ -46,10 +46,11 @@ export class messageController {
             throw new ArgumentError(ctx.gettext('login-name-format-validate-failed'));
         }
 
+        const isNotLogin = [AuthCodeTypeEnum.Register, AuthCodeTypeEnum.ResetPassword].includes(authCodeType);
         const isExistLoginName = await this.userService.count(condition);
-        if (authCodeType === AuthCodeTypeEnum.Register && isExistLoginName) {
+        if (isNotLogin && isExistLoginName) {
             throw new ApplicationError(ctx.gettext(isMobile86 ? 'mobile-register-validate-failed' : 'email-register-validate-failed'));
-        } else if (authCodeType === 'register') {
+        } else if (isNotLogin) {
             await this.messageService.sendMessage(authCodeType, loginName);
             return ctx.success(true);
         }
