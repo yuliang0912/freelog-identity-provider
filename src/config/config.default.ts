@@ -2,7 +2,7 @@ import {EggAppInfo} from 'midway';
 import {readFileSync} from 'fs';
 import {join} from 'path';
 
-const areaList = require('./pcas-code.json');
+const areaList = require('../../pcas-code.json');
 
 export default (appInfo: EggAppInfo) => {
     const config: any = {};
