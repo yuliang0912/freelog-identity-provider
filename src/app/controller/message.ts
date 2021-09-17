@@ -5,9 +5,7 @@ import {
     AuthenticationError,
     CommonRegex,
     FreelogContext,
-    IdentityTypeEnum,
-    LogicError,
-    visitorIdentityValidator
+    LogicError
 } from 'egg-freelog-base';
 import {IMessageService, IUserService, UserInfo} from '../../interface';
 import {AuthCodeTypeEnum} from '../../enum';
@@ -72,7 +70,6 @@ export class messageController {
      * 核验验证码是否输入正确
      */
     @get('/verify')
-    @visitorIdentityValidator(IdentityTypeEnum.LoginUser)
     async verify() {
 
         const {ctx} = this;
@@ -81,11 +78,15 @@ export class messageController {
         const address = ctx.checkQuery('address').exist().isEmailOrMobile86().value;
         ctx.validateParams();
 
-        const userInfo = await this.userService.findOne({userId: ctx.userId});
-        if (![userInfo.mobile, userInfo.email].includes(address)) {
-            return ctx.success(false);
+        const isNeedLogin = [AuthCodeTypeEnum.UpdateMobileOrEmail, AuthCodeTypeEnum.UpdateTransactionAccountPwd, AuthCodeTypeEnum.ActivateTransactionAccount].includes(authCode);
+        if (isNeedLogin && !ctx.isLoginUser()) {
+            throw new AuthenticationError(ctx.gettext('user-authentication-failed'));
+        } else if (isNeedLogin) {
+            const userInfo = await this.userService.findOne({userId: ctx.userId});
+            if (![userInfo.mobile, userInfo.email].includes(address)) {
+                return ctx.success(false);
+            }
         }
-
         // 后续要加上用户调用频率限制
         const isVerify = await this.messageService.verify(authCodeType, address, authCode);
 
