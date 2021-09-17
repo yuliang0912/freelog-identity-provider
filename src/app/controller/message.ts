@@ -73,7 +73,7 @@ export class messageController {
     async verify() {
 
         const {ctx} = this;
-        const authCodeType = ctx.checkBody('authCodeType').exist().is((value) => Object.values(AuthCodeTypeEnum).includes(value), '验证码类型错误').value;
+        const authCodeType = ctx.checkQuery('authCodeType').exist().is((value) => Object.values(AuthCodeTypeEnum).includes(value), '验证码类型错误').value;
         const authCode = ctx.checkQuery('authCode').exist().toInt().value;
         const address = ctx.checkQuery('address').exist().isEmailOrMobile86().value;
         ctx.validateParams();
