@@ -3,7 +3,8 @@ import {inject, provide} from 'midway';
 import SendMailHelper from '../../extend/send-mail-helper';
 import SendSmsHelper from '../../extend/send-sms-helper';
 import {IMessageService, MessageRecordInfo} from '../../interface';
-import {ApplicationError, CommonRegex, FreelogContext, IMongodbOperation} from 'egg-freelog-base';
+import {ApplicationError, ArgumentError, CommonRegex, FreelogContext, IMongodbOperation} from 'egg-freelog-base';
+import {AuthCodeTypeEnum} from '../../enum';
 
 @provide()
 export class MessageService implements IMessageService {
@@ -22,7 +23,7 @@ export class MessageService implements IMessageService {
      * @param authCodeType
      * @param toAddress 手机或email
      */
-    async sendMessage(authCodeType: 'register' | 'resetPassword' | 'activateTransactionAccount' | 'updateTransactionAccountPwd', toAddress: string): Promise<void> {
+    async sendMessage(authCodeType: AuthCodeTypeEnum, toAddress: string): Promise<void> {
 
         const expireDate = new Date();
         expireDate.setMinutes(expireDate.getMinutes() - 1);
@@ -55,7 +56,10 @@ export class MessageService implements IMessageService {
      * @param address
      * @param authCode
      */
-    async verify(authCodeType: 'register' | 'resetPassword' | 'activateTransactionAccount' | 'updateTransactionAccountPwd', address: string, authCode: number): Promise<boolean> {
+    async verify(authCodeType: AuthCodeTypeEnum, address: string, authCode: number): Promise<boolean> {
+        if ([AuthCodeTypeEnum.AuditFail, AuthCodeTypeEnum.AuditPass].includes(authCodeType)) {
+            throw new ArgumentError(this.ctx.gettext('params-validate-failed'));
+        }
         return this.messageProvider.count({
             authCodeType, toAddress: address,
             'templateParams.code': authCode,

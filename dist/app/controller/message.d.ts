@@ -7,9 +7,9 @@ export declare class messageController {
     /**
      * 发送验证码
      */
-    send(): Promise<void>;
+    send(): Promise<FreelogContext>;
     /**
      * 核验验证码是否输入正确
      */
-    verify(): Promise<void>;
+    verify(): Promise<FreelogContext>;
 }

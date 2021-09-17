@@ -1,8 +1,8 @@
-import {findOptions, ITageService, TagInfo} from "../../interface";
-import {inject, provide} from "midway";
-import TagInfoProvider from "../data-provider/tag-provider";
-import {PageResult} from "egg-freelog-base";
-import AutoIncrementRecordProvider from "../data-provider/auto-increment-record-provider";
+import {findOptions, ITageService, TagInfo} from '../../interface';
+import {inject, provide} from 'midway';
+import TagInfoProvider from '../data-provider/tag-provider';
+import {PageResult} from 'egg-freelog-base';
+import AutoIncrementRecordProvider from '../data-provider/auto-increment-record-provider';
 
 @provide()
 export class TagService implements ITageService {
@@ -30,6 +30,7 @@ export class TagService implements ITageService {
     /**
      * 查询多条
      * @param condition
+     * @param options
      */
     async find(condition: object, options?: findOptions<TagInfo>): Promise<TagInfo[]> {
         return this.tagInfoProvider.find(condition, options?.projection, options);
@@ -38,6 +39,7 @@ export class TagService implements ITageService {
     /**
      * 查询单条
      * @param condition
+     * @param options
      */
     async findOne(condition: object, options?: findOptions<TagInfo>): Promise<TagInfo> {
         return this.tagInfoProvider.findOne(condition, options?.projection, options);
@@ -80,7 +82,7 @@ export class TagService implements ITageService {
 
     /**
      * 设置标签自增(自减)数量.
-     * @param tagInfo
+     * @param tagIds
      * @param number
      */
     async setTagAutoIncrementCounts(tagIds: number[], number: 1 | -1): Promise<boolean> {

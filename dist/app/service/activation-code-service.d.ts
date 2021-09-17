@@ -23,7 +23,7 @@ export declare class ActivationCodeService implements IActivationCodeService {
     batchUpdate(codes: string[], status: 0 | 1): Promise<boolean>;
     /**
      * 使用授权码激活测试资格
-     * @param userId
+     * @param userInfo
      * @param code
      */
     activateAuthorizationCode(userInfo: UserInfo, code: string): Promise<boolean>;

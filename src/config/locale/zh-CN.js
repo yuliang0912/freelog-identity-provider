@@ -50,5 +50,7 @@ module.exports = {
 
     'password_include': '密码必须包含数字和字母',
 
-    'user_account_has_already_freeze': '用户账号已被冻结'
+    'user_account_has_already_freeze': '用户账号已被冻结',
+
+    'user_email_or_mobile_invalid': "验证码发送地址与当前登录用户信息不匹配"
 }

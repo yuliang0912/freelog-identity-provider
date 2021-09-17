@@ -1,5 +1,6 @@
 import {config, provide, scope} from 'midway';
 import {createTransport} from 'nodemailer';
+import {AuthCodeTypeEnum} from '../enum';
 
 @provide()
 @scope('Singleton')
@@ -52,11 +53,7 @@ export default class SendMailHelper {
 
         const htmlTemplateContentMap = new Map<string, (...args) => string>();
 
-        htmlTemplateContentMap.set('resetPassword', (code: string) => `验证码${code}，您正在尝试修改登录密码，请妥善保管账户信息。`);
-        htmlTemplateContentMap.set('activateTransactionAccount', (code: string) => `验证码为：${code}，您正在进行账户激活操作，如非本人操作，请忽略本短信！`);
-        htmlTemplateContentMap.set('updateTransactionAccountPwd', (code: string) => `验证码为：${code}，您正在进行修改账户交易密码操作，如非本人操作，请忽略本短信！`);
-
-        htmlTemplateContentMap.set('register', (code: string) => `<!DOCTYPE html>
+        htmlTemplateContentMap.set(AuthCodeTypeEnum.Register, (code: string) => `<!DOCTYPE html>
                 <html lang="en">
                     <head><meta charset="UTF-8"></head>
                     <body>
@@ -69,7 +66,7 @@ export default class SendMailHelper {
                         </div>
                     </body>
                 </html>`);
-        htmlTemplateContentMap.set('auditPass', (username: string) => `<!DOCTYPE html>
+        htmlTemplateContentMap.set(AuthCodeTypeEnum.AuditPass, (username: string) => `<!DOCTYPE html>
                 <html lang="en">
                     <head>
                         <meta charset="UTF-8">
@@ -83,7 +80,7 @@ export default class SendMailHelper {
                         </div>
                     </body>
                 </html>`);
-        htmlTemplateContentMap.set('auditFail', (username: string) => `<!DOCTYPE html>
+        htmlTemplateContentMap.set(AuthCodeTypeEnum.AuditFail, (username: string) => `<!DOCTYPE html>
                 <html lang="en">
                     <head><meta charset="UTF-8"></head>
                     <body>
@@ -94,12 +91,51 @@ export default class SendMailHelper {
                         </div>
                     </body>
                 </html>`);
-        htmlTemplateContentMap.set('updateMobileOrEmail', (code: string) => `<!DOCTYPE html>
+        htmlTemplateContentMap.set(AuthCodeTypeEnum.ResetPassword, (code: string) => `<!DOCTYPE html>
+                <html lang="en">
+                    <head><meta charset="UTF-8"></head>
+                    <body>
+                        <div style="font-size: 14px;">
+                            <div>您好！</div><br>
+                            <div>您正在尝试修改登录密码，请回填如下验证码：</div><br>
+                            <div style="font-size: 18px; font-weight: 600;">${code}</div><br>
+                            <div>如果你有任何问题请联系：<a style="color: inherit;" href="mailto:support@freelog.com">support@freelog.com</a></div><br>
+                            <div>FreeLog团队</div>
+                        </div>
+                    </body>
+                </html>`);
+        htmlTemplateContentMap.set(AuthCodeTypeEnum.UpdateMobileOrEmail, (code: string) => `<!DOCTYPE html>
                 <html lang="en">
                     <head><meta charset="UTF-8"></head>
                     <body>
                         <div style="font-size: 14px;">
                             <div>【Freelog】您正在更改登录邮箱，请回填以下验证码: </div><br>
+                            <div style="font-size: 18px; font-weight: 600;">${code}</div><br>
+                            <div>如果你有任何问题请联系：<a style="color: inherit;" href="mailto:support@freelog.com">support@freelog.com</a></div><br>
+                            <div>FreeLog团队</div>
+                        </div>
+                    </body>
+                </html>`);
+        htmlTemplateContentMap.set(AuthCodeTypeEnum.ActivateTransactionAccount, (code: string) => `<!DOCTYPE html>
+                <html lang="en">
+                    <head><meta charset="UTF-8"></head>
+                    <body>
+                        <div style="font-size: 14px;">
+                            <div>您好！</div><br>
+                            <div>您正在进行账户激活操作，请回填如下验证码：</div><br>
+                            <div style="font-size: 18px; font-weight: 600;">${code}</div><br>
+                            <div>如果你有任何问题请联系：<a style="color: inherit;" href="mailto:support@freelog.com">support@freelog.com</a></div><br>
+                            <div>FreeLog团队</div>
+                        </div>
+                    </body>
+                </html>`);
+        htmlTemplateContentMap.set(AuthCodeTypeEnum.UpdateTransactionAccountPwd, (code: string) => `<!DOCTYPE html>
+                <html lang="en">
+                    <head><meta charset="UTF-8"></head>
+                    <body>
+                        <div style="font-size: 14px;">
+                            <div>您好！</div><br>
+                            <div>您正在尝试修改支付密码，请回填如下验证码：</div><br>
                             <div style="font-size: 18px; font-weight: 600;">${code}</div><br>
                             <div>如果你有任何问题请联系：<a style="color: inherit;" href="mailto:support@freelog.com">support@freelog.com</a></div><br>
                             <div>FreeLog团队</div>

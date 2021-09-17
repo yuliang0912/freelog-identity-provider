@@ -1,6 +1,16 @@
 import {controller, get, inject, post, provide} from 'midway';
-import {FreelogContext, CommonRegex, ApplicationError, ArgumentError} from 'egg-freelog-base';
+import {
+    ApplicationError,
+    ArgumentError,
+    AuthenticationError,
+    CommonRegex,
+    FreelogContext,
+    IdentityTypeEnum,
+    LogicError,
+    visitorIdentityValidator
+} from 'egg-freelog-base';
 import {IMessageService, IUserService, UserInfo} from '../../interface';
+import {AuthCodeTypeEnum} from '../../enum';
 
 @provide()
 @controller('/v2/messages')
@@ -20,8 +30,8 @@ export class messageController {
     async send() {
 
         const {ctx} = this;
-        const loginName = ctx.checkBody('loginName').exist().trim().value;
-        const authCodeType = ctx.checkBody('authCodeType').exist().in(['register', 'resetPassword', 'activateTransactionAccount', 'updateTransactionAccountPwd']).value;
+        const loginName = ctx.checkBody('loginName').exist().isEmailOrMobile86().trim().value;
+        const authCodeType = ctx.checkBody('authCodeType').exist().is((value) => Object.values(AuthCodeTypeEnum).includes(value), '验证码类型错误').value;
         ctx.validateParams();
 
         const condition: Partial<UserInfo> = {};
@@ -37,11 +47,22 @@ export class messageController {
         }
 
         const isExistLoginName = await this.userService.count(condition);
-        if (authCodeType === 'register' && isExistLoginName) {
+        if (authCodeType === AuthCodeTypeEnum.Register && isExistLoginName) {
             throw new ApplicationError(ctx.gettext(isMobile86 ? 'mobile-register-validate-failed' : 'email-register-validate-failed'));
+        } else if (authCodeType === 'register') {
+            await this.messageService.sendMessage(authCodeType, loginName);
+            return ctx.success(true);
         }
-        if (['resetPassword', 'activateTransactionAccount', 'updateTransactionAccountPwd'].includes(authCodeType) && !isExistLoginName) {
-            throw new ApplicationError(ctx.gettext('login-name-not-exist-error'));
+
+        if (!ctx.isLoginUser()) {
+            throw new AuthenticationError('user-authentication-failed');
+        }
+        const userInfo = await this.userService.findOne({userId: ctx.userId});
+        if (![userInfo.mobile, userInfo.email].includes(loginName)) {
+            throw new LogicError(ctx.gettext('user_email_or_mobile_invalid'));
+        }
+        if ([AuthCodeTypeEnum.AuditFail, AuthCodeTypeEnum.AuditPass].includes(authCodeType)) {
+            throw new ArgumentError(ctx.gettext('params-validate-failed', 'authCodeType'));
         }
 
         await this.messageService.sendMessage(authCodeType, loginName).then(data => ctx.success(true));
@@ -51,13 +72,19 @@ export class messageController {
      * 核验验证码是否输入正确
      */
     @get('/verify')
+    @visitorIdentityValidator(IdentityTypeEnum.LoginUser)
     async verify() {
 
         const {ctx} = this;
-        const authCodeType = ctx.checkQuery('authCodeType').exist().in(['register', 'resetPassword', 'activateTransactionAccount', 'updateTransactionAccountPwd']).value;
+        const authCodeType = ctx.checkBody('authCodeType').exist().is((value) => Object.values(AuthCodeTypeEnum).includes(value), '验证码类型错误').value;
         const authCode = ctx.checkQuery('authCode').exist().toInt().value;
         const address = ctx.checkQuery('address').exist().isEmailOrMobile86().value;
         ctx.validateParams();
+
+        const userInfo = await this.userService.findOne({userId: ctx.userId});
+        if (![userInfo.mobile, userInfo.email].includes(address)) {
+            return ctx.success(false);
+        }
 
         // 后续要加上用户调用频率限制
         const isVerify = await this.messageService.verify(authCodeType, address, authCode);

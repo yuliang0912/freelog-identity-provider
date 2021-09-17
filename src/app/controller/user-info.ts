@@ -5,7 +5,7 @@ import {
 } from 'egg-freelog-base';
 import headImageGenerator from '../../extend/head-image-generator';
 import {isString, isArray, first, omit, isDate, pick, isNumber, differenceWith} from 'lodash';
-import {UserStatusEnum} from '../../enum';
+import {AuthCodeTypeEnum, UserStatusEnum} from '../../enum';
 import {generatePassword} from '../../extend/common-helper';
 
 @provide()
@@ -177,7 +177,7 @@ export class UserInfoController {
             throw new ArgumentError(ctx.gettext('login-name-format-validate-failed'), {loginName});
         }
 
-        const isVerify = await this.messageService.verify('register', loginName, authCode);
+        const isVerify = await this.messageService.verify(AuthCodeTypeEnum.Register, loginName, authCode);
         if (!isVerify) {
             throw new ApplicationError(ctx.gettext('auth-code-validate-failed'));
         }
@@ -229,7 +229,7 @@ export class UserInfoController {
         if (!userInfo) {
             throw new ApplicationError(ctx.gettext('user-entity-not-found'));
         }
-        const isVerify = await this.messageService.verify('resetPassword', loginName, authCode);
+        const isVerify = await this.messageService.verify(AuthCodeTypeEnum.ResetPassword, loginName, authCode);
         if (!isVerify) {
             throw new ApplicationError(ctx.gettext('auth-code-validate-failed'));
         }

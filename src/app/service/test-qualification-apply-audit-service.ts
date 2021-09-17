@@ -10,7 +10,7 @@ import {
 import {ApplicationError, FreelogContext, MongodbOperation, PageResult} from 'egg-freelog-base';
 import SendSmsHelper from '../../extend/send-sms-helper';
 import SendMailHelper from '../../extend/send-mail-helper';
-import {AuditStatusEnum} from '../../enum';
+import {AuditStatusEnum, AuthCodeTypeEnum} from '../../enum';
 
 @provide()
 export class TestQualificationApplyAuditService implements ITestQualificationApplyAuditService {
@@ -127,7 +127,7 @@ export class TestQualificationApplyAuditService implements ITestQualificationApp
 
     /**
      * 审核申请信息
-     * @param ApplyRecordInfo
+     * @param applyRecordInfo
      * @param handleInfo
      * @returns {Promise<Boolean>}
      */
@@ -191,7 +191,7 @@ export class TestQualificationApplyAuditService implements ITestQualificationApp
     async sendAuditNoticeMessage(userInfo: UserInfo, auditStatus: 0 | 1) {
 
         const {mobile, username, email} = userInfo;
-        const templateCodeType = auditStatus === 1 ? 'auditPass' : 'auditFail';
+        const templateCodeType = auditStatus === 1 ? AuthCodeTypeEnum.AuditPass : AuthCodeTypeEnum.AuditFail;
 
         if (mobile) {
             return this.sendSmsHelper.sendSMS(mobile, this.sendSmsHelper.getTemplate(templateCodeType), {

@@ -62,7 +62,7 @@ let ActivationCodeService = class ActivationCodeService {
     }
     /**
      * 使用授权码激活测试资格
-     * @param userId
+     * @param userInfo
      * @param code
      */
     async activateAuthorizationCode(userInfo, code) {

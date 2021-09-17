@@ -1,8 +1,9 @@
-import {FreelogUserInfo, PageResult} from "egg-freelog-base";
+import {FreelogUserInfo, PageResult} from 'egg-freelog-base';
 import {
     ActivationCodeStatusEnum, AuditStatusEnum,
+    AuthCodeTypeEnum,
     MessageRecordStatusEnum, UserRoleEnum, UserStatusEnum, UserTypeEnum
-} from "./enum";
+} from './enum';
 
 export interface UserInfo extends FreelogUserInfo {
 
@@ -315,7 +316,7 @@ export interface ITageService extends IBaseService<TagInfo> {
 
     /**
      * 设置标签自增(自减)数量.
-     * @param tagInfo
+     * @param tagIds
      * @param number
      */
     setTagAutoIncrementCounts(tagIds: number[], number: 1 | -1): Promise<boolean>;
@@ -357,7 +358,7 @@ export interface IMessageService {
      * @param authCodeType
      * @param toAddress
      */
-    sendMessage(authCodeType: 'register' | 'resetPassword', toAddress: string): Promise<void>;
+    sendMessage(authCodeType: AuthCodeTypeEnum, toAddress: string): Promise<void>;
 
     /**
      * 校验验证码是否有效
@@ -365,7 +366,7 @@ export interface IMessageService {
      * @param address
      * @param authCode
      */
-    verify(authCodeType: 'register' | 'resetPassword', address: string, authCode: number): Promise<boolean>
+    verify(authCodeType: AuthCodeTypeEnum, address: string, authCode: number): Promise<boolean>
 }
 
 export interface ICaptchaService {
@@ -402,7 +403,7 @@ export interface IActivationCodeService extends IBaseService<ActivationCodeInfo>
 
     /**
      * 使用授权码激活测试资格
-     * @param userId
+     * @param userInfo
      * @param code
      */
     activateAuthorizationCode(userInfo: UserInfo, code: string): Promise<boolean>;

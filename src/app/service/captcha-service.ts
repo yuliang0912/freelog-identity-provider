@@ -1,8 +1,8 @@
-import {FreelogContext, CryptoHelper} from "egg-freelog-base";
-import {inject, provide} from "midway";
-import {ICaptchaService} from "../../interface";
+import {FreelogContext, CryptoHelper} from 'egg-freelog-base';
+import {inject, provide} from 'midway';
+import {ICaptchaService} from '../../interface';
 
-const svgCaptcha = require('svg-captcha')
+const svgCaptcha = require('svg-captcha');
 
 @provide()
 export class CaptchaService implements ICaptchaService {
@@ -12,8 +12,8 @@ export class CaptchaService implements ICaptchaService {
 
     /**
      * 生成generateCaptcha
+     * @param captchaKey
      * @param options
-     * @returns {CaptchaObj}
      */
     generateCaptcha(captchaKey: string, options: object = {}) {
 
@@ -24,7 +24,7 @@ export class CaptchaService implements ICaptchaService {
             httpOnly: false,
             //domain: ctx.config.domain,
             overwrite: true, signed: false
-        }
+        };
         const cookieKey = `captcha-${captchaKey}`;
         const signText = `${cookieKey}@${captcha.text.toLowerCase()}`;
 

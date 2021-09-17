@@ -77,6 +77,9 @@ export enum ActivationCodeStatusEnum {
     enabled = 1
 }
 
+/**
+ * 消息记录状态
+ */
 export enum MessageRecordStatusEnum {
 
     /**
@@ -90,6 +93,9 @@ export enum MessageRecordStatusEnum {
     SendFailed = 2
 }
 
+/**
+ * 审核状态
+ */
 export enum AuditStatusEnum {
 
     /**
@@ -113,9 +119,17 @@ export enum AuditStatusEnum {
  */
 export enum AuthCodeTypeEnum {
 
+    AuditPass = 'auditPass',
+
+    AuditFail = 'auditFail',
+
     Register = 'register',
 
     ResetPassword = 'resetPassword',
 
-    ActivateTransactionAccount = 'activateTransactionAccount'
+    ActivateTransactionAccount = 'activateTransactionAccount',
+
+    UpdateTransactionAccountPwd = 'updateTransactionAccountPwd',
+
+    UpdateMobileOrEmail = 'updateMobileOrEmail'
 }

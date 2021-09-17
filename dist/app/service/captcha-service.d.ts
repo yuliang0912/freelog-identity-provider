@@ -1,11 +1,11 @@
-import { FreelogContext } from "egg-freelog-base";
-import { ICaptchaService } from "../../interface";
+import { FreelogContext } from 'egg-freelog-base';
+import { ICaptchaService } from '../../interface';
 export declare class CaptchaService implements ICaptchaService {
     ctx: FreelogContext;
     /**
      * 生成generateCaptcha
+     * @param captchaKey
      * @param options
-     * @returns {CaptchaObj}
      */
     generateCaptcha(captchaKey: string, options?: object): any;
     /**

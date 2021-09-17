@@ -24,5 +24,6 @@ declare const _exports: {
     password_length: string;
     password_include: string;
     user_account_has_already_freeze: string;
+    user_email_or_mobile_invalid: string;
 };
 export = _exports;

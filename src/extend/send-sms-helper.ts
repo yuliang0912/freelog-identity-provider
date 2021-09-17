@@ -1,5 +1,6 @@
 import {config, provide, scope} from 'midway';
 import {CryptoHelper} from 'egg-freelog-base';
+import {AuthCodeTypeEnum} from '../enum';
 
 const SMSClient = require('@alicloud/sms-sdk');
 
@@ -15,13 +16,13 @@ export default class SendSmsHelper {
 
     constructor() {
         this.templateCodeMap = new Map<string, string>([
-            ['register', 'SMS_157980466'],
-            ['resetPassword', 'SMS_157980465'],
-            ['auditPass', 'SMS_182385369'],
-            ['auditFail', 'SMS_181859961'],
-            ['activateTransactionAccount', 'SMS_217427807'],
-            ['updateTransactionAccountPwd', 'SMS_218547345'],
-            ['updateMobileOrEmail', '']
+            [AuthCodeTypeEnum.Register, 'SMS_157980466'],
+            [AuthCodeTypeEnum.ResetPassword, 'SMS_157980465'],
+            [AuthCodeTypeEnum.AuditPass, 'SMS_182385369'],
+            [AuthCodeTypeEnum.AuditFail, 'SMS_181859961'],
+            [AuthCodeTypeEnum.ActivateTransactionAccount, 'SMS_217427807'],
+            [AuthCodeTypeEnum.UpdateTransactionAccountPwd, 'SMS_218547345'],
+            [AuthCodeTypeEnum.UpdateMobileOrEmail, 'SMS_224340686']
         ]);
     }
 
@@ -56,7 +57,7 @@ export default class SendSmsHelper {
      * 获取模板
      * @param authCodeType
      */
-    getTemplate(authCodeType: string) {
+    getTemplate(authCodeType: AuthCodeTypeEnum) {
         if (!this.templateCodeMap.has(authCodeType)) {
             return '';
         }

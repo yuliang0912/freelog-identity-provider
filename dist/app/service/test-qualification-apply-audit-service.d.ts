@@ -57,7 +57,7 @@ export declare class TestQualificationApplyAuditService implements ITestQualific
     }>;
     /**
      * 审核申请信息
-     * @param ApplyRecordInfo
+     * @param applyRecordInfo
      * @param handleInfo
      * @returns {Promise<Boolean>}
      */

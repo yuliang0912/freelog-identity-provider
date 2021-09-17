@@ -1,3 +1,4 @@
+import { AuthCodeTypeEnum } from '../enum';
 export default class SendSmsHelper {
     aliYunSecret: any;
     _smsClient: any;
@@ -16,5 +17,5 @@ export default class SendSmsHelper {
      * 获取模板
      * @param authCodeType
      */
-    getTemplate(authCodeType: string): string;
+    getTemplate(authCodeType: AuthCodeTypeEnum): string;
 }

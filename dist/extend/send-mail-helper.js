@@ -11,6 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const midway_1 = require("midway");
 const nodemailer_1 = require("nodemailer");
+const enum_1 = require("../enum");
 let SendMailHelper = class SendMailHelper {
     smtpTransportConfig;
     htmlTemplateContentMap;
@@ -47,10 +48,7 @@ let SendMailHelper = class SendMailHelper {
      */
     getHtmlTemplateContents() {
         const htmlTemplateContentMap = new Map();
-        htmlTemplateContentMap.set('resetPassword', (code) => `验证码${code}，您正在尝试修改登录密码，请妥善保管账户信息。`);
-        htmlTemplateContentMap.set('activateTransactionAccount', (code) => `验证码为：${code}，您正在进行账户激活操作，如非本人操作，请忽略本短信！`);
-        htmlTemplateContentMap.set('updateTransactionAccountPwd', (code) => `验证码为：${code}，您正在进行修改账户交易密码操作，如非本人操作，请忽略本短信！`);
-        htmlTemplateContentMap.set('register', (code) => `<!DOCTYPE html>
+        htmlTemplateContentMap.set(enum_1.AuthCodeTypeEnum.Register, (code) => `<!DOCTYPE html>
                 <html lang="en">
                     <head><meta charset="UTF-8"></head>
                     <body>
@@ -63,7 +61,7 @@ let SendMailHelper = class SendMailHelper {
                         </div>
                     </body>
                 </html>`);
-        htmlTemplateContentMap.set('auditPass', (username) => `<!DOCTYPE html>
+        htmlTemplateContentMap.set(enum_1.AuthCodeTypeEnum.AuditPass, (username) => `<!DOCTYPE html>
                 <html lang="en">
                     <head>
                         <meta charset="UTF-8">
@@ -77,7 +75,7 @@ let SendMailHelper = class SendMailHelper {
                         </div>
                     </body>
                 </html>`);
-        htmlTemplateContentMap.set('auditFail', (username) => `<!DOCTYPE html>
+        htmlTemplateContentMap.set(enum_1.AuthCodeTypeEnum.AuditFail, (username) => `<!DOCTYPE html>
                 <html lang="en">
                     <head><meta charset="UTF-8"></head>
                     <body>
@@ -88,12 +86,51 @@ let SendMailHelper = class SendMailHelper {
                         </div>
                     </body>
                 </html>`);
-        htmlTemplateContentMap.set('updateMobileOrEmail', (code) => `<!DOCTYPE html>
+        htmlTemplateContentMap.set(enum_1.AuthCodeTypeEnum.ResetPassword, (code) => `<!DOCTYPE html>
+                <html lang="en">
+                    <head><meta charset="UTF-8"></head>
+                    <body>
+                        <div style="font-size: 14px;">
+                            <div>您好！</div><br>
+                            <div>您正在尝试修改登录密码，请回填如下验证码：</div><br>
+                            <div style="font-size: 18px; font-weight: 600;">${code}</div><br>
+                            <div>如果你有任何问题请联系：<a style="color: inherit;" href="mailto:support@freelog.com">support@freelog.com</a></div><br>
+                            <div>FreeLog团队</div>
+                        </div>
+                    </body>
+                </html>`);
+        htmlTemplateContentMap.set(enum_1.AuthCodeTypeEnum.UpdateMobileOrEmail, (code) => `<!DOCTYPE html>
                 <html lang="en">
                     <head><meta charset="UTF-8"></head>
                     <body>
                         <div style="font-size: 14px;">
                             <div>【Freelog】您正在更改登录邮箱，请回填以下验证码: </div><br>
+                            <div style="font-size: 18px; font-weight: 600;">${code}</div><br>
+                            <div>如果你有任何问题请联系：<a style="color: inherit;" href="mailto:support@freelog.com">support@freelog.com</a></div><br>
+                            <div>FreeLog团队</div>
+                        </div>
+                    </body>
+                </html>`);
+        htmlTemplateContentMap.set(enum_1.AuthCodeTypeEnum.ActivateTransactionAccount, (code) => `<!DOCTYPE html>
+                <html lang="en">
+                    <head><meta charset="UTF-8"></head>
+                    <body>
+                        <div style="font-size: 14px;">
+                            <div>您好！</div><br>
+                            <div>您正在进行账户激活操作，请回填如下验证码：</div><br>
+                            <div style="font-size: 18px; font-weight: 600;">${code}</div><br>
+                            <div>如果你有任何问题请联系：<a style="color: inherit;" href="mailto:support@freelog.com">support@freelog.com</a></div><br>
+                            <div>FreeLog团队</div>
+                        </div>
+                    </body>
+                </html>`);
+        htmlTemplateContentMap.set(enum_1.AuthCodeTypeEnum.UpdateTransactionAccountPwd, (code) => `<!DOCTYPE html>
+                <html lang="en">
+                    <head><meta charset="UTF-8"></head>
+                    <body>
+                        <div style="font-size: 14px;">
+                            <div>您好！</div><br>
+                            <div>您正在尝试修改支付密码，请回填如下验证码：</div><br>
                             <div style="font-size: 18px; font-weight: 600;">${code}</div><br>
                             <div>如果你有任何问题请联系：<a style="color: inherit;" href="mailto:support@freelog.com">support@freelog.com</a></div><br>
                             <div>FreeLog团队</div>
@@ -113,4 +150,4 @@ SendMailHelper = __decorate([
     __metadata("design:paramtypes", [])
 ], SendMailHelper);
 exports.default = SendMailHelper;
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoic2VuZC1tYWlsLWhlbHBlci5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uL3NyYy9leHRlbmQvc2VuZC1tYWlsLWhlbHBlci50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzs7Ozs7Ozs7OztBQUFBLG1DQUE4QztBQUM5QywyQ0FBMkM7QUFJM0MsSUFBcUIsY0FBYyxHQUFuQyxNQUFxQixjQUFjO0lBRy9CLG1CQUFtQixDQUFDO0lBRXBCLHNCQUFzQixDQUFtQztJQUV6RDtRQUNJLElBQUksQ0FBQyxzQkFBc0IsR0FBRyxJQUFJLENBQUMsdUJBQXVCLEVBQUUsQ0FBQztJQUNqRSxDQUFDO0lBRUQ7Ozs7O09BS0c7SUFDSCxRQUFRLENBQUMsT0FBZSxFQUFFLElBQVksRUFBRSxVQUFrQixXQUFXO1FBQ2pFLDRCQUE0QjtRQUM1QixNQUFNLFdBQVcsR0FBRyxJQUFBLDRCQUFlLEVBQUMsSUFBSSxDQUFDLG1CQUFtQixDQUFDLENBQUM7UUFDOUQsTUFBTSxXQUFXLEdBQUc7WUFDaEIsSUFBSSxFQUFFLFdBQVcsSUFBSSxDQUFDLG1CQUFtQixDQUFDLElBQUksQ0FBQyxJQUFJLEdBQUcsRUFBRSxFQUFFLEVBQUUsT0FBTyxFQUFFLE9BQU8sRUFBRSxJQUFJO1NBQ3JGLENBQUM7UUFDRixPQUFPLFdBQVcsQ0FBQyxRQUFRLENBQUMsV0FBVyxDQUFDLENBQUM7SUFDN0MsQ0FBQztJQUdEOzs7O09BSUc7SUFDSCxXQUFXLENBQUMsWUFBb0IsRUFBRSxJQUFxQjtRQUVuRCxJQUFJLENBQUMsSUFBSSxDQUFDLHNCQUFzQixDQUFDLEdBQUcsQ0FBQyxZQUFZLENBQUMsRUFBRTtZQUNoRCxPQUFPLEVBQUUsQ0FBQztTQUNiO1FBRUQsT0FBTyxJQUFJLENBQUMsc0JBQXNCLENBQUMsR0FBRyxDQUFDLFlBQVksQ0FBQyxDQUFDLElBQUksQ0FBQyxJQUFJLEVBQUUsSUFBSSxDQUFDLENBQUM7SUFDMUUsQ0FBQztJQUdEOztPQUVHO0lBQ0gsdUJBQXVCO1FBRW5CLE1BQU0sc0JBQXNCLEdBQUcsSUFBSSxHQUFHLEVBQStCLENBQUM7UUFFdEUsc0JBQXNCLENBQUMsR0FBRyxDQUFDLGVBQWUsRUFBRSxDQUFDLElBQVksRUFBRSxFQUFFLENBQUMsTUFBTSxJQUFJLHlCQUF5QixDQUFDLENBQUM7UUFDbkcsc0JBQXNCLENBQUMsR0FBRyxDQUFDLDRCQUE0QixFQUFFLENBQUMsSUFBWSxFQUFFLEVBQUUsQ0FBQyxRQUFRLElBQUksNkJBQTZCLENBQUMsQ0FBQztRQUN0SCxzQkFBc0IsQ0FBQyxHQUFHLENBQUMsNkJBQTZCLEVBQUUsQ0FBQyxJQUFZLEVBQUUsRUFBRSxDQUFDLFFBQVEsSUFBSSxpQ0FBaUMsQ0FBQyxDQUFDO1FBRTNILHNCQUFzQixDQUFDLEdBQUcsQ0FBQyxVQUFVLEVBQUUsQ0FBQyxJQUFZLEVBQUUsRUFBRSxDQUFDOzs7Ozs7OzhFQU9hLElBQUk7Ozs7O3dCQUsxRCxDQUFDLENBQUM7UUFDbEIsc0JBQXNCLENBQUMsR0FBRyxDQUFDLFdBQVcsRUFBRSxDQUFDLFFBQWdCLEVBQUUsRUFBRSxDQUFDOzs7Ozs7O3NDQU9oQyxRQUFROzs7Ozs7d0JBTXRCLENBQUMsQ0FBQztRQUNsQixzQkFBc0IsQ0FBQyxHQUFHLENBQUMsV0FBVyxFQUFFLENBQUMsUUFBZ0IsRUFBRSxFQUFFLENBQUM7Ozs7O3NDQUtoQyxRQUFROzs7Ozt3QkFLdEIsQ0FBQyxDQUFDO1FBQ2xCLHNCQUFzQixDQUFDLEdBQUcsQ0FBQyxxQkFBcUIsRUFBRSxDQUFDLElBQVksRUFBRSxFQUFFLENBQUM7Ozs7Ozs4RUFNRSxJQUFJOzs7Ozt3QkFLMUQsQ0FBQyxDQUFDO1FBRWxCLE9BQU8sc0JBQXNCLENBQUM7SUFDbEMsQ0FBQztDQUNKLENBQUE7QUF2R0c7SUFEQyxJQUFBLGVBQU0sR0FBRTs7MkRBQ1c7QUFISCxjQUFjO0lBRmxDLElBQUEsZ0JBQU8sR0FBRTtJQUNULElBQUEsY0FBSyxFQUFDLFdBQVcsQ0FBQzs7R0FDRSxjQUFjLENBMEdsQztrQkExR29CLGNBQWMifQ==
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoic2VuZC1tYWlsLWhlbHBlci5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uL3NyYy9leHRlbmQvc2VuZC1tYWlsLWhlbHBlci50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzs7Ozs7Ozs7OztBQUFBLG1DQUE4QztBQUM5QywyQ0FBMkM7QUFDM0Msa0NBQXlDO0FBSXpDLElBQXFCLGNBQWMsR0FBbkMsTUFBcUIsY0FBYztJQUcvQixtQkFBbUIsQ0FBQztJQUVwQixzQkFBc0IsQ0FBbUM7SUFFekQ7UUFDSSxJQUFJLENBQUMsc0JBQXNCLEdBQUcsSUFBSSxDQUFDLHVCQUF1QixFQUFFLENBQUM7SUFDakUsQ0FBQztJQUVEOzs7OztPQUtHO0lBQ0gsUUFBUSxDQUFDLE9BQWUsRUFBRSxJQUFZLEVBQUUsVUFBa0IsV0FBVztRQUNqRSw0QkFBNEI7UUFDNUIsTUFBTSxXQUFXLEdBQUcsSUFBQSw0QkFBZSxFQUFDLElBQUksQ0FBQyxtQkFBbUIsQ0FBQyxDQUFDO1FBQzlELE1BQU0sV0FBVyxHQUFHO1lBQ2hCLElBQUksRUFBRSxXQUFXLElBQUksQ0FBQyxtQkFBbUIsQ0FBQyxJQUFJLENBQUMsSUFBSSxHQUFHLEVBQUUsRUFBRSxFQUFFLE9BQU8sRUFBRSxPQUFPLEVBQUUsSUFBSTtTQUNyRixDQUFDO1FBQ0YsT0FBTyxXQUFXLENBQUMsUUFBUSxDQUFDLFdBQVcsQ0FBQyxDQUFDO0lBQzdDLENBQUM7SUFHRDs7OztPQUlHO0lBQ0gsV0FBVyxDQUFDLFlBQW9CLEVBQUUsSUFBcUI7UUFFbkQsSUFBSSxDQUFDLElBQUksQ0FBQyxzQkFBc0IsQ0FBQyxHQUFHLENBQUMsWUFBWSxDQUFDLEVBQUU7WUFDaEQsT0FBTyxFQUFFLENBQUM7U0FDYjtRQUVELE9BQU8sSUFBSSxDQUFDLHNCQUFzQixDQUFDLEdBQUcsQ0FBQyxZQUFZLENBQUMsQ0FBQyxJQUFJLENBQUMsSUFBSSxFQUFFLElBQUksQ0FBQyxDQUFDO0lBQzFFLENBQUM7SUFHRDs7T0FFRztJQUNILHVCQUF1QjtRQUVuQixNQUFNLHNCQUFzQixHQUFHLElBQUksR0FBRyxFQUErQixDQUFDO1FBRXRFLHNCQUFzQixDQUFDLEdBQUcsQ0FBQyx1QkFBZ0IsQ0FBQyxRQUFRLEVBQUUsQ0FBQyxJQUFZLEVBQUUsRUFBRSxDQUFDOzs7Ozs7OzhFQU9GLElBQUk7Ozs7O3dCQUsxRCxDQUFDLENBQUM7UUFDbEIsc0JBQXNCLENBQUMsR0FBRyxDQUFDLHVCQUFnQixDQUFDLFNBQVMsRUFBRSxDQUFDLFFBQWdCLEVBQUUsRUFBRSxDQUFDOzs7Ozs7O3NDQU8vQyxRQUFROzs7Ozs7d0JBTXRCLENBQUMsQ0FBQztRQUNsQixzQkFBc0IsQ0FBQyxHQUFHLENBQUMsdUJBQWdCLENBQUMsU0FBUyxFQUFFLENBQUMsUUFBZ0IsRUFBRSxFQUFFLENBQUM7Ozs7O3NDQUsvQyxRQUFROzs7Ozt3QkFLdEIsQ0FBQyxDQUFDO1FBQ2xCLHNCQUFzQixDQUFDLEdBQUcsQ0FBQyx1QkFBZ0IsQ0FBQyxhQUFhLEVBQUUsQ0FBQyxJQUFZLEVBQUUsRUFBRSxDQUFDOzs7Ozs7OzhFQU9QLElBQUk7Ozs7O3dCQUsxRCxDQUFDLENBQUM7UUFDbEIsc0JBQXNCLENBQUMsR0FBRyxDQUFDLHVCQUFnQixDQUFDLG1CQUFtQixFQUFFLENBQUMsSUFBWSxFQUFFLEVBQUUsQ0FBQzs7Ozs7OzhFQU1iLElBQUk7Ozs7O3dCQUsxRCxDQUFDLENBQUM7UUFDbEIsc0JBQXNCLENBQUMsR0FBRyxDQUFDLHVCQUFnQixDQUFDLDBCQUEwQixFQUFFLENBQUMsSUFBWSxFQUFFLEVBQUUsQ0FBQzs7Ozs7Ozs4RUFPcEIsSUFBSTs7Ozs7d0JBSzFELENBQUMsQ0FBQztRQUNsQixzQkFBc0IsQ0FBQyxHQUFHLENBQUMsdUJBQWdCLENBQUMsMkJBQTJCLEVBQUUsQ0FBQyxJQUFZLEVBQUUsRUFBRSxDQUFDOzs7Ozs7OzhFQU9yQixJQUFJOzs7Ozt3QkFLMUQsQ0FBQyxDQUFDO1FBRWxCLE9BQU8sc0JBQXNCLENBQUM7SUFDbEMsQ0FBQztDQUNKLENBQUE7QUExSUc7SUFEQyxJQUFBLGVBQU0sR0FBRTs7MkRBQ1c7QUFISCxjQUFjO0lBRmxDLElBQUEsZ0JBQU8sR0FBRTtJQUNULElBQUEsY0FBSyxFQUFDLFdBQVcsQ0FBQzs7R0FDRSxjQUFjLENBNklsQztrQkE3SW9CLGNBQWMifQ==
