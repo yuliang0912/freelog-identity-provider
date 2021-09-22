@@ -7,6 +7,7 @@ export declare class UserInfoController {
     messageService: IMessageService;
     tagService: ITageService;
     headImageGenerator: headImageGenerator;
+    areaList: any[];
     /**
      * 获取用户列表
      */
@@ -36,9 +37,17 @@ export declare class UserInfoController {
      */
     updatePassword(): Promise<void>;
     /**
+     * 更新基础信息
+     */
+    updateUserInfo(): Promise<void>;
+    /**
      * 上传头像
      */
     uploadHeadImg(): Promise<void>;
+    /**
+     * 绑定(换绑)手机号或邮箱
+     */
+    updateMobileOrEmail(): Promise<void>;
     /**
      * 查询用户详情
      */

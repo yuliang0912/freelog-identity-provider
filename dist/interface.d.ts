@@ -50,6 +50,10 @@ export interface UserInfo extends FreelogUserInfo {
 export interface UserDetailInfo {
     userId: number;
     tagIds: number[];
+    birthday?: Date;
+    occupation?: string;
+    areaCode?: string;
+    areaName?: string;
     latestLoginDate: Date;
     latestLoginIp: string;
     statusChangeRemark: string;

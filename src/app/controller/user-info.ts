@@ -1,4 +1,4 @@
-import {controller, get, inject, post, provide, put} from 'midway';
+import {config, controller, get, inject, post, provide, put} from 'midway';
 import {IMessageService, ITageService, IUserService, UserDetailInfo, UserInfo} from '../../interface';
 import {
     FreelogContext, visitorIdentityValidator, CommonRegex, IdentityTypeEnum, ArgumentError, ApplicationError
@@ -7,6 +7,7 @@ import headImageGenerator from '../../extend/head-image-generator';
 import {isString, isArray, first, omit, isDate, pick, isNumber, differenceWith} from 'lodash';
 import {AuthCodeTypeEnum, UserStatusEnum} from '../../enum';
 import {generatePassword} from '../../extend/common-helper';
+import {deleteUndefinedFields} from 'egg-freelog-base/lib/freelog-common-func';
 
 @provide()
 @controller('/v2/users')
@@ -22,6 +23,8 @@ export class UserInfoController {
     tagService: ITageService;
     @inject()
     headImageGenerator: headImageGenerator;
+    @config()
+    areaList: any[];
 
     /**
      * 获取用户列表
@@ -131,30 +134,6 @@ export class UserInfoController {
         ctx.success({userId: userInfo.userId, isVerifySuccessful});
     }
 
-    // /**
-    //  * 获取用户详情
-    //  */
-    // @get('/search')
-    // @visitorIdentityValidator(IdentityTypeEnum.InternalClient | IdentityTypeEnum.LoginUser | IdentityTypeEnum.UnLoginUser)
-    // async searchOne() {
-    //     //手机号,邮箱
-    //     const {ctx} = this;
-    //     const keywords = ctx.checkQuery('keywords').exist().value
-    //     ctx.validateParams();
-    //
-    //     const condition: any = {};
-    //     if (ctx.helper.commonRegex.mobile86.test(keywords)) {
-    //         condition.mobile = new RegExp(`^${keywords}$`, 'i')
-    //     } else if (ctx.helper.commonRegex.email.test(keywords)) {
-    //         condition.email = new RegExp(`^${keywords}$`, 'i')
-    //     } else if (ctx.helper.commonRegex.username.test(keywords)) {
-    //         condition.username = new RegExp(`^${keywords}$`, 'i')
-    //     } else {
-    //         throw new ArgumentError(ctx.gettext('params-format-validate-failed', 'keywords'))
-    //     }
-    //     await this.userService.findOne(condition).then(ctx.success)
-    // }
-
     /**
      * 注册用户
      */
@@ -257,6 +236,39 @@ export class UserInfoController {
     }
 
     /**
+     * 更新基础信息
+     */
+    @put('/current/detailInfo')
+    @visitorIdentityValidator(IdentityTypeEnum.LoginUser)
+    async updateUserInfo() {
+        const {ctx} = this;
+        const areaCode = ctx.checkBody('areaCode').optional().isNumeric().len(2, 4).value;
+        const occupation = ctx.checkBody('occupation').optional().type('string').len(1, 20).value;
+        const birthday = ctx.checkBody('birthday').optional().toDate().value;
+        ctx.validateParams();
+
+        const model: Partial<UserDetailInfo> = deleteUndefinedFields({
+            areaCode, occupation, birthday
+        });
+        if (model.areaCode) {
+            if (model.areaCode.length === 2) {
+                model.areaName = this.areaList.find(x => x.code === model.areaCode)?.name;
+            } else if (model.areaCode.length === 4) {
+                const provinceInfo = this.areaList.find(x => x.code === model.areaCode.substr(0, 2));
+                model.areaName = provinceInfo?.children.find(x => x.code === model.areaCode)?.name;
+            }
+            if (!model.areaName) {
+                throw new ArgumentError(ctx.gettext('params-validate-failed', 'areaCode'));
+            }
+        }
+        if (!Object.keys(model).length) {
+            throw new ArgumentError(ctx.gettext('params-required-validate-failed'));
+        }
+
+        await this.userService.updateOneUserDetail({userId: ctx.userId}, model).then(ctx.success);
+    }
+
+    /**
      * 上传头像
      */
     @post('/current/uploadHeadImg')
@@ -280,6 +292,47 @@ export class UserInfoController {
         await this.userService.updateOne({userId: ctx.userId}, {headImage: headImageUrl}).then(() => {
             ctx.success(`${headImageUrl}?x-oss-process=style/head-image`);
         });
+    }
+
+    /**
+     * 绑定(换绑)手机号或邮箱
+     */
+    @put('/current/mobileOrEmail')
+    @visitorIdentityValidator(IdentityTypeEnum.LoginUser)
+    async updateMobileOrEmail() {
+        const {ctx} = this;
+        const oldAuthCode = ctx.checkBody('oldAuthCode').ignoreParamWhenEmpty().toInt().value;
+        const newAuthCode = ctx.checkBody('newAuthCode').exist().toInt().value;
+        const newLoginName = ctx.checkBody('newLoginName').exist().isEmailOrMobile86().value;
+        ctx.validateParams();
+
+        const isEmail = CommonRegex.email.test(newLoginName);
+        const userInfo = await this.userService.findOne({userId: ctx.userId});
+        const oldMessageAddress = isEmail ? userInfo.email : userInfo.mobile;
+        if ([userInfo.email, userInfo.mobile].includes(newLoginName)) {
+            throw new ArgumentError(ctx.gettext(`新的${isEmail ? '邮箱' : '手机号'}不能与原${isEmail ? '邮箱' : '手机号'}相同`));
+        }
+
+        // 如果不输入旧的验证码,代表直接绑定操作,否则代表换绑操作
+        if (!oldAuthCode && ((isEmail && Boolean(userInfo.email)) || !isEmail && Boolean(userInfo.mobile))) {
+            throw new ArgumentError('换绑操作必须输入原始验证码');
+        }
+        if (!await this.messageService.verify(AuthCodeTypeEnum.UpdateMobileOrEmail, oldMessageAddress, oldAuthCode)) {
+            throw new ArgumentError(ctx.gettext('原始验证码校验失败'));
+        }
+        if (!await this.messageService.verify(AuthCodeTypeEnum.UpdateMobileOrEmail, newLoginName, newAuthCode)) {
+            throw new ArgumentError(ctx.gettext('新验证码校验失败'));
+        }
+
+        const model: Partial<UserInfo> = isEmail ? {email: newLoginName} : {mobile: newLoginName};
+        await this.userService.findOne(model).then(data => {
+            if (data && isEmail) {
+                throw new ArgumentError(ctx.gettext('email-register-validate-failed'));
+            } else if (data) {
+                throw new ArgumentError(ctx.gettext('mobile-register-validate-failed'));
+            }
+        });
+        await this.userService.updateOne({userId: userInfo.userId}, model).then(() => ctx.success(true));
     }
 
     /**
@@ -339,6 +392,7 @@ export class UserInfoController {
         await this.userService.findOne(condition).then(ctx.success);
     }
 
+    // 设置用户标签
     @put('/:userId/setTag')
     @visitorIdentityValidator(IdentityTypeEnum.LoginUser)
     async setUserTag() {
@@ -363,6 +417,7 @@ export class UserInfoController {
         await this.userService.setTag(userId, tagList).then(ctx.success);
     }
 
+    // 取消设置用户标签
     @put('/:userId/unsetTag')
     @visitorIdentityValidator(IdentityTypeEnum.LoginUser)
     async unsetUserTag() {
@@ -403,6 +458,7 @@ export class UserInfoController {
         await Promise.all([task1, task2]).then(t => ctx.success(true));
     }
 
+    // 检查用户头像.
     @get('/allUsers/checkHeadImage')
     async checkHeadImage() {
         const userList = await this.userService.find({headImage: ''});
