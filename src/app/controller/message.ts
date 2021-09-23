@@ -32,21 +32,11 @@ export class messageController {
         const authCodeType = ctx.checkBody('authCodeType').exist().is((value) => Object.values(AuthCodeTypeEnum).includes(value), '验证码类型错误').value;
         ctx.validateParams();
 
-        const condition: Partial<UserInfo> = {};
+        const isEmail = CommonRegex.email.test(loginName);
+        const condition: Partial<UserInfo> = isEmail ? {email: loginName} : {mobile: loginName};
 
-        let isMobile86 = false;
-        if (CommonRegex.mobile86.test(loginName)) {
-            condition.mobile = loginName;
-            isMobile86 = true;
-        } else if (CommonRegex.email.test(loginName)) {
-            condition.email = loginName;
-        } else {
-            throw new ArgumentError(ctx.gettext('login-name-format-validate-failed'));
-        }
-
-        const isExistLoginName = await this.userService.count(condition);
-        if (AuthCodeTypeEnum.Register === authCodeType && isExistLoginName) {
-            throw new ApplicationError(ctx.gettext(isMobile86 ? 'mobile-register-validate-failed' : 'email-register-validate-failed'));
+        if (AuthCodeTypeEnum.Register === authCodeType && await this.userService.count(condition)) {
+            throw new ApplicationError(ctx.gettext(isEmail ? 'email-register-validate-failed' : 'mobile-register-validate-failed'));
         } else if ([AuthCodeTypeEnum.Register, AuthCodeTypeEnum.ResetPassword].includes(authCodeType)) {
             await this.messageService.sendMessage(authCodeType, loginName);
             return ctx.success(true);

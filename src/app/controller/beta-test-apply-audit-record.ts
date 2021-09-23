@@ -11,9 +11,9 @@ import {
     IUserService,
     TestQualificationApplyAuditRecordInfo,
     UserInfo
-} from "../../interface";
+} from '../../interface';
 import {first} from 'lodash';
-import {AuditStatusEnum} from "../../enum";
+import {AuditStatusEnum} from '../../enum';
 
 @provide()
 @controller('/v2/testQualifications/beta/apply')
@@ -33,8 +33,8 @@ export class betaTestApplyAuditRecordController {
         const skip = ctx.checkQuery('skip').ignoreParamWhenEmpty().toInt().default(0).ge(0).value;
         const limit = ctx.checkQuery('limit').ignoreParamWhenEmpty().toInt().default(10).gt(0).lt(101).value;
         const sort = ctx.checkQuery('sort').optional().value;
-        const status = ctx.checkQuery("status").ignoreParamWhenEmpty().toInt().value;
-        const keywords = ctx.checkQuery("keywords").ignoreParamWhenEmpty().default('').trim().value;
+        const status = ctx.checkQuery('status').ignoreParamWhenEmpty().toInt().value;
+        const keywords = ctx.checkQuery('keywords').ignoreParamWhenEmpty().default('').trim().value;
         ctx.validateParams().validateOfficialAuditAccount();
 
         const condition: Partial<UserInfo> = {};
@@ -58,7 +58,7 @@ export class betaTestApplyAuditRecordController {
 
         const userDetailInfoMap = await this.userService.findUserDetails({userId: {$in: pageResult.dataList.map(x => x.userId)}}).then(list => {
             return new Map(list.map(x => [x.userId, x]));
-        })
+        });
 
         pageResult.dataList = pageResult.dataList.map(record => {
             const userInfo = first<UserInfo>(record['userInfos']);
@@ -87,15 +87,15 @@ export class betaTestApplyAuditRecordController {
     async create() {
 
         const {ctx} = this;
-        const province = ctx.checkBody("province").exist().type('string').len(2, 10).value
-        const city = ctx.checkBody("city").exist().type('string').len(2, 10).value
-        const occupation = ctx.checkBody("occupation").exist().type('string').len(2, 15).value
-        const description = ctx.checkBody("description").exist().type('string').len(1, 500).value
+        const province = ctx.checkBody('province').exist().type('string').len(2, 10).value;
+        const city = ctx.checkBody('city').exist().type('string').len(2, 10).value;
+        const occupation = ctx.checkBody('occupation').exist().type('string').len(2, 15).value;
+        const description = ctx.checkBody('description').exist().type('string').len(1, 500).value;
         ctx.validateParams();
 
         const userInfo = await this.userService.findOne({userId: ctx.userId});
         if (userInfo.userType > 0) {
-            throw new ApplicationError(ctx.gettext('test-qualification-apply-refuse-error'))
+            throw new ApplicationError(ctx.gettext('test-qualification-apply-refuse-error'));
         }
 
         const model: Partial<TestQualificationApplyAuditRecordInfo> = {
@@ -104,7 +104,7 @@ export class betaTestApplyAuditRecordController {
             otherInfo: {
                 province, city, occupation, description
             }
-        }
+        };
 
         await this.testQualificationApplyAuditService.testQualificationApply(model).then(ctx.success);
     }
@@ -114,10 +114,10 @@ export class betaTestApplyAuditRecordController {
     async show() {
 
         const {ctx} = this;
-        const recordId = ctx.checkParams("recordId").exist().isMongoObjectId().value;
+        const recordId = ctx.checkParams('recordId').exist().isMongoObjectId().value;
         ctx.validateParams();
 
-        await this.testQualificationApplyAuditService.findOne({_id: recordId}).then(ctx.success)
+        await this.testQualificationApplyAuditService.findOne({_id: recordId}).then(ctx.success);
     }
 
     @put('/batch')
@@ -125,7 +125,7 @@ export class betaTestApplyAuditRecordController {
     async batchUpdate() {
 
         const {ctx} = this;
-        const recordIds = ctx.checkBody("recordIds").exist().isArray().len(1, 50).value;
+        const recordIds = ctx.checkBody('recordIds').exist().isArray().len(1, 50).value;
         const status = ctx.checkBody('status').exist().toInt().value; //只有初始态才可以修改
         const auditMsg = ctx.checkBody('auditMsg').optional().type('string').default('').value; //只有初始态才可以修改
         ctx.validateParams();
@@ -140,7 +140,7 @@ export class betaTestApplyAuditRecordController {
 
         await this.testQualificationApplyAuditService.batchAuditTestQualificationApply(applyRecordInfos, {
             status, auditMsg
-        }).then(ctx.success)
+        }).then(ctx.success);
     }
 
     @put('/:recordId')
@@ -148,7 +148,7 @@ export class betaTestApplyAuditRecordController {
     async update() {
 
         const {ctx} = this;
-        const recordId = ctx.checkParams("recordId").exist().isMongoObjectId().value;
+        const recordId = ctx.checkParams('recordId').exist().isMongoObjectId().value;
         const status = ctx.checkBody('status').exist().toInt().value; //只有初始态才可以修改
         const auditMsg = ctx.checkBody('auditMsg').optional().type('string').default('').value; //只有初始态才可以修改
         ctx.validateParams();
@@ -164,6 +164,6 @@ export class betaTestApplyAuditRecordController {
 
         await this.testQualificationApplyAuditService.auditTestQualificationApply(applyRecordInfo, {
             status, auditMsg
-        }).then(ctx.success)
+        }).then(ctx.success);
     }
 }

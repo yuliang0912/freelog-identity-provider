@@ -1,5 +1,5 @@
 import { FreelogContext } from 'egg-freelog-base';
-import { ITestQualificationApplyAuditService, IUserService } from "../../interface";
+import { ITestQualificationApplyAuditService, IUserService } from '../../interface';
 export declare class betaTestApplyAuditRecordController {
     ctx: FreelogContext;
     userService: IUserService;

@@ -77,6 +77,10 @@ export class UserInfoController {
             if (isArray(user?.userDetails) && user.userDetails.length) {
                 const userDetail: UserDetailInfo = first(user.userDetails);
                 user.tags = userDetail.tagIds.filter(x => tagMap.has(x.toString())).map(x => tagMap.get(x.toString()));
+                user.birthday = userDetail.birthday ?? '';
+                user.occupation = userDetail.occupation ?? '';
+                user.areaCode = userDetail.areaCode ?? '';
+                user.areaName = userDetail.areaName ?? '';
                 user.latestLoginIp = userDetail.latestLoginIp ?? '';
                 user.latestLoginDate = userDetail.latestLoginDate ?? null;
                 user.statusChangeRemark = userDetail.statusChangeRemark ?? '';
@@ -190,20 +194,13 @@ export class UserInfoController {
     async resetPassword() {
 
         const {ctx} = this;
-        const loginName = ctx.checkParams('loginName').exist().notEmpty().trim().value;
+        const loginName = ctx.checkParams('loginName').exist().isEmailOrMobile86().trim().value;
         const password = ctx.checkBody('password').exist().isLoginPassword(ctx.gettext('password_length') + ctx.gettext('password_include')).value;
         const authCode = ctx.checkBody('authCode').exist().toInt().value;
         ctx.validateParams();
 
-        const condition: Partial<UserInfo> = {};
-        if (CommonRegex.mobile86.test(loginName)) {
-            condition.mobile = loginName;
-        } else if (CommonRegex.email.test(loginName)) {
-            condition.email = loginName;
-        } else {
-            throw new ArgumentError(ctx.gettext('login-name-format-validate-failed'));
-        }
-
+        const isEmail = CommonRegex.email.test(loginName);
+        const condition: Partial<UserInfo> = isEmail ? {email: loginName} : {mobile: loginName};
         const userInfo = await this.userService.findOne(condition);
         if (!userInfo) {
             throw new ApplicationError(ctx.gettext('user-entity-not-found'));
@@ -228,8 +225,7 @@ export class UserInfoController {
         const newPassword = ctx.checkBody('newPassword').exist().isLoginPassword(ctx.gettext('password_length') + ctx.gettext('password_include')).value;
         ctx.validateParams();
 
-        const userId = ctx.userId;
-        const userInfo = await this.userService.findOne({userId});
+        const userInfo = await this.userService.findOne({userId: ctx.userId});
         ctx.entityNullObjectCheck(userInfo, {msg: ctx.gettext('login-name-or-password-validate-failed')});
 
         await this.userService.updatePassword(userInfo, oldPassword, newPassword).then(ctx.success);
