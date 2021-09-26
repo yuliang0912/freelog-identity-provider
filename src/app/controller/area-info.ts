@@ -1,5 +1,4 @@
 import {controller, provide, get, inject, config} from 'midway';
-import {pick} from 'lodash';
 import {FreelogContext} from 'egg-freelog-base';
 
 @provide()
@@ -14,7 +13,7 @@ export class areaInfoController {
     // 获取全部的省
     @get('/provinces')
     getAllProvinces() {
-        this.ctx.success(this.areaList.map(x => pick(x, ['code', 'name'])));
+        this.ctx.success(this.areaList);
     }
 
     // 根据省获取城市
