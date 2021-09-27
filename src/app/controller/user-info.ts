@@ -241,7 +241,7 @@ export class UserInfoController {
         const occupation = ctx.checkBody('occupation').optional().type('string').len(1, 20).value;
         const birthday = ctx.checkBody('birthday').optional().toDate().value;
         const sex = ctx.checkBody('sex').optional().toInt().in([0, 1, 2]).value;
-        const intro = ctx.checkBody('intro').optional().type('string').len(1, 200).value;
+        const intro = ctx.checkBody('intro').optional().type('string').len(0, 200).value;
         ctx.validateParams();
 
         const model: Partial<UserDetailInfo> = deleteUndefinedFields({
