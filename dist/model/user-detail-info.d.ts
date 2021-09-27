@@ -4,6 +4,6 @@ export declare class UserDetailInfoModel extends MongooseModelBase {
     constructor(mongoose: any);
     buildMongooseModel(): any;
     static get toObjectOptions(): {
-        transform(doc: any, ret: any): import("lodash").Omit<any, "_id">;
+        transform(doc: any, ret: any): import("lodash").Omit<any, "userId" | "_id" | "tagIds">;
     };
 }

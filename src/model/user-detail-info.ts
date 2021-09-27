@@ -1,6 +1,7 @@
 import {omit} from 'lodash';
 import {scope, provide, plugin} from 'midway';
 import {MongooseModelBase} from 'egg-freelog-base/database/mongoose-model-base';
+import moment = require('moment');
 
 @scope('Singleton')
 @provide('model.userDetailInfo')
@@ -40,7 +41,10 @@ export class UserDetailInfoModel extends MongooseModelBase {
     static get toObjectOptions() {
         return {
             transform(doc, ret) {
-                return omit(ret, ['_id']);
+                if (ret.birthday) {
+                    ret.birthday = moment(ret.birthday).format('YYYY-MM-DD');
+                }
+                return omit(ret, ['_id', 'tagIds', 'userId']);
             }
         };
     }
