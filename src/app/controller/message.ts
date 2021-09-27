@@ -37,7 +37,7 @@ export class messageController {
 
         if (AuthCodeTypeEnum.Register === authCodeType && await this.userService.count(condition)) {
             throw new ApplicationError(ctx.gettext(isEmail ? 'email-register-validate-failed' : 'mobile-register-validate-failed'));
-        } else if ([AuthCodeTypeEnum.Register, AuthCodeTypeEnum.ResetPassword].includes(authCodeType)) {
+        } else if ([AuthCodeTypeEnum.Register, AuthCodeTypeEnum.ResetPassword, AuthCodeTypeEnum.UpdateMobileOrEmail].includes(authCodeType)) {
             await this.messageService.sendMessage(authCodeType, loginName);
             return ctx.success(true);
         }
