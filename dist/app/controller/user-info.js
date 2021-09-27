@@ -203,7 +203,7 @@ let UserInfoController = class UserInfoController {
      */
     async updateUserInfo() {
         const { ctx } = this;
-        const areaCode = ctx.checkBody('areaCode').optional().isNumeric().len(2, 4).value;
+        const areaCode = ctx.checkBody('areaCode').optional().isNumeric().len(4, 6).value;
         const occupation = ctx.checkBody('occupation').optional().type('string').len(1, 20).value;
         const birthday = ctx.checkBody('birthday').optional().toDate().value;
         const sex = ctx.checkBody('sex').optional().toInt().in([0, 1, 2]).value;
