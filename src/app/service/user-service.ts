@@ -184,7 +184,9 @@ export class UserService implements IUserService {
      * @param model
      */
     async updateOneUserDetail(condition: object, model: Partial<UserDetailInfo>): Promise<boolean> {
-        return this.userDetailProvider.updateOne(condition, model).then(t => Boolean(t.ok));
+        return this.userDetailProvider.findOneAndUpdate(condition, model, {new: true}).then(data => {
+            return data || this.userDetailProvider.create(Object.assign({userId: this.ctx.userId}, model));
+        }).then(() => true);
     }
 
     async findUserDetails(condition: object): Promise<UserDetailInfo[]> {
