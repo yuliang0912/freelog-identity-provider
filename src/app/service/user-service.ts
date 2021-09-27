@@ -2,7 +2,7 @@ import {v4} from 'uuid';
 import {inject, provide} from 'midway';
 import {generatePassword} from '../../extend/common-helper';
 import AutoIncrementRecordProvider from '../data-provider/auto-increment-record-provider';
-import {ArgumentError, FreelogContext, MongodbOperation, PageResult} from 'egg-freelog-base';
+import {ArgumentError, CommonRegex, FreelogContext, MongodbOperation, PageResult} from 'egg-freelog-base';
 import {findOptions, ITageService, IUserService, TagInfo, UserDetailInfo, UserInfo} from '../../interface';
 import {UserRoleEnum, UserStatusEnum} from '../../enum';
 import {difference} from 'lodash';
@@ -20,6 +20,22 @@ export class UserService implements IUserService {
     userDetailProvider: MongodbOperation<UserDetailInfo>;
     @inject()
     autoIncrementRecordProvider: AutoIncrementRecordProvider;
+
+    // 通过登录名查找用户(忽略大小写)
+    async findUserByLoginName(loginName: string): Promise<UserInfo> {
+        const condition: any = {};
+        const loginNameRegex = new RegExp(`^${loginName}$`, 'i');
+        if (CommonRegex.mobile86.test(loginName)) {
+            condition.mobile = loginNameRegex;
+        } else if (CommonRegex.email.test(loginName)) {
+            condition.email = loginNameRegex;
+        } else if (CommonRegex.username.test(loginName)) {
+            condition.username = loginNameRegex;
+        } else {
+            throw new ArgumentError('参数错误');
+        }
+        return this.userInfoProvider.findOne(condition);
+    }
 
     async count(condition: object): Promise<number> {
         return this.userInfoProvider.count(condition);

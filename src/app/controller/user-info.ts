@@ -80,6 +80,8 @@ export class UserInfoController {
                 user.birthday = userDetail.birthday ?? '';
                 user.occupation = userDetail.occupation ?? '';
                 user.areaCode = userDetail.areaCode ?? '';
+                user.intro = userDetail.intro ?? '';
+                user.sex = userDetail.sex;
                 user.areaName = userDetail.areaName ?? '';
                 user.latestLoginIp = userDetail.latestLoginIp ?? '';
                 user.latestLoginDate = userDetail.latestLoginDate ?? null;
@@ -118,7 +120,9 @@ export class UserInfoController {
     @visitorIdentityValidator(IdentityTypeEnum.LoginUser)
     async current() {
         const {ctx} = this;
-        await this.userService.findOne({userId: ctx.userId}).then(ctx.success);
+        const userInfo = await this.userService.findOne({userId: ctx.userId}).then(x => x.toObject());
+        userInfo.userDetail = await this.userService.findUserDetails({userId: userInfo.userId}).then(first);
+        ctx.success(userInfo);
     }
 
     /**
@@ -145,43 +149,38 @@ export class UserInfoController {
     async create() {
 
         const {ctx} = this;
-        const loginName = ctx.checkBody('loginName').exist().notEmpty().value;
+        const loginName = ctx.checkBody('loginName').exist().isEmailOrMobile86().value;
         const password = ctx.checkBody('password').exist().isLoginPassword(ctx.gettext('password_length') + ctx.gettext('password_include')).value;
         const username = ctx.checkBody('username').exist().isUsername().value;
         const authCode = ctx.checkBody('authCode').exist().toInt().value;
         ctx.validateParams();
-
-        const model: Partial<UserInfo> = {};
-        if (CommonRegex.mobile86.test(loginName)) {
-            model.mobile = loginName;
-        } else if (CommonRegex.email.test(loginName)) {
-            model.email = loginName;
-        } else {
-            throw new ArgumentError(ctx.gettext('login-name-format-validate-failed'), {loginName});
-        }
 
         const isVerify = await this.messageService.verify(AuthCodeTypeEnum.Register, loginName, authCode);
         if (!isVerify) {
             throw new ApplicationError(ctx.gettext('auth-code-validate-failed'));
         }
 
-        const condition = {$or: [{username}, model.mobile ? {mobile: loginName} : {email: loginName}]};
-        await this.userService.findOne(condition).then(data => {
-            if (data && data.mobile === loginName) {
+        await this.userService.findUserByLoginName(loginName).then(data => {
+            if (data?.mobile === loginName) {
                 throw new ArgumentError(ctx.gettext('mobile-register-validate-failed'));
-            } else if (data && data.email === loginName) {
+            } else if (data?.email.toLowerCase() === loginName.toLowerCase) {
                 throw new ArgumentError(ctx.gettext('email-register-validate-failed'));
             } else if (data) {
                 throw new ArgumentError(ctx.gettext('username-register-validate-failed'));
             }
         });
 
-        const userInfo = Object.assign({username, password}, model);
-        const createdUserInfo = await this.userService.create(userInfo);
+        const model: Partial<UserInfo> = {username, password};
+        if (CommonRegex.mobile86.test(loginName)) {
+            model.mobile = loginName;
+        } else {
+            model.email = loginName;
+        }
+        const createdUserInfo = await this.userService.create(model);
         ctx.success(createdUserInfo);
 
         try {
-            await this._generateHeadImage(userInfo.userId);
+            await this._generateHeadImage(createdUserInfo.userId);
         } catch (e) {
             console.log('用户头像创建失败', e.toString());
         }
@@ -241,10 +240,12 @@ export class UserInfoController {
         const areaCode = ctx.checkBody('areaCode').optional().isNumeric().len(2, 4).value;
         const occupation = ctx.checkBody('occupation').optional().type('string').len(1, 20).value;
         const birthday = ctx.checkBody('birthday').optional().toDate().value;
+        const sex = ctx.checkBody('sex').optional().toInt().in([0, 1, 2]).value;
+        const intro = ctx.checkBody('intro').optional().type('string').len(1, 200).value;
         ctx.validateParams();
 
         const model: Partial<UserDetailInfo> = deleteUndefinedFields({
-            areaCode, occupation, birthday
+            areaCode, occupation, birthday, sex, intro
         });
         if (model.areaCode) {
             if (model.areaCode.length === 2) {
@@ -321,7 +322,7 @@ export class UserInfoController {
         }
 
         const model: Partial<UserInfo> = isEmail ? {email: newLoginName} : {mobile: newLoginName};
-        await this.userService.findOne(model).then(data => {
+        await this.userService.findUserByLoginName(newLoginName).then(data => {
             if (data && isEmail) {
                 throw new ArgumentError(ctx.gettext('email-register-validate-failed'));
             } else if (data) {

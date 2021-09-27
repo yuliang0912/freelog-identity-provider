@@ -1,6 +1,6 @@
 import {config, controller, get, inject, post, provide} from 'midway';
-import {ArgumentError, AuthenticationError, CommonRegex, FreelogContext, JwtHelper} from 'egg-freelog-base';
-import {IUserService, UserInfo} from '../../interface';
+import {AuthenticationError, FreelogContext, JwtHelper} from 'egg-freelog-base';
+import {IUserService} from '../../interface';
 import {generatePassword} from '../../extend/common-helper';
 import {pick} from 'lodash';
 
@@ -28,18 +28,7 @@ export class passportController {
         const returnUrl = ctx.checkBody('returnUrl').optional().emptyStringAsNothingness().value;
         ctx.validateParams();
 
-        const condition: Partial<UserInfo> = {};
-        if (CommonRegex.mobile86.test(loginName)) {
-            condition.mobile = loginName;
-        } else if (CommonRegex.email.test(loginName)) {
-            condition.email = loginName;
-        } else if (CommonRegex.username.test(loginName)) {
-            condition.username = loginName;
-        } else {
-            throw new ArgumentError(ctx.gettext('login-name-format-validate-failed'), {loginName});
-        }
-
-        const userInfo = await this.userService.findOne(condition);
+        const userInfo = await this.userService.findUserByLoginName(loginName);
         if (!userInfo || generatePassword(userInfo.salt, password) !== userInfo.password) {
             throw new AuthenticationError(ctx.gettext('login-name-or-password-validate-failed'));
         }
@@ -90,16 +79,14 @@ export class passportController {
      * @param token
      */
     _generateJwtPayload(userId: number, token: string) {
-        {
-            const currTime = Math.round(new Date().getTime() / 1000);
-            return {
-                iss: 'https://identity.freelog.com',
-                sub: userId.toString(),
-                aud: 'freelog-website',
-                exp: currTime + 1296000,
-                iat: currTime,
-                jti: token
-            };
-        }
+        const currTime = Math.round(new Date().getTime() / 1000);
+        return {
+            iss: 'https://identity.freelog.com',
+            sub: userId.toString(),
+            aud: 'freelog-website',
+            exp: currTime + 1296000,
+            iat: currTime,
+            jti: token
+        };
     }
 }

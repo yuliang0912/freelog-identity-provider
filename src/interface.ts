@@ -62,6 +62,9 @@ export interface UserInfo extends FreelogUserInfo {
      */
     status: UserStatusEnum;
 
+    /**
+     * 用户详细信息
+     */
     userDetail?: UserDetailInfo;
 }
 
@@ -72,6 +75,8 @@ export interface UserDetailInfo {
     occupation?: string;
     areaCode?: string;
     areaName?: string;
+    intro?: string;
+    sex?: 0 | 1 | 2;
     latestLoginDate: Date;
     latestLoginIp: string;
     statusChangeRemark: string;
@@ -338,7 +343,7 @@ export interface IUserService extends IBaseService<UserInfo> {
 
     updatePassword(userInfo: UserInfo, oldPassword: string, newPassword: string): Promise<boolean>;
 
-    setTag(userId: number, tagInfos: TagInfo[]): Promise<boolean>
+    setTag(userId: number, tagInfos: TagInfo[]): Promise<boolean>;
 
     unsetTag(userId: number, tagInfo: TagInfo): Promise<boolean>;
 
@@ -352,6 +357,8 @@ export interface IUserService extends IBaseService<UserInfo> {
      * @param model
      */
     updateOneUserDetail(condition: object, model: Partial<UserDetailInfo>): Promise<boolean>;
+
+    findUserByLoginName(loginName: string): Promise<UserInfo>;
 
     findUserDetails(condition: object): Promise<UserDetailInfo[]>;
 }

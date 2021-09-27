@@ -14,6 +14,7 @@ export class UserDetailInfoModel extends MongooseModelBase {
 
         const userDetailInfoSchema = new this.mongoose.Schema({
             userId: {type: Number, required: true}, // 用户ID
+            sex: {type: Number, enum: [0, 1, 2], default: 0, required: true}, // 性别
             birthday: {type: Date, default: null, required: false}, // 生日
             occupation: {type: String, default: '', required: false}, // 职业
             areaCode: {type: String, default: '', required: false}, // 区域编码
@@ -22,6 +23,7 @@ export class UserDetailInfoModel extends MongooseModelBase {
             latestLoginIp: {type: String, default: '', required: false}, // 最新登录IP
             statusChangeRemark: {type: String, default: '', required: false}, // 状态变更备注
             tagIds: {type: [Number], default: [], required: false}, // tagId,有关联需求.
+            intro: {type: String, required: false, default: ''}, // 简介
         }, {
             versionKey: false,
             timestamps: {createdAt: 'createDate', updatedAt: 'updateDate'},

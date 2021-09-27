@@ -7,6 +7,7 @@ export declare class UserService implements IUserService {
     userInfoProvider: MongodbOperation<UserInfo>;
     userDetailProvider: MongodbOperation<UserDetailInfo>;
     autoIncrementRecordProvider: AutoIncrementRecordProvider;
+    findUserByLoginName(loginName: string): Promise<UserInfo>;
     count(condition: object): Promise<number>;
     find(condition: object, options?: findOptions<UserInfo>): Promise<UserInfo[]>;
     findIntervalList(condition: object, options?: findOptions<UserInfo>): Promise<PageResult<UserInfo>>;
