@@ -312,7 +312,7 @@ export class UserInfoController {
 
         // 如果不输入旧的验证码,代表直接绑定操作,否则代表换绑操作
         if (!oldAuthCode && ((isEmail && Boolean(userInfo.email)) || !isEmail && Boolean(userInfo.mobile))) {
-            throw new ArgumentError('换绑操作必须输入原始验证码');
+            throw new ArgumentError('换绑操作必须输入原始验证码', {userInfo});
         }
         if (!await this.messageService.verify(AuthCodeTypeEnum.UpdateMobileOrEmail, oldMessageAddress, oldAuthCode)) {
             throw new ArgumentError(ctx.gettext('原始验证码校验失败'));
