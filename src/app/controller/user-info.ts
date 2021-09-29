@@ -6,7 +6,7 @@ import {
 import headImageGenerator from '../../extend/head-image-generator';
 import {isString, isArray, first, omit, isDate, pick, isNumber, differenceWith} from 'lodash';
 import {AuthCodeTypeEnum, UserStatusEnum} from '../../enum';
-import {generatePassword} from '../../extend/common-helper';
+import {generatePassword, getAreaName} from '../../extend/common-helper';
 import {deleteUndefinedFields} from 'egg-freelog-base/lib/freelog-common-func';
 
 @provide()
@@ -248,12 +248,7 @@ export class UserInfoController {
             areaCode, occupation, birthday, sex, intro
         });
         if (model.areaCode) {
-            if (model.areaCode.length === 2) {
-                model.areaName = this.areaList.find(x => x.code === model.areaCode)?.name;
-            } else if (model.areaCode.length === 4) {
-                const provinceInfo = this.areaList.find(x => x.code === model.areaCode.substr(0, 2));
-                model.areaName = provinceInfo?.children.find(x => x.code === model.areaCode)?.name;
-            }
+            model.areaName = getAreaName(model.areaCode);
             if (!model.areaName) {
                 throw new ArgumentError(ctx.gettext('params-validate-failed', 'areaCode'));
             }
