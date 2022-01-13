@@ -1,4 +1,4 @@
-import {config, controller, get, inject, post, provide, put} from 'midway';
+import {controller, get, inject, post, provide, put} from 'midway';
 import {IMessageService, ITageService, IUserService, UserDetailInfo, UserInfo} from '../../interface';
 import {
     FreelogContext, visitorIdentityValidator, CommonRegex, IdentityTypeEnum, ArgumentError, ApplicationError
@@ -23,8 +23,6 @@ export class UserInfoController {
     tagService: ITageService;
     @inject()
     headImageGenerator: headImageGenerator;
-    @config()
-    areaList: any[];
 
     /**
      * 获取用户列表
@@ -151,7 +149,9 @@ export class UserInfoController {
         const {ctx} = this;
         const loginName = ctx.checkBody('loginName').exist().isEmailOrMobile86().value;
         const password = ctx.checkBody('password').exist().isLoginPassword(ctx.gettext('password_length') + ctx.gettext('password_include')).value;
-        const username = ctx.checkBody('username').exist().isUsername().value;
+        const username = ctx.checkBody('username').exist().isUsername().is(function (vale) {
+            return !CommonRegex.mobile86.test(vale);
+        }).value;
         const authCode = ctx.checkBody('authCode').exist().toInt().value;
         ctx.validateParams();
 

@@ -7,7 +7,6 @@ export declare class UserInfoController {
     messageService: IMessageService;
     tagService: ITageService;
     headImageGenerator: headImageGenerator;
-    areaList: any[];
     /**
      * 获取用户列表
      */
