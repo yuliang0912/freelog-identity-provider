@@ -20,7 +20,7 @@
     "probe-image-size": "^5.0.0",
     "svg-captcha": "^1.4.0",
     "uuid": "^8.3.2",
-    "validator": "^13.6.0"
+    "validator": "^13.7.0"
   },
   "devDependencies": {
     "@types/mocha": "^5.2.7",
