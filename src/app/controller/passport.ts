@@ -34,7 +34,7 @@ export class passportController {
         }
 
         this.userService.updateOneUserDetail({userId: userInfo.userId}, {
-            latestLoginDate: new Date(), latestLoginIp: ctx.ip,
+            userId: userInfo.userId, latestLoginDate: new Date(), latestLoginIp: ctx.ip,
         }).then();
 
         const {publicKey, privateKey, cookieName} = this.jwtAuth;
