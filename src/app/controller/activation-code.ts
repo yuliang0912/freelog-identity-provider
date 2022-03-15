@@ -1,7 +1,7 @@
 import {controller, get, put, inject, post, provide} from 'midway';
 import {FreelogContext, visitorIdentityValidator, IdentityTypeEnum, ApplicationError} from 'egg-freelog-base';
 import {IActivationCodeService, IUserService} from '../../interface';
-import {isString} from 'lodash';
+import {isDate, isString} from 'lodash';
 
 @provide()
 @controller('/v2/testQualifications/beta/codes')
@@ -23,6 +23,8 @@ export class activationCodeController {
         const limit = ctx.checkQuery('limit').optional().toInt().default(10).gt(0).lt(101).value;
         const sort = ctx.checkQuery('sort').optional().emptyStringAsNothingness().value;
         const status = ctx.checkQuery('status').optional().toInt().value;
+        const beginCreateDate = ctx.checkQuery('beginCreateDate').ignoreParamWhenEmpty().toDate().value;
+        const endCreateDate = ctx.checkQuery('endCreateDate').ignoreParamWhenEmpty().toDate().value;
         const keywords = ctx.checkQuery('keywords').optional().emptyStringAsNothingness().trim().value;
         ctx.validateParams().validateOfficialAuditAccount();
 
@@ -32,6 +34,13 @@ export class activationCodeController {
         }
         if (isString(keywords) && keywords.length) {
             condition.$or = [{username: keywords}, {code: keywords}];
+        }
+        if (isDate(beginCreateDate) && isDate(endCreateDate)) {
+            condition.createDate = {$gte: beginCreateDate, $lte: endCreateDate};
+        } else if (isDate(beginCreateDate)) {
+            condition.createDate = {$gte: beginCreateDate};
+        } else if (isDate(endCreateDate)) {
+            condition.createDate = {$lte: endCreateDate};
         }
 
         await this.activationCodeService.findIntervalList(condition, {
