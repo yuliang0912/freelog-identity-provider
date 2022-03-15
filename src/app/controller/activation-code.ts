@@ -55,7 +55,7 @@ export class activationCodeController {
 
         const {ctx} = this;
         const createQuantity = ctx.checkBody('createQuantity').optional().toInt().gt(0).lt(51).default(10).value;
-        const limitCount = ctx.checkBody('limitCount').exist().toInt().gt(0).value;
+        const limitCount = ctx.checkBody('limitCount').exist().toInt().ge(0).value;
         const startEffectiveDate = ctx.checkBody('startEffectiveDate').optional().toDate().value;
         const endEffectiveDate = ctx.checkBody('endEffectiveDate').optional().toDate().value;
         ctx.validateParams().validateOfficialAuditAccount();
