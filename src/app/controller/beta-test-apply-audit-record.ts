@@ -77,7 +77,8 @@ export class betaTestApplyAuditRecordController {
                 latestLoginData: userDetailInfo?.latestLoginDate ?? null,
                 latestLoginIp: userDetailInfo?.latestLoginIp ?? '',
                 createDate: record.createDate,
-                status: record.status
+                status: record.status,
+                auditMsg: record.auditMsg
             } as any;
         });
         ctx.success(pageResult);
