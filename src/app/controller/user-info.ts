@@ -384,6 +384,22 @@ export class UserInfoController {
         await this.userService.findOne(condition).then(ctx.success);
     }
 
+    /**
+     * 批量设置标签(多用户设置一个标签)
+     */
+    @put('/batchSetTag')
+    async batchSetUsersTag() {
+        const {ctx} = this;
+        const userIds = ctx.checkBody('userIds').exist().isArray().len(1, 100).value;
+        const tagId = ctx.checkBody('tagId').exist().isInt().gt(0).value;
+        ctx.validateParams();
+
+        const tagInfo = await this.tagService.findOne({_id: {$in: tagId}, status: 0});
+        ctx.entityNullObjectCheck(tagInfo);
+
+        await this.userService.batchSetTag(userIds, tagInfo).then(ctx.success);
+    }
+
     // 设置用户标签
     @put('/:userId/setTag')
     @visitorIdentityValidator(IdentityTypeEnum.LoginUser)
@@ -415,16 +431,19 @@ export class UserInfoController {
     async unsetUserTag() {
         const {ctx} = this;
         const userId = ctx.checkParams('userId').exist().toInt().gt(10000).value;
-        const tagId = ctx.checkBody('tagId').exist().toInt().gt(0).value;
+        const tagIds = ctx.checkBody('tagIds').exist().isArray().len(1, 100).value;
         ctx.validateParams().validateOfficialAuditAccount();
 
-        const tagInfo = await this.tagService.findOne({_id: tagId, status: 0});
-        ctx.entityNullObjectCheck(tagInfo);
+        const tagList = await this.tagService.find({_id: {$in: tagIds}, status: 0});
+        const invalidTagIds = differenceWith(tagIds, tagList, (x, y) => x.toString() === y.tagId.toString());
+        if (invalidTagIds.length) {
+            throw new ArgumentError(this.ctx.gettext('params-validate-failed', 'tagIds'), {invalidTagIds});
+        }
 
         const userInfo = await this.userService.findOne({userId});
         ctx.entityNullObjectCheck(userInfo);
 
-        await this.userService.unsetTag(userId, tagInfo).then(ctx.success);
+        await this.userService.unsetTag(userId, tagList).then(ctx.success);
     }
 
     // 冻结或恢复用户

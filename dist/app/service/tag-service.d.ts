@@ -7,10 +7,11 @@ export declare class TagService implements ITageService {
     autoIncrementRecordProvider: AutoIncrementRecordProvider;
     /**
      * 创建tag
-     * @param tags
+     * @param createTags
      * @param type
+     * @param updateTagIds
      */
-    create(tags: string[], type: 1 | 2): Promise<TagInfo[]>;
+    create(createTags: string[], type: 1 | 2, updateTagIds: number[]): Promise<TagInfo[]>;
     /**
      * 查询多条
      * @param condition
@@ -45,7 +46,7 @@ export declare class TagService implements ITageService {
      * @param tagInfo
      * @param number
      */
-    setTagAutoIncrementCount(tagInfo: TagInfo, number: 1 | -1): Promise<boolean>;
+    setTagAutoIncrementCount(tagInfo: TagInfo, number: number): Promise<boolean>;
     /**
      * 设置标签自增(自减)数量.
      * @param tagIds

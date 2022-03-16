@@ -43,11 +43,17 @@ export declare class UserService implements IUserService {
      */
     setTag(userId: number, tagInfos: TagInfo[]): Promise<boolean>;
     /**
-     * 取消设置Tag
-     * @param userId
+     * 批量为多用户设置标签
+     * @param userIds
      * @param tagInfo
      */
-    unsetTag(userId: number, tagInfo: TagInfo): Promise<boolean>;
+    batchSetTag(userIds: number[], tagInfo: TagInfo): Promise<boolean>;
+    /**
+     * 取消设置Tag
+     * @param userId
+     * @param tagInfos
+     */
+    unsetTag(userId: number, tagInfos: TagInfo[]): Promise<boolean>;
     /**
      * 更新用户详情信息
      * @param condition

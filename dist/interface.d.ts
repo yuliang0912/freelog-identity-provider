@@ -108,6 +108,10 @@ export interface ActivationCodeInfo {
      * 结束生效日期
      */
     endEffectiveDate: Date;
+    /**
+     * 备注
+     */
+    remark?: string;
 }
 export interface ActivationCodeUsedRecord {
     /**
@@ -219,7 +223,7 @@ export interface TagInfo {
      * 总设置数量
      */
     totalSetCount: number;
-    status: 0;
+    status: 0 | 1;
 }
 export interface findOptions<T> {
     sort?: {
@@ -236,7 +240,7 @@ export interface IBaseService<T> {
     count(condition: object): Promise<number>;
 }
 export interface ITageService extends IBaseService<TagInfo> {
-    create(tags: string[], type: 1 | 2): Promise<TagInfo[]>;
+    create(createTags: string[], type: 1 | 2, updateTagIds: number[]): Promise<TagInfo[]>;
     /**
      * 更新tag
      * @param tagInfo
@@ -248,7 +252,7 @@ export interface ITageService extends IBaseService<TagInfo> {
      * @param tagInfo
      * @param number
      */
-    setTagAutoIncrementCount(tagInfo: TagInfo, number: 1 | -1): Promise<boolean>;
+    setTagAutoIncrementCount(tagInfo: TagInfo, number: number): Promise<boolean>;
     /**
      * 设置标签自增(自减)数量.
      * @param tagIds
@@ -263,7 +267,8 @@ export interface IUserService extends IBaseService<UserInfo> {
     resetPassword(userInfo: UserInfo, newPassword: string): Promise<boolean>;
     updatePassword(userInfo: UserInfo, oldPassword: string, newPassword: string): Promise<boolean>;
     setTag(userId: number, tagInfos: TagInfo[]): Promise<boolean>;
-    unsetTag(userId: number, tagInfo: TagInfo): Promise<boolean>;
+    batchSetTag(userIds: number[], tagInfo: TagInfo): Promise<boolean>;
+    unsetTag(userId: number, tagInfos: TagInfo[]): Promise<boolean>;
     searchIntervalListByTags(condition: object, tagIds: number[], options?: findOptions<UserInfo>): Promise<PageResult<UserInfo>>;
     /**
      * 更新用户详情信息
@@ -314,8 +319,9 @@ export interface IActivationCodeService extends IBaseService<ActivationCodeInfo>
      * 批量修改状态
      * @param codes
      * @param status
+     * @param remark
      */
-    batchUpdate(codes: string[], status: 0 | 1): Promise<boolean>;
+    batchUpdate(codes: string[], status: 0 | 1, remark: string): Promise<boolean>;
     /**
      * 使用授权码激活测试资格
      * @param userInfo

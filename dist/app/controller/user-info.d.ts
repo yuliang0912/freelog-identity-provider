@@ -55,6 +55,10 @@ export declare class UserInfoController {
      * 获取用户信息
      */
     show(): Promise<FreelogContext>;
+    /**
+     * 批量设置标签(多用户设置一个标签)
+     */
+    batchSetUsersTag(): Promise<void>;
     setUserTag(): Promise<void>;
     unsetUserTag(): Promise<void>;
     freeOrRecoverUserStatus(): Promise<FreelogContext>;

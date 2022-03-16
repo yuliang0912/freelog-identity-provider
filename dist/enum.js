@@ -65,7 +65,7 @@ var ActivationCodeStatusEnum;
      */
     ActivationCodeStatusEnum[ActivationCodeStatusEnum["disabled"] = 0] = "disabled";
     /**
-     * 一起用
+     * 已启用
      */
     ActivationCodeStatusEnum[ActivationCodeStatusEnum["enabled"] = 1] = "enabled";
 })(ActivationCodeStatusEnum = exports.ActivationCodeStatusEnum || (exports.ActivationCodeStatusEnum = {}));

@@ -21,6 +21,7 @@ export class ActivationCodeModel extends MongooseModelBase {
             limitCount: {type: Number, default: 1, required: true, mixin: 1}, // 限制使用次数
             startEffectiveDate: {type: Date, default: null, required: false}, // 开始生效日期
             endEffectiveDate: {type: Date, default: null, required: false}, // 生效截止日期
+            remark: {type: String, default: '', required: false}, // 备注
             status: {type: Number, default: 0, required: true}, //0:未使用 1:已使用
         }, {
             versionKey: false,

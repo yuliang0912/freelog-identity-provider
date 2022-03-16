@@ -14,17 +14,23 @@ export class TagService implements ITageService {
 
     /**
      * 创建tag
-     * @param tags
+     * @param createTags
      * @param type
+     * @param updateTagIds
      */
-    async create(tags: string[], type: 1 | 2): Promise<TagInfo[]> {
+    async create(createTags: string[], type: 1 | 2, updateTagIds: number[]): Promise<TagInfo[]> {
 
         const tagLists: any[] = [];
-        for (const tag of tags) {
+        for (const tag of createTags) {
             tagLists.push({tag, type, status: 0, _id: await this.autoIncrementRecordProvider.getNextTagId()});
         }
+        if (updateTagIds?.length) {
+            await this.tagInfoProvider.updateMany({_id: {$in: updateTagIds}}, {status: 0});
+        }
 
-        return this.tagInfoProvider.insertMany(tagLists);
+        await this.tagInfoProvider.insertMany(tagLists);
+
+        return this.tagInfoProvider.find({_id: {$in: [...tagLists.map(x => x._id), ...updateTagIds]}});
     }
 
     /**
@@ -76,7 +82,7 @@ export class TagService implements ITageService {
      * @param tagInfo
      * @param number
      */
-    async setTagAutoIncrementCount(tagInfo: TagInfo, number: 1 | -1): Promise<boolean> {
+    async setTagAutoIncrementCount(tagInfo: TagInfo, number: number): Promise<boolean> {
         return this.tagInfoProvider.updateOne({_id: tagInfo.tagId}, {$inc: {totalSetCount: number}}).then(x => Boolean(x.nModified));
     }
 

@@ -72,7 +72,7 @@ export enum ActivationCodeStatusEnum {
     disabled = 0,
 
     /**
-     * 一起用
+     * 已启用
      */
     enabled = 1
 }

@@ -5,7 +5,7 @@ import AutoIncrementRecordProvider from '../data-provider/auto-increment-record-
 import {ArgumentError, CommonRegex, FreelogContext, MongodbOperation, PageResult} from 'egg-freelog-base';
 import {findOptions, ITageService, IUserService, TagInfo, UserDetailInfo, UserInfo} from '../../interface';
 import {UserRoleEnum, UserStatusEnum} from '../../enum';
-import {difference} from 'lodash';
+import {difference, intersection} from 'lodash';
 
 @provide()
 export class UserService implements IUserService {
@@ -163,19 +163,40 @@ export class UserService implements IUserService {
     }
 
     /**
-     * 取消设置Tag
-     * @param userId
+     * 批量为多用户设置标签
+     * @param userIds
      * @param tagInfo
      */
-    async unsetTag(userId: number, tagInfo: TagInfo): Promise<boolean> {
-        const userDetail = await this.userDetailProvider.findOne({userId});
-        if (!userDetail || !userDetail.tagIds.includes(tagInfo.tagId)) {
+    async batchSetTag(userIds: number[], tagInfo: TagInfo): Promise<boolean> {
+        const userDetailList = await this.userDetailProvider.find({userId: {$in: userIds}});
+        const effectiveUserDetailList = userDetailList.filter(x => !x.tagIds?.some(x => tagInfo.tagId));
+        if (!effectiveUserDetailList.length) {
             return true;
         }
-        await this.userDetailProvider.updateOne({userId}, {
-            tagIds: userDetail.tagIds.filter(x => x !== tagInfo.tagId)
+        await this.userDetailProvider.updateMany({userId: {$in: userIds}}, {
+            $addToSet: {tagIds: tagInfo.tagId}
         });
-        return this.tagService.setTagAutoIncrementCount(tagInfo, -1);
+        return this.tagService.setTagAutoIncrementCount(tagInfo, effectiveUserDetailList.length);
+    }
+
+    /**
+     * 取消设置Tag
+     * @param userId
+     * @param tagInfos
+     */
+    async unsetTag(userId: number, tagInfos: TagInfo[]): Promise<boolean> {
+        const tagIds = tagInfos.map(x => x.tagId);
+        const userDetail = await this.userDetailProvider.findOne({userId});
+        const effectiveTagIds = intersection(tagIds, userDetail?.tagIds ?? []);
+        if (!effectiveTagIds.length) {
+            return true;
+        }
+        const userTagIds = difference(userDetail?.tagIds ?? [], tagIds);
+
+        await this.userDetailProvider.updateOne({userId}, {
+            tagIds: userTagIds
+        });
+        return this.tagService.setTagAutoIncrementCounts(effectiveTagIds, -1);
     }
 
     /**

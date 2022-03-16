@@ -58,10 +58,11 @@ export class activationCodeController {
         const limitCount = ctx.checkBody('limitCount').exist().toInt().ge(0).value;
         const startEffectiveDate = ctx.checkBody('startEffectiveDate').optional().toDate().value;
         const endEffectiveDate = ctx.checkBody('endEffectiveDate').optional().toDate().value;
+        const remark = ctx.checkBody('remark').optional().value;
         ctx.validateParams().validateOfficialAuditAccount();
 
         await this.activationCodeService.batchCreate(createQuantity, {
-            limitCount, startEffectiveDate, endEffectiveDate
+            limitCount, startEffectiveDate, endEffectiveDate, remark
         }).then(ctx.success);
     }
 
@@ -72,9 +73,10 @@ export class activationCodeController {
         const {ctx} = this;
         const codes = ctx.checkBody('codes').exist().isArray().len(1, 100).value;
         const status = ctx.checkBody('status').exist().in([0, 1]).value;
+        const remark = ctx.checkBody('remark').optional().value;
         ctx.validateParams().validateOfficialAuditAccount();
 
-        await this.activationCodeService.batchUpdate(codes, status).then(ctx.success);
+        await this.activationCodeService.batchUpdate(codes, status, remark).then(ctx.success);
     }
 
     // 使用授权码激活测试资格

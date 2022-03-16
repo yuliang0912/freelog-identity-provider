@@ -138,6 +138,11 @@ export interface ActivationCodeInfo {
      * 结束生效日期
      */
     endEffectiveDate: Date;
+
+    /**
+     * 备注
+     */
+    remark?: string
 }
 
 export interface ActivationCodeUsedRecord {
@@ -282,7 +287,7 @@ export interface TagInfo {
      */
     totalSetCount: number;
 
-    status: 0;
+    status: 0 | 1;
 }
 
 export interface findOptions<T> {
@@ -307,7 +312,7 @@ export interface IBaseService<T> {
 
 export interface ITageService extends IBaseService<TagInfo> {
 
-    create(tags: string[], type: 1 | 2): Promise<TagInfo[]>;
+    create(createTags: string[], type: 1 | 2, updateTagIds: number[]): Promise<TagInfo[]>;
 
     /**
      * 更新tag
@@ -321,7 +326,7 @@ export interface ITageService extends IBaseService<TagInfo> {
      * @param tagInfo
      * @param number
      */
-    setTagAutoIncrementCount(tagInfo: TagInfo, number: 1 | -1): Promise<boolean>;
+    setTagAutoIncrementCount(tagInfo: TagInfo, number: number): Promise<boolean>;
 
     /**
      * 设置标签自增(自减)数量.
@@ -345,7 +350,9 @@ export interface IUserService extends IBaseService<UserInfo> {
 
     setTag(userId: number, tagInfos: TagInfo[]): Promise<boolean>;
 
-    unsetTag(userId: number, tagInfo: TagInfo): Promise<boolean>;
+    batchSetTag(userIds: number[], tagInfo: TagInfo): Promise<boolean>;
+
+    unsetTag(userId: number, tagInfos: TagInfo[]): Promise<boolean>;
 
     // searchIntervalList(condition: object, tagId?: number, options?: findOptions<UserInfo>): Promise<PageResult<UserInfo>>;
 
@@ -409,8 +416,9 @@ export interface IActivationCodeService extends IBaseService<ActivationCodeInfo>
      * 批量修改状态
      * @param codes
      * @param status
+     * @param remark
      */
-    batchUpdate(codes: string[], status: 0 | 1): Promise<boolean>;
+    batchUpdate(codes: string[], status: 0 | 1, remark: string): Promise<boolean>;
 
     /**
      * 使用授权码激活测试资格

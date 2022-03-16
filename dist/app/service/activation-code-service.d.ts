@@ -1,5 +1,5 @@
-import { ActivationCodeInfo, ActivationCodeUsedRecord, findOptions, IActivationCodeService, IUserService, UserInfo } from "../../interface";
-import { FreelogContext, IMongodbOperation, PageResult } from "egg-freelog-base";
+import { ActivationCodeInfo, ActivationCodeUsedRecord, findOptions, IActivationCodeService, IUserService, UserInfo } from '../../interface';
+import { FreelogContext, IMongodbOperation, PageResult } from 'egg-freelog-base';
 export declare class ActivationCodeService implements IActivationCodeService {
     ctx: FreelogContext;
     userService: IUserService;
@@ -20,7 +20,7 @@ export declare class ActivationCodeService implements IActivationCodeService {
      * @param codes
      * @param status
      */
-    batchUpdate(codes: string[], status: 0 | 1): Promise<boolean>;
+    batchUpdate(codes: string[], status: 0 | 1, remark?: string): Promise<boolean>;
     /**
      * 使用授权码激活测试资格
      * @param userInfo

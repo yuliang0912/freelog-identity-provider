@@ -1,4 +1,4 @@
-import {isString, uniqBy} from 'lodash';
+import {isString, uniqBy, differenceWith} from 'lodash';
 import {ITageService} from '../../interface';
 import {controller, get, inject, post, del, provide, put, priority} from 'midway';
 import {
@@ -28,10 +28,12 @@ export class TagInfoController {
         }
         tags = uniqBy<string>(tags, x => x.trim());
         const existingTags = await this.tagService.find({tag: {$in: tags}});
-        if (existingTags.length) {
+        if (existingTags.some(x => x.status !== 1)) {
             throw new ArgumentError(this.ctx.gettext('params-validate-failed', 'tags'), {existingTags});
         }
-        await this.tagService.create(tags, type).then(ctx.success);
+        const createTags = differenceWith(tags, existingTags, (x, y) => x === y.tag && y.status === 1) as string[];
+        const updateTagIds = existingTags.filter(x => x.status === 1).map(x => x.tagId);
+        await this.tagService.create(createTags, type, updateTagIds).then(ctx.success);
     }
 
     @get('/')
