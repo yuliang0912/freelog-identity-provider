@@ -391,13 +391,16 @@ export class UserInfoController {
     async batchSetUsersTag() {
         const {ctx} = this;
         const userIds = ctx.checkBody('userIds').exist().isArray().len(1, 100).value;
-        const tagId = ctx.checkBody('tagId').exist().isInt().gt(0).value;
+        const tagIds = ctx.checkBody('tagIds').exist().isArray().len(1, 100).value;
         ctx.validateParams().validateOfficialAuditAccount();
 
-        const tagInfo = await this.tagService.findOne({_id: {$in: tagId}, status: 0});
-        ctx.entityNullObjectCheck(tagInfo);
+        const tagList = await this.tagService.find({_id: {$in: tagIds}, status: 0});
+        const invalidTagIds = differenceWith(tagIds, tagList, (x, y) => x.toString() === y.tagId.toString());
+        if (invalidTagIds.length) {
+            throw new ArgumentError(this.ctx.gettext('params-validate-failed', 'tagIds'), {invalidTagIds});
+        }
 
-        await this.userService.batchSetTag(userIds, tagInfo).then(ctx.success);
+        await this.userService.batchSetTag(userIds, tagList).then(ctx.success);
     }
 
     // 设置用户标签

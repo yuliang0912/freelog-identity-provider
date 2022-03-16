@@ -167,16 +167,25 @@ export class UserService implements IUserService {
      * @param userIds
      * @param tagInfo
      */
-    async batchSetTag(userIds: number[], tagInfo: TagInfo): Promise<boolean> {
+    async batchSetTag(userIds: number[], tagInfos: TagInfo[]): Promise<boolean> {
         const userDetailList = await this.userDetailProvider.find({userId: {$in: userIds}});
-        const effectiveUserDetailList = userDetailList.filter(x => !x.tagIds?.some(x => tagInfo.tagId));
-        if (!effectiveUserDetailList.length) {
-            return true;
+        const effectiveTag = new Map<number, number>();
+        for (const tagInfo of tagInfos) {
+            for (const user of userDetailList) {
+                if (!user.tagIds?.includes(tagInfo.tagId)) {
+                    effectiveTag.set(tagInfo.tagId, (effectiveTag.get(tagInfo.tagId) ?? 0) + 1);
+                }
+            }
         }
         await this.userDetailProvider.updateMany({userId: {$in: userIds}}, {
-            $addToSet: {tagIds: tagInfo.tagId}
+            $addToSet: {tagIds: tagInfos.map(x => x.tagId)}
         });
-        return this.tagService.setTagAutoIncrementCount(tagInfo, effectiveUserDetailList.length);
+
+        for (const [key, value] of effectiveTag) {
+            const tagInfo = tagInfos.find(x => x.tagId === key);
+            this.tagService.setTagAutoIncrementCount(tagInfo, value).then();
+        }
+        return true;
     }
 
     /**

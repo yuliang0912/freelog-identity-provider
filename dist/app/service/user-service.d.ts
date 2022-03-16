@@ -47,7 +47,7 @@ export declare class UserService implements IUserService {
      * @param userIds
      * @param tagInfo
      */
-    batchSetTag(userIds: number[], tagInfo: TagInfo): Promise<boolean>;
+    batchSetTag(userIds: number[], tagInfos: TagInfo[]): Promise<boolean>;
     /**
      * 取消设置Tag
      * @param userId

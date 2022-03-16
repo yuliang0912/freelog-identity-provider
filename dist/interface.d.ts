@@ -267,7 +267,7 @@ export interface IUserService extends IBaseService<UserInfo> {
     resetPassword(userInfo: UserInfo, newPassword: string): Promise<boolean>;
     updatePassword(userInfo: UserInfo, oldPassword: string, newPassword: string): Promise<boolean>;
     setTag(userId: number, tagInfos: TagInfo[]): Promise<boolean>;
-    batchSetTag(userIds: number[], tagInfo: TagInfo): Promise<boolean>;
+    batchSetTag(userIds: number[], tagList: TagInfo[]): Promise<boolean>;
     unsetTag(userId: number, tagInfos: TagInfo[]): Promise<boolean>;
     searchIntervalListByTags(condition: object, tagIds: number[], options?: findOptions<UserInfo>): Promise<PageResult<UserInfo>>;
     /**

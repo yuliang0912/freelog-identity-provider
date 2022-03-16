@@ -350,7 +350,7 @@ export interface IUserService extends IBaseService<UserInfo> {
 
     setTag(userId: number, tagInfos: TagInfo[]): Promise<boolean>;
 
-    batchSetTag(userIds: number[], tagInfo: TagInfo): Promise<boolean>;
+    batchSetTag(userIds: number[], tagList: TagInfo[]): Promise<boolean>;
 
     unsetTag(userId: number, tagInfos: TagInfo[]): Promise<boolean>;
 
