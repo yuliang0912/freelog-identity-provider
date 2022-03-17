@@ -26,6 +26,8 @@ module.exports = {
 
     'params-validate-failed': '参数%s校验失败',
 
+    'tag_name_be_taken': '这个标签名称已经被使用',
+
     'group-create-duplicate-error': 'groupId已经存在,不能重复创建',
 
     'group-member-count-limit-validate-failed': '群组中成员数量超出最大限制(%s)',

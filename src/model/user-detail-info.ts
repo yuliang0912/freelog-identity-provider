@@ -22,7 +22,8 @@ export class UserDetailInfoModel extends MongooseModelBase {
             areaName: {type: String, default: '', required: false}, // 区域名称
             latestLoginDate: {type: Date, default: null, required: false}, // 最新登录日期
             latestLoginIp: {type: String, default: '', required: false}, // 最新登录IP
-            statusChangeRemark: {type: String, default: '', required: false}, // 状态变更备注
+            reason: {type: String, default: '', required: false}, // 冻结原因
+            remark: {type: String, default: '', required: false}, // 备注
             tagIds: {type: [Number], default: [], required: false}, // tagId,有关联需求.
             intro: {type: String, required: false, default: ''}, // 简介
         }, {

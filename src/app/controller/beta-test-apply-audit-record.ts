@@ -129,7 +129,8 @@ export class betaTestApplyAuditRecordController {
         const {ctx} = this;
         const recordIds = ctx.checkBody('recordIds').exist().isArray().len(1, 50).value;
         const status = ctx.checkBody('status').exist().toInt().value; //只有初始态才可以修改
-        const auditMsg = ctx.checkBody('auditMsg').optional().type('string').default('').value; //只有初始态才可以修改
+        const auditMsg = ctx.checkBody('auditMsg').optional().type('string').value; // 只有初始态才可以修改
+        const remark = ctx.checkBody('remark').optional().type('string').value; // 只有初始态才可以修改
         ctx.validateParams();
 
         const applyRecordInfos = await this.testQualificationApplyAuditService.find({
@@ -141,7 +142,7 @@ export class betaTestApplyAuditRecordController {
         }
 
         await this.testQualificationApplyAuditService.batchAuditTestQualificationApply(applyRecordInfos, {
-            status, auditMsg
+            status, auditMsg, remark
         }).then(ctx.success);
     }
 
@@ -152,7 +153,8 @@ export class betaTestApplyAuditRecordController {
         const {ctx} = this;
         const recordId = ctx.checkParams('recordId').exist().isMongoObjectId().value;
         const status = ctx.checkBody('status').exist().toInt().value; //只有初始态才可以修改
-        const auditMsg = ctx.checkBody('auditMsg').optional().type('string').default('').value; //只有初始态才可以修改
+        const auditMsg = ctx.checkBody('auditMsg').optional().type('string').value; //只有初始态才可以修改
+        const remark = ctx.checkBody('remark').optional().type('string').value; //只有初始态才可以修改
         ctx.validateParams();
 
         const applyRecordInfo = await this.testQualificationApplyAuditService.findOne({
@@ -165,7 +167,7 @@ export class betaTestApplyAuditRecordController {
         }
 
         await this.testQualificationApplyAuditService.auditTestQualificationApply(applyRecordInfo, {
-            status, auditMsg
+            status, auditMsg, remark
         }).then(ctx.success);
     }
 }

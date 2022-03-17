@@ -61,7 +61,8 @@ export interface UserDetailInfo {
     sex?: 0 | 1 | 2;
     latestLoginDate: Date;
     latestLoginIp: string;
-    statusChangeRemark: string;
+    remark?: string;
+    reason?: string;
 }
 export interface ActivationCodeInfo {
     /**
@@ -155,7 +156,8 @@ export interface MessageRecordInfo {
 }
 export interface TestQualificationAuditHandleInfo {
     status: 0 | 1;
-    auditMsg: number;
+    auditMsg: string;
+    remark: string;
 }
 export interface TestQualificationApplyAuditRecordInfo {
     id: string;

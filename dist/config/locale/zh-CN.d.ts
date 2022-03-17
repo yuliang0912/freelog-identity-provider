@@ -11,6 +11,7 @@ declare const _exports: {
     'params-required-validate-failed': string;
     'params-format-validate-failed': string;
     'params-validate-failed': string;
+    tag_name_be_taken: string;
     'group-create-duplicate-error': string;
     'group-member-count-limit-validate-failed': string;
     'head-image-extension-validate-failed': string;

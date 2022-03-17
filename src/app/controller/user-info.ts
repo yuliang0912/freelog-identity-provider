@@ -83,12 +83,14 @@ export class UserInfoController {
                 user.areaName = userDetail.areaName ?? '';
                 user.latestLoginIp = userDetail.latestLoginIp ?? '';
                 user.latestLoginDate = userDetail.latestLoginDate ?? null;
-                user.statusChangeRemark = userDetail.statusChangeRemark ?? '';
+                user.reason = userDetail.reason ?? '';
+                user.remark = userDetail.remark ?? '';
             } else {
                 user.tags = [];
                 user.latestLoginIp = '';
                 user.latestLoginDate = null;
-                user.statusChangeRemark = '';
+                user.reason = '';
+                user.remark = '';
             }
             list.push(omit(user, ['_id', 'password', 'salt', 'updateDate', 'userDetails', 'tokenSn']));
         }
@@ -177,6 +179,7 @@ export class UserInfoController {
             model.email = loginName;
         }
         const createdUserInfo = await this.userService.create(model);
+        await this.userService.updateOneUserDetail({userId: createdUserInfo.userId}, {});
         ctx.success(createdUserInfo);
 
         try {
@@ -456,7 +459,8 @@ export class UserInfoController {
         const {ctx} = this;
         const userId = ctx.checkParams('userId').exist().toInt().gt(10000).value;
         const status = ctx.checkBody('status').exist().toInt().in([UserStatusEnum.Freeze, UserStatusEnum.Normal]).value;
-        const remark = ctx.checkBody('remark').ignoreParamWhenEmpty().type('string').len(0, 500).default('').value;
+        const reason = ctx.checkBody('reason').ignoreParamWhenEmpty().type('string').len(0, 500).value;
+        const remark = ctx.checkBody('remark').ignoreParamWhenEmpty().type('string').len(0, 500).value;
         ctx.validateParams().validateOfficialAuditAccount();
 
         const userInfo = await this.userService.findOne({userId});
@@ -466,8 +470,10 @@ export class UserInfoController {
             return ctx.success(true);
         }
 
+        const userDetailModel = deleteUndefinedFields({reason, remark});
+
         const task1 = this.userService.updateOne({userId}, {status});
-        const task2 = this.userService.updateOneUserDetail({userId}, {statusChangeRemark: status === UserStatusEnum.Normal ? '' : remark ?? ''});
+        const task2 = this.userService.updateOneUserDetail({userId}, userDetailModel);
 
         await Promise.all([task1, task2]).then(t => ctx.success(true));
     }

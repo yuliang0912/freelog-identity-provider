@@ -11,6 +11,7 @@ import {ApplicationError, FreelogContext, MongodbOperation, PageResult} from 'eg
 import SendSmsHelper from '../../extend/send-sms-helper';
 import SendMailHelper from '../../extend/send-mail-helper';
 import {AuditStatusEnum, AuthCodeTypeEnum} from '../../enum';
+import {deleteUndefinedFields} from 'egg-freelog-base/lib/freelog-common-func';
 
 @provide()
 export class TestQualificationApplyAuditService implements ITestQualificationApplyAuditService {
@@ -139,11 +140,12 @@ export class TestQualificationApplyAuditService implements ITestQualificationApp
             throw new ApplicationError(ctx.gettext('test-qualification-apply-refuse-error'));
         }
 
-        const task1 = this.testQualificationApplyAuditProvider.updateOne({_id: applyRecordInfo.id}, {
+        const task1 = this.testQualificationApplyAuditProvider.updateOne({_id: applyRecordInfo.id}, deleteUndefinedFields({
             operationUserId: ctx.userId,
             status: handleInfo.status,
-            auditMsg: handleInfo.auditMsg
-        });
+            auditMsg: handleInfo.auditMsg,
+            remark: handleInfo.remark
+        }));
 
         let task2 = undefined;
         if (handleInfo.status === 1) {
@@ -164,11 +166,12 @@ export class TestQualificationApplyAuditService implements ITestQualificationApp
      */
     async batchAuditTestQualificationApply(applyRecordList: TestQualificationApplyAuditRecordInfo[], handleInfo: TestQualificationAuditHandleInfo) {
 
-        const task1 = this.testQualificationApplyAuditProvider.updateMany({_id: {$in: applyRecordList.map(x => x['_id'])}}, {
+        const task1 = this.testQualificationApplyAuditProvider.updateMany({_id: {$in: applyRecordList.map(x => x['_id'])}}, deleteUndefinedFields({
             operationUserId: this.ctx.userId,
             status: handleInfo.status,
-            auditMsg: handleInfo.auditMsg
-        });
+            auditMsg: handleInfo.auditMsg,
+            remark: handleInfo.remark
+        }));
 
         let task2 = undefined;
         if (handleInfo.status === AuditStatusEnum.AuditPass) {

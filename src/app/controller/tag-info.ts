@@ -29,7 +29,7 @@ export class TagInfoController {
         tags = uniqBy<string>(tags, x => x.trim());
         const existingTags = await this.tagService.find({tag: {$in: tags}});
         if (existingTags.some(x => x.status !== 1)) {
-            throw new ArgumentError(this.ctx.gettext('params-validate-failed', 'tags'), {existingTags});
+            throw new ArgumentError(this.ctx.gettext('tag_name_be_taken'), {existingTags});
         }
         const createTags = differenceWith(tags, existingTags, (x, y) => x === y.tag && y.status === 1) as string[];
         const updateTagIds = existingTags.filter(x => x.status === 1).map(x => x.tagId);
