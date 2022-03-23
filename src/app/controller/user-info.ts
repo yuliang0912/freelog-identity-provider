@@ -85,12 +85,6 @@ export class UserInfoController {
                 user.latestLoginDate = userDetail.latestLoginDate ?? null;
                 user.reason = userDetail.reason ?? '';
                 user.remark = userDetail.remark ?? '';
-            } else {
-                user.tags = [];
-                user.latestLoginIp = '';
-                user.latestLoginDate = null;
-                user.reason = '';
-                user.remark = '';
             }
             list.push(omit(user, ['_id', 'password', 'salt', 'updateDate', 'userDetails', 'tokenSn']));
         }

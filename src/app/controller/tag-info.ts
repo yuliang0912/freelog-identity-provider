@@ -69,7 +69,7 @@ export class TagInfoController {
         const {ctx} = this;
         const tagId = this.ctx.checkParams('tagId').exist().toInt().gt(0).value;
         const tag = ctx.checkBody('tag').exist().type('string').trim().len(1, 80).value;
-        ctx.validateOfficialAuditAccount();
+        ctx.validateParams().validateOfficialAuditAccount();
 
         const tagInfo = await this.tagService.findOne({_id: tagId});
         ctx.entityNullObjectCheck(tagInfo);
