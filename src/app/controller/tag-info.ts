@@ -2,7 +2,11 @@ import {isString, uniqBy, differenceWith} from 'lodash';
 import {ITageService} from '../../interface';
 import {controller, get, inject, post, del, provide, put, priority} from 'midway';
 import {
-    IdentityTypeEnum, visitorIdentityValidator, FreelogContext, ApplicationRouterMatchError, ArgumentError
+    IdentityTypeEnum,
+    visitorIdentityValidator,
+    FreelogContext,
+    ArgumentError,
+    LogicError
 } from 'egg-freelog-base';
 
 @provide()
@@ -44,22 +48,22 @@ export class TagInfoController {
         await this.tagService.find({status: 0}).then(ctx.success);
     }
 
-    @del('/:tagId')
+    @del('/')
     @visitorIdentityValidator(IdentityTypeEnum.LoginUser)
     async destroy() {
 
         const {ctx} = this;
-        const tagId = this.ctx.checkParams('tagId').exist().toInt().gt(0).value;
+        const tagIds = this.ctx.checkBody('tagIds').exist().isArray().len(1, 100).value;
         ctx.validateParams().validateOfficialAuditAccount();
 
-        const tagInfo = await this.tagService.findOne({_id: tagId});
-        ctx.entityNullObjectCheck(tagInfo);
-
-        if (tagInfo.type === 2) {
-            throw new ApplicationRouterMatchError('没有操作权限');
+        const tagList = await this.tagService.find({_id: {$in: tagIds}});
+        if (tagList.some(x => x.type === 2)) {
+            throw new LogicError('自动产生的标签无法删除');
         }
-
-        await this.tagService.updateOne(tagInfo, {status: 1}).then(ctx.success);
+        if (!tagList.length) {
+            ctx.success(false);
+        }
+        await this.tagService.updateMany({_id: {$in: tagIds}}, {status: 1}).then(ctx.success);
     }
 
     @put('/:tagId')

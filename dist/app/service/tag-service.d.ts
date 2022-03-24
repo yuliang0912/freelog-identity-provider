@@ -31,6 +31,12 @@ export declare class TagService implements ITageService {
      */
     updateOne(tagInfo: TagInfo, model: object): Promise<boolean>;
     /**
+     * 批量更新
+     * @param condition
+     * @param model
+     */
+    updateMany(condition: object, model: object): Promise<boolean>;
+    /**
      * 查询区间列表
      * @param condition
      * @param options

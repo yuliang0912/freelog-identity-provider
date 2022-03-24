@@ -250,6 +250,12 @@ export interface ITageService extends IBaseService<TagInfo> {
      */
     updateOne(tagInfo: TagInfo, model: object): Promise<boolean>;
     /**
+     * 批量更新
+     * @param condition
+     * @param model
+     */
+    updateMany(condition: object, model: object): Promise<boolean>;
+    /**
      * 设置标签自增(自减)数量.
      * @param tagInfo
      * @param number

@@ -61,6 +61,15 @@ export class TagService implements ITageService {
     }
 
     /**
+     * 批量更新
+     * @param condition
+     * @param model
+     */
+    async updateMany(condition: object, model: object): Promise<boolean> {
+        return this.tagInfoProvider.updateMany(condition, model).then(t => Boolean(t.nModified));
+    }
+
+    /**
      * 查询区间列表
      * @param condition
      * @param options
