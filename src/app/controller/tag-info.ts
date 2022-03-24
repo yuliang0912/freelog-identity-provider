@@ -1,6 +1,6 @@
 import {isString, uniqBy, differenceWith} from 'lodash';
 import {ITageService} from '../../interface';
-import {controller, get, inject, post, del, provide, put, priority} from 'midway';
+import {controller, get, inject, post, provide, put, priority} from 'midway';
 import {
     IdentityTypeEnum,
     visitorIdentityValidator,
@@ -48,7 +48,7 @@ export class TagInfoController {
         await this.tagService.find({status: 0}).then(ctx.success);
     }
 
-    @del('/')
+    @put('/')
     @visitorIdentityValidator(IdentityTypeEnum.LoginUser)
     async destroy() {
 
