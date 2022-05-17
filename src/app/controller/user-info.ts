@@ -35,6 +35,7 @@ export class UserInfoController {
         const skip = ctx.checkQuery('skip').optional().toInt().default(0).ge(0).value;
         const limit = ctx.checkQuery('limit').optional().toInt().default(10).gt(0).lt(101).value;
         const sort = ctx.checkQuery('sort').optional().value;
+        const userId = ctx.checkQuery('userId').ignoreParamWhenEmpty().isUserId().toInt().value;
         const tagIds = ctx.checkQuery('tagIds').ignoreParamWhenEmpty().isSplitNumber().toSplitArray().value;
         const keywords = ctx.checkQuery('keywords').ignoreParamWhenEmpty().trim().value;
         const startRegisteredDate = ctx.checkQuery('startRegisteredDate').ignoreParamWhenEmpty().toDate().value;
@@ -59,6 +60,9 @@ export class UserInfoController {
             condition.createDate = {$gte: startRegisteredDate};
         } else if (isDate(endRegisteredDate)) {
             condition.createDate = {$lte: endRegisteredDate};
+        }
+        if (userId) {
+            condition.userId = userId;
         }
 
         const pageResult = await this.userService.searchIntervalListByTags(condition, tagIds?.map(x => parseInt(x)), {
