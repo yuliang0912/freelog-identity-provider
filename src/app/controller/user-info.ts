@@ -45,15 +45,14 @@ export class UserInfoController {
         if (CommonRegex.mobile86.test(keywords)) {
             condition.mobile = keywords;
         } else if (CommonRegex.email.test(keywords)) {
-            condition.email = keywords;
+            condition.email = new RegExp(`^${keywords}`, 'i');
         } else if (isString(keywords) && CommonRegex.username.test(keywords)) {
-            condition.username = keywords;
+            condition.username = new RegExp(`^${keywords}`, 'i');
         } else if (/^[0-9]{5,12}$/.test(keywords)) {
             condition.userId = parseInt(keywords);
         } else if (isString(keywords)) {
             return ctx.success({skip, limit, totalItem: 0, dataList: []});
         }
-
         if (isDate(startRegisteredDate) && isDate(endRegisteredDate)) {
             condition.createDate = {$gte: startRegisteredDate, $lte: endRegisteredDate};
         } else if (isDate(startRegisteredDate)) {
