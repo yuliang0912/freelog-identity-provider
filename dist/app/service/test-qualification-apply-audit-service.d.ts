@@ -33,8 +33,9 @@ export declare class TestQualificationApplyAuditService implements ITestQualific
     /**
      * 查找一条数据
      * @param condition
+     * @param args
      */
-    findOne(condition: Partial<TestQualificationApplyAuditRecordInfo> | object): Promise<TestQualificationApplyAuditRecordInfo>;
+    findOne(condition: Partial<TestQualificationApplyAuditRecordInfo> | object, ...args: any[]): Promise<TestQualificationApplyAuditRecordInfo>;
     /**
      * 查找多条数据
      * @param condition

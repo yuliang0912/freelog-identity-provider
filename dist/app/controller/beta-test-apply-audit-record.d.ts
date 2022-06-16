@@ -6,6 +6,7 @@ export declare class betaTestApplyAuditRecordController {
     testQualificationApplyAuditService: ITestQualificationApplyAuditService;
     index(): Promise<FreelogContext>;
     create(): Promise<void>;
+    currentRecord(): Promise<void>;
     show(): Promise<void>;
     batchUpdate(): Promise<FreelogContext>;
     update(): Promise<void>;

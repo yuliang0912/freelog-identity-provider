@@ -1,6 +1,6 @@
 import {controller, get, inject, post, provide, put} from 'midway';
 import {
-    ApplicationError,
+    ApplicationError, ArgumentError,
     CommonRegex,
     FreelogContext,
     IdentityTypeEnum,
@@ -14,6 +14,7 @@ import {
 } from '../../interface';
 import {first} from 'lodash';
 import {AuditStatusEnum} from '../../enum';
+import {getAreaName} from '../../extend/common-helper';
 
 @provide()
 @controller('/v2/testQualifications/beta/apply')
@@ -66,8 +67,8 @@ export class betaTestApplyAuditRecordController {
             return {
                 recordId: record['_id'],
                 operationUserId: record.operationUserId,
-                province: record.otherInfo.province,
-                city: record.otherInfo.city,
+                areaCode: record.otherInfo.areaCode,
+                areaName: record.otherInfo.areaName,
                 occupation: record.otherInfo.occupation,
                 description: record.otherInfo.description,
                 userId: record.userId,
@@ -89,8 +90,7 @@ export class betaTestApplyAuditRecordController {
     async create() {
 
         const {ctx} = this;
-        const province = ctx.checkBody('province').exist().type('string').len(2, 10).value;
-        const city = ctx.checkBody('city').exist().type('string').len(2, 10).value;
+        const areaCode = ctx.checkBody('areaCode').exist().isNumeric().len(4, 6).value;
         const occupation = ctx.checkBody('occupation').exist().type('string').len(2, 15).value;
         const description = ctx.checkBody('description').exist().type('string').len(1, 500).value;
         ctx.validateParams();
@@ -99,16 +99,25 @@ export class betaTestApplyAuditRecordController {
         if (userInfo.userType > 0) {
             throw new ApplicationError(ctx.gettext('test-qualification-apply-refuse-error'));
         }
-
+        const areaName = getAreaName(areaCode);
+        if (!areaName) {
+            throw new ArgumentError(ctx.gettext('params-validate-failed', 'areaCode'));
+        }
         const model: Partial<TestQualificationApplyAuditRecordInfo> = {
             userId: userInfo.userId,
             username: userInfo.username,
             otherInfo: {
-                province, city, occupation, description
+                areaCode, areaName, occupation, description
             }
         };
 
         await this.testQualificationApplyAuditService.testQualificationApply(model).then(ctx.success);
+    }
+
+    @get('/current')
+    @visitorIdentityValidator(IdentityTypeEnum.LoginUser)
+    async currentRecord() {
+        await this.testQualificationApplyAuditService.findOne({userId: this.ctx.userId}, null, {sort: {createDate: -1}}).then(this.ctx.success);
     }
 
     @get('/:recordId')

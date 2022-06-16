@@ -83,9 +83,10 @@ export class TestQualificationApplyAuditService implements ITestQualificationApp
     /**
      * 查找一条数据
      * @param condition
+     * @param args
      */
-    async findOne(condition: Partial<TestQualificationApplyAuditRecordInfo> | object): Promise<TestQualificationApplyAuditRecordInfo> {
-        return this.testQualificationApplyAuditProvider.findOne(condition);
+    async findOne(condition: Partial<TestQualificationApplyAuditRecordInfo> | object, ...args): Promise<TestQualificationApplyAuditRecordInfo> {
+        return this.testQualificationApplyAuditProvider.findOne(condition, ...args);
     }
 
     /**

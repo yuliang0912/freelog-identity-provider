@@ -174,13 +174,13 @@ export interface TestQualificationApplyAuditRecordInfo {
      */
     otherInfo: {
         /**
-         * 省份
+         * 区域编码
          */
-        province: string;
+        areaCode: string;
         /**
-         * 城市
+         * 区域名称
          */
-        city: string;
+        areaName: string;
         /**
          * 职业
          */
@@ -345,7 +345,7 @@ export interface IActivationCodeService extends IBaseService<ActivationCodeInfo>
 }
 export interface ITestQualificationApplyAuditService {
     findSearchIntervalList(condition: Partial<UserInfo>, status?: number, options?: findOptions<UserInfo>): Promise<PageResult<TestQualificationApplyAuditRecordInfo>>;
-    findOne(condition: Partial<TestQualificationApplyAuditRecordInfo> | object): Promise<TestQualificationApplyAuditRecordInfo>;
+    findOne(condition: Partial<TestQualificationApplyAuditRecordInfo> | object, ...args: any[]): Promise<TestQualificationApplyAuditRecordInfo>;
     testQualificationApply(applyInfo: Partial<TestQualificationApplyAuditRecordInfo>): Promise<TestQualificationApplyAuditRecordInfo>;
     /**
      * 批量审核

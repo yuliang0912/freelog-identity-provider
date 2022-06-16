@@ -69,7 +69,6 @@ export class activationCodeController {
     @put('/batchUpdate')
     @visitorIdentityValidator(IdentityTypeEnum.LoginUser)
     async batchUpdate() {
-
         const {ctx} = this;
         const codes = ctx.checkBody('codes').exist().isArray().len(1, 100).value;
         const status = ctx.checkBody('status').exist().in([0, 1]).value;
@@ -122,7 +121,6 @@ export class activationCodeController {
     @get('/:code')
     @visitorIdentityValidator(IdentityTypeEnum.LoginUser)
     async show() {
-
         const {ctx} = this;
         const code = ctx.checkParams('code').type('string').len(8, 8).value;
         ctx.validateParams();

@@ -221,16 +221,15 @@ export interface TestQualificationApplyAuditRecordInfo {
      * 申请人其他附属信息
      */
     otherInfo: {
+        /**
+         * 区域编码
+         */
+        areaCode: string;
 
         /**
-         * 省份
+         * 区域名称
          */
-        province: string;
-
-        /**
-         * 城市
-         */
-        city: string;
+        areaName: string;
 
         /**
          * 职业
@@ -448,7 +447,7 @@ export interface ITestQualificationApplyAuditService {
 
     findSearchIntervalList(condition: Partial<UserInfo>, status?: number, options?: findOptions<UserInfo>): Promise<PageResult<TestQualificationApplyAuditRecordInfo>>;
 
-    findOne(condition: Partial<TestQualificationApplyAuditRecordInfo> | object): Promise<TestQualificationApplyAuditRecordInfo>;
+    findOne(condition: Partial<TestQualificationApplyAuditRecordInfo> | object, ...args): Promise<TestQualificationApplyAuditRecordInfo>;
 
     testQualificationApply(applyInfo: Partial<TestQualificationApplyAuditRecordInfo>): Promise<TestQualificationApplyAuditRecordInfo>;
 

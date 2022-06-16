@@ -13,8 +13,8 @@ export class TestQualificationApplyAuditRecordModel extends MongooseModelBase {
     buildMongooseModel() {
 
         const otherInfoSchema = new this.mongoose.Schema({
-            province: {type: String, required: true},
-            city: {type: String, required: true},
+            areaCode: {type: String, required: true},
+            areaName: {type: String, required: true},
             occupation: {type: String, required: true}, //职业
             description: {type: String, required: true},
         }, {_id: false});
