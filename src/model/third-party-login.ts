@@ -11,7 +11,7 @@ export class ThirdPartyIdentityInfoModel extends MongooseModelBase {
 
     buildMongooseModel() {
         const thirdPartyIdentityInfoSchema = new this.mongoose.Schema({
-            thirdPartyType: {type: String, required: true, enum: ['wechat']},
+            thirdPartyType: {type: String, required: true, enum: ['weChat']},
             thirdPartyIdentityInfo: {}, // 第三方官方响应的信息
             openId: {type: String, required: true}, // 唯一标识ID
             userId: {type: Number, default: 0, required: false}, //用户ID

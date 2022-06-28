@@ -20,14 +20,15 @@ export class ThirdPartyController {
     // testUrl:https://open.weixin.qq.com/connect/qrconnect?appid=wx25a849d14dd44177&redirect_uri=https%3A%2F%2Fapi.freelog.com%2ftest&response_type=code&scope=snsapi_login&state=STATE#wechat_redirect
     @get('/weChat/codeHandle')
     async getWeChatToken() {
+        // 测试扫码地址
+        const redirectUri = encodeURIComponent('https://api.freelog.com/test/v2/thirdParty/weChat/codeHandle?returnUrl=http://console.testfreelog.com');
+        const loginUri = `https://open.weixin.qq.com/connect/qrconnect?appid=wx25a849d14dd44177&redirect_uri=${redirectUri}&response_type=code&scope=snsapi_login&state=STATE#wechat_redirect`;
+        console.log(loginUri);
+        
         const {ctx} = this;
         const code = ctx.checkQuery('code').exist().notBlank().value;
         let returnUrl = ctx.checkBody('returnUrl').optional().emptyStringAsNothingness().value;
         this.ctx.validateParams();
-
-        // 测试扫码地址
-        // const redirectUri = encodeURIComponent('https://api.freelog.com/test/v2/thirdParty/weChat/codeHandle?returnUrl=http://console.testfreelog.com');
-        // const loginUri = `https://open.weixin.qq.com/connect/qrconnect?appid=wx25a849d14dd44177&redirect_uri=${redirectUri}&response_type=code&scope=snsapi_login&state=STATE#wechat_redirect`;
 
         const thirdPartyIdentityInfo = await this.thirdPartyIdentityService.setChatToken(code);
         // 如果已经绑定用户ID,则直接登陆,跳转

@@ -21,7 +21,7 @@ let ThirdPartyIdentityInfoModel = class ThirdPartyIdentityInfoModel extends mong
     }
     buildMongooseModel() {
         const thirdPartyIdentityInfoSchema = new this.mongoose.Schema({
-            thirdPartyType: { type: String, required: true, enum: ['wechat'] },
+            thirdPartyType: { type: String, required: true, enum: ['weChat'] },
             thirdPartyIdentityInfo: {},
             openId: { type: String, required: true },
             userId: { type: Number, default: 0, required: false },
