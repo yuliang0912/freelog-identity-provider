@@ -24,12 +24,14 @@ export class ThirdPartyController {
         // const redirectUri = encodeURIComponent('https://api.freelog.com/test/v2/thirdParty/weChat/codeHandle?returnUrl=http://console.testfreelog.com');
         // const loginUri = `https://open.weixin.qq.com/connect/qrconnect?appid=wx25a849d14dd44177&redirect_uri=${redirectUri}&response_type=code&scope=snsapi_login&state=STATE#wechat_redirect`;
         // console.log(loginUri);
+
         const {ctx} = this;
         const code = ctx.checkQuery('code').exist().notBlank().value;
         let returnUrl = ctx.checkBody('returnUrl').optional().emptyStringAsNothingness().value;
-        console.log(ctx.host, ctx.hostname);
         this.ctx.validateParams();
-
+        if (ctx.host === 'api.freelog.com') {
+            return ctx.redirect('http://api.testfreelog.com' + ctx.url);
+        }
         const thirdPartyIdentityInfo = await this.thirdPartyIdentityService.setChatToken(code);
         // 如果已经绑定用户ID,则直接登陆,跳转
         if (thirdPartyIdentityInfo.userId) {
