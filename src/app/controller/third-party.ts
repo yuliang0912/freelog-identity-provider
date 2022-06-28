@@ -29,7 +29,9 @@ export class ThirdPartyController {
         const code = ctx.checkQuery('code').exist().notBlank().value;
         let returnUrl = ctx.checkBody('returnUrl').optional().emptyStringAsNothingness().value;
         this.ctx.validateParams();
+        console.log(ctx.host, ctx.host === 'api.freelog.com');
         if (ctx.host === 'api.freelog.com') {
+            console.log('跳转', 'http://api.testfreelog.com' + ctx.url);
             return ctx.redirect('http://api.testfreelog.com' + ctx.url);
         }
         const thirdPartyIdentityInfo = await this.thirdPartyIdentityService.setChatToken(code);
