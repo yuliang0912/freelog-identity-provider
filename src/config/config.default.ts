@@ -85,6 +85,13 @@ export default (appInfo: EggAppInfo) => {
         privateKey: '96d8bd08230d2f3052f4df986c2b8ce9'
     };
 
+    config.thirdPartyInfo = {
+        weChat: {
+            appid: 'wx25a849d14dd44177',
+            secret: 'NTIwMDQ5YzczOTkzMTQ1Y2JkMTAyYjM1NjFjNTRlNTk='
+        }
+    };
+
     config.areaList = areaList;
 
     return config;

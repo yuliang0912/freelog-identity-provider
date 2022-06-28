@@ -266,6 +266,25 @@ export interface TestQualificationApplyAuditRecordInfo {
     createDate: Date;
 }
 
+export interface ThirdPartyIdentityInfo {
+    id?: string;
+    thirdPartyType: 'weChat' | 'weibo',
+    thirdPartyIdentityInfo: WeChatTokenInfo | any;
+    openId: string;
+    userId?: number;
+    status?: number;
+}
+
+export declare interface WeChatTokenInfo {
+    access_token: string;
+    expires_in: number;
+    refresh_token: string;
+    openid: string;
+    scope: string;
+    unionid: string;
+    errcode?: number;
+}
+
 export interface TagInfo {
 
     /**

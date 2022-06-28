@@ -1,12 +1,11 @@
 import { FreelogContext } from 'egg-freelog-base';
+import { ThirdPartyIdentityService } from '../service/third-party-identity-service';
 import { IUserService } from '../../interface';
 import { PassportService } from '../service/passport-service';
-export declare class passportController {
-    jwtAuth: any;
-    domain: any;
+export declare class ThirdPartyController {
     ctx: FreelogContext;
+    thirdPartyIdentityService: ThirdPartyIdentityService;
     userService: IUserService;
     passportService: PassportService;
-    login(): Promise<void>;
-    logout(ctx: any): Promise<void>;
+    getWeChatToken(): Promise<void>;
 }
