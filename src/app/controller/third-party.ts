@@ -21,13 +21,13 @@ export class ThirdPartyController {
     @get('/weChat/codeHandle')
     async getWeChatToken() {
         // 测试扫码地址
-        const redirectUri = encodeURIComponent('https://api.freelog.com/test/v2/thirdParty/weChat/codeHandle?returnUrl=http://console.testfreelog.com');
-        const loginUri = `https://open.weixin.qq.com/connect/qrconnect?appid=wx25a849d14dd44177&redirect_uri=${redirectUri}&response_type=code&scope=snsapi_login&state=STATE#wechat_redirect`;
-        console.log(loginUri);
-        
+        // const redirectUri = encodeURIComponent('https://api.freelog.com/test/v2/thirdParty/weChat/codeHandle?returnUrl=http://console.testfreelog.com');
+        // const loginUri = `https://open.weixin.qq.com/connect/qrconnect?appid=wx25a849d14dd44177&redirect_uri=${redirectUri}&response_type=code&scope=snsapi_login&state=STATE#wechat_redirect`;
+        // console.log(loginUri);
         const {ctx} = this;
         const code = ctx.checkQuery('code').exist().notBlank().value;
         let returnUrl = ctx.checkBody('returnUrl').optional().emptyStringAsNothingness().value;
+        console.log(ctx.host, ctx.hostname);
         this.ctx.validateParams();
 
         const thirdPartyIdentityInfo = await this.thirdPartyIdentityService.setChatToken(code);

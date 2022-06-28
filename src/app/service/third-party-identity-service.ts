@@ -22,6 +22,9 @@ export class ThirdPartyIdentityService {
             openId: tokenInfo.openid,
             thirdPartyIdentityInfo: tokenInfo
         };
+        if (tokenInfo.unionid) {
+            thirdPartyIdentityModel.unionId = tokenInfo.unionid;
+        }
         return this.thirdPartyIdentityProvider.findOneAndUpdate(pick(thirdPartyIdentityModel, ['openId', 'thirdPartyType']), thirdPartyIdentityModel, {new: true}).then(model => {
             return model ?? this.thirdPartyIdentityProvider.create(thirdPartyIdentityModel);
         });
