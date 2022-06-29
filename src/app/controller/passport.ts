@@ -1,7 +1,6 @@
 import {config, controller, get, inject, post, provide} from 'midway';
 import {AuthenticationError, FreelogContext} from 'egg-freelog-base';
 import {IUserService} from '../../interface';
-import {generatePassword} from '../../extend/common-helper';
 import {PassportService} from '../service/passport-service';
 
 @provide()
@@ -31,7 +30,7 @@ export class passportController {
         ctx.validateParams();
 
         const userInfo = await this.userService.findUserByLoginName(loginName);
-        if (!userInfo || generatePassword(userInfo.salt, password) !== userInfo.password) {
+        if (!this.passportService.verifyUserPassword(userInfo, password)) {
             throw new AuthenticationError(ctx.gettext('login-name-or-password-validate-failed'));
         }
         await this.passportService.setCookieAndLoginRecord(userInfo, jwtType, isRemember);

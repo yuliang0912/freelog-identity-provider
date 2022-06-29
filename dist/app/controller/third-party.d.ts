@@ -8,4 +8,5 @@ export declare class ThirdPartyController {
     userService: IUserService;
     passportService: PassportService;
     getWeChatToken(): Promise<void>;
+    registerOrBindUser(): Promise<void>;
 }

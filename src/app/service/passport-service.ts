@@ -2,6 +2,7 @@ import {config, inject, provide} from 'midway';
 import {IUserService, UserInfo} from '../../interface';
 import {ArgumentError, FreelogContext, JwtHelper} from 'egg-freelog-base';
 import {pick} from 'lodash';
+import {generatePassword} from '../../extend/common-helper';
 
 @provide()
 export class PassportService {
@@ -53,6 +54,18 @@ export class PassportService {
         }).then().catch(console.error);
         console.log('登录成功');
         return true;
+    }
+
+    /**
+     * 校验密码是否正确
+     * @param userInfo
+     * @param password
+     */
+    verifyUserPassword(userInfo: UserInfo, password: string): boolean {
+        if (!userInfo || !password) {
+            return false;
+        }
+        return generatePassword(userInfo.salt, password) === userInfo.password;
     }
 
     /**
