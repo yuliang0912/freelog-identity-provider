@@ -30,10 +30,10 @@ export class ThirdPartyController {
         let returnUrl = ctx.checkBody('returnUrl').optional().emptyStringAsNothingness().value;
         this.ctx.validateParams();
 
-        console.log(ctx.host, ctx.host === 'api.freelog.com');
         if (ctx.host === 'api.freelog.com') {
-            console.log('跳转', 'http://api.testfreelog.com' + ctx.url);
-            this.ctx.body = '<script>location.href="http://api.testfreelog.com' + this.ctx.url + '"</script>';
+            // 不能直接使用ctx.redirect,需要浏览器通过脚本做一次跳转,而非302跳转
+            const secondJumpUrl = `http://api.testfreelog.com${this.ctx.url}`;
+            this.ctx.body = '<script>location.href="' + secondJumpUrl + '"</script>';
             return;
         }
         const thirdPartyIdentityInfo = await this.thirdPartyIdentityService.setChatToken(code);
@@ -44,7 +44,8 @@ export class ThirdPartyController {
             if (!returnUrl) {
                 returnUrl = ctx.app.env === 'prod' ? 'https://user.freelog.com' : 'http://user.testfreelog.com';
             }
-            return ctx.redirect(returnUrl);
+            this.ctx.body = '<script>location.href="' + returnUrl + '"</script>';
+            return;
         }
         // 如果未绑定用户ID,则需要走绑定或者注册流程.
         ctx.success(`等待前端做好第三方用户绑定或注册流程之后,会跳转,param:{id:${thirdPartyIdentityInfo.id},openId${thirdPartyIdentityInfo.openId}}`);

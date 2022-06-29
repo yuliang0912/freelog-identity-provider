@@ -44,12 +44,14 @@ export class PassportService {
             };
             ctx.cookies.set(cookieName, jwtStr, cookieOptions);
             ctx.cookies.set('uid', userInfo.userId.toString(), {...cookieOptions, ...{httpOnly: false}});
+            console.log('写入cookie', JSON.stringify(cookieOptions));
         } else {
             ctx.set('Authorization', `Bearer ${jwtStr}`);
         }
         this.userService.updateOneUserDetail({userId: userInfo.userId}, {
             userId: userInfo.userId, latestLoginDate: new Date(), latestLoginIp: ctx.ip,
         }).then().catch(console.error);
+        console.log('登录成功');
         return true;
     }
 
