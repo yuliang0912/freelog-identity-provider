@@ -6,7 +6,7 @@ import {
 import headImageGenerator from '../../extend/head-image-generator';
 import {isString, isArray, first, omit, isDate, pick, isNumber, differenceWith} from 'lodash';
 import {AuthCodeTypeEnum, UserStatusEnum} from '../../enum';
-import {generatePassword, getAreaName} from '../../extend/common-helper';
+import {generatePassword, generateTempUserState, getAreaName} from '../../extend/common-helper';
 import {deleteUndefinedFields} from 'egg-freelog-base/lib/freelog-common-func';
 
 @provide()
@@ -136,7 +136,7 @@ export class UserInfoController {
         const userInfo = await this.userService.findOne({userId: ctx.userId});
         const isVerifySuccessful = generatePassword(userInfo.salt, password) === userInfo.password;
 
-        ctx.success({userId: userInfo.userId, isVerifySuccessful});
+        ctx.success({userId: userInfo.userId, state: generateTempUserState(userInfo.userId), isVerifySuccessful});
     }
 
     /**

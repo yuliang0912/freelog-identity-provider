@@ -9,4 +9,5 @@ export declare class ThirdPartyController {
     passportService: PassportService;
     getWeChatToken(): Promise<void>;
     registerOrBindUser(): Promise<void>;
+    bindWeChat(): Promise<void>;
 }

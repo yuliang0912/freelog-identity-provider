@@ -1,8 +1,16 @@
 import {controller, get, inject, post, provide} from 'midway';
-import {ArgumentError, AuthenticationError, FreelogContext, LogicError} from 'egg-freelog-base';
+import {
+    ArgumentError,
+    AuthenticationError,
+    FreelogContext, IdentityTypeEnum,
+    LogicError,
+    visitorIdentityValidator
+} from 'egg-freelog-base';
 import {ThirdPartyIdentityService} from '../service/third-party-identity-service';
 import {IUserService} from '../../interface';
 import {PassportService} from '../service/passport-service';
+import {CommonRegex} from 'egg-freelog-base';
+import {generateTempUserState} from '../../extend/common-helper';
 
 @provide()
 @controller('/v2/thirdParty')
@@ -47,8 +55,10 @@ export class ThirdPartyController {
             this.ctx.body = '<script>location.href="' + returnUrl + '"</script>';
             return;
         }
-        // 如果未绑定用户ID,则需要走绑定或者注册流程.
-        ctx.success(`等待前端做好第三方用户绑定或注册流程之后,会跳转,param:{id:${thirdPartyIdentityInfo.id},openId:${thirdPartyIdentityInfo.openId}}`);
+        // 如果没绑定,则走绑定流程
+        let url = ctx.app.env === 'prod' ? 'https://user.freelog.com/bind' : 'http://user.testfreelog.com/bind';
+        url += `?identityId=${thirdPartyIdentityInfo.id}&returnUrl=${encodeURIComponent(returnUrl)}`;
+        this.ctx.body = '<script>location.href="' + url + '?"</script>';
     }
 
     // 注册或绑定账号
@@ -67,12 +77,51 @@ export class ThirdPartyController {
         if (identityInfo.userId) {
             throw new LogicError('账号已被绑定');
         }
-        const userInfo = await this.userService.findUserByLoginName(loginName);
-        if (!this.passportService.verifyUserPassword(userInfo, password)) {
+        let userInfo = await this.userService.findUserByLoginName(loginName);
+        if (userInfo && !this.passportService.verifyUserPassword(userInfo, password)) {
             throw new AuthenticationError(ctx.gettext('login-name-or-password-validate-failed'));
+        }
+        if (!userInfo && !CommonRegex.username.test(loginName)) {
+            throw new ArgumentError(ctx.gettext('params-validate-failed', 'loginName'));
+        }
+        if (!userInfo) {
+            userInfo = await this.userService.create({username: loginName, password});
         }
         await this.thirdPartyIdentityService.bindUserId(identityInfo, userInfo);
         await this.passportService.setCookieAndLoginRecord(userInfo, 'cookie', true);
         ctx.success(true);
+    }
+
+    // 登录用户绑定微信
+    @get('/weChat/bindHandle')
+    @visitorIdentityValidator(IdentityTypeEnum.LoginUser)
+    async bindWeChat() {
+        const {ctx} = this;
+        const code = ctx.checkQuery('code').exist().notBlank().value;
+        const state = ctx.checkQuery('state').exist().notBlank().value;
+        let returnUrl = ctx.checkBody('returnUrl').optional().emptyStringAsNothingness().value;
+        this.ctx.validateParams();
+
+        // 微信开放平台只申请了一个网站应用,所以需要网关根据前缀区分不同的环境,然后跳转到不同的域名.
+        if (ctx.app.env !== 'prod' && ctx.host === 'api.freelog.com') {
+            // 不能直接使用ctx.redirect,需要浏览器通过脚本发起一次跳转,而非302跳转
+            const secondJumpUrl = `http://api.testfreelog.com${this.ctx.url}`;
+            this.ctx.body = '<script>location.href="' + secondJumpUrl + '"</script>';
+            return;
+        }
+        if (generateTempUserState(this.ctx.userId) !== state) {
+            throw new ArgumentError('参数state校验失败');
+        }
+        const thirdPartyIdentityInfo = await this.thirdPartyIdentityService.setWeChatToken(code);
+        // 如果已经绑定用户ID,则直接登陆,跳转
+        if (thirdPartyIdentityInfo.userId) {
+            const userInfo = await this.userService.findOne({userId: thirdPartyIdentityInfo.userId});
+            await this.passportService.setCookieAndLoginRecord(userInfo, 'cookie', true);
+            if (!returnUrl) {
+                returnUrl = ctx.app.env === 'prod' ? 'https://user.freelog.com' : 'http://user.testfreelog.com';
+            }
+            this.ctx.body = '<script>location.href="' + returnUrl + '"</script>';
+            return;
+        }
     }
 }

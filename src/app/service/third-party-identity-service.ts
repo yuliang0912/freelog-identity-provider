@@ -15,6 +15,7 @@ export class ThirdPartyIdentityService {
     /**
      * 保存微信token以及身份信息
      * @param code
+     * @param userId
      */
     async setWeChatToken(code: string) {
         const tokenInfo = await this.outsideApiService.getWeChatAccessToken(code);

@@ -9,7 +9,6 @@ export declare class captchaController {
     generateCaptcha(): Promise<void>;
     /**
      * 核验验证码是否输入正确
-     * @param ctx
      * @returns {Promise<void>}
      */
     verify(): Promise<void>;

@@ -11,6 +11,15 @@ export const generatePassword = (salt: string, password: string) => {
 };
 
 /**
+ * 生成临时的userState
+ * @param userId
+ */
+export const generateTempUserState = (userId: number) => {
+    const text = `identity@freelog.com#state#$${userId}`;
+    return CryptoHelper.md5(CryptoHelper.base64Encode(text));
+};
+
+/**
  * 获取区域名称
  * @param areaCode
  */
@@ -19,7 +28,7 @@ export function getAreaName(areaCode: string) {
     const provinceCode = areaCode.length >= 2 ? areaCode.substr(0, 2) : '';
     const cityCode = ['11', '12', '31', '50'].includes(provinceCode) || areaCode.length < 4 ? '' : areaCode.substr(0, 4);
     const countyCode = areaCode.length >= 6 ? areaCode.substr(0, 6) : '';
-    
+
     return [provinceCode, cityCode, countyCode].reduce((previousValue: any, currentValue: string) => {
         if (!currentValue) {
             return previousValue;

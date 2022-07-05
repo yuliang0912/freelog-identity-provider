@@ -7,6 +7,7 @@ export declare class ThirdPartyIdentityService {
     /**
      * 保存微信token以及身份信息
      * @param code
+     * @param userId
      */
     setWeChatToken(code: string): Promise<ThirdPartyIdentityInfo>;
     /**
