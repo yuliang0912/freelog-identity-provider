@@ -32,7 +32,7 @@ exports.default = () => {
     // };
     config.domain = '127.0.0.1';
     config.localIdentity = {
-        userId: 50003,
+        userId: 50017,
         username: 'yuliang',
         email: 'support@freelog.com'
     };

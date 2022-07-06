@@ -1,15 +1,18 @@
-import {controller, get, inject, post, provide} from 'midway';
+import {controller, get, inject, post, provide, put} from 'midway';
 import {
     ArgumentError,
     AuthenticationError,
+    CommonRegex,
     FreelogContext,
+    IdentityTypeEnum,
     LogicError,
+    visitorIdentityValidator,
 } from 'egg-freelog-base';
 import {ThirdPartyIdentityService} from '../service/third-party-identity-service';
 import {IUserService} from '../../interface';
 import {PassportService} from '../service/passport-service';
-import {CommonRegex} from 'egg-freelog-base';
-import {generateTempUserState} from '../../extend/common-helper';
+import {generatePassword, generateTempUserState} from '../../extend/common-helper';
+import {pick} from 'lodash';
 
 @provide()
 @controller('/v2/thirdParty')
@@ -36,7 +39,7 @@ export class ThirdPartyController {
         // 微信开放平台只申请了一个网站应用,所以需要网关根据前缀区分不同的环境,然后跳转到不同的域名.
         // 不能直接使用ctx.redirect,需要浏览器通过脚本发起一次跳转,而非302跳转
         if (ctx.app.config.env !== 'prod' && ctx.host === 'api.freelog.com') {
-            this.ctx.body = `<script>location.href="http://api.testfreelog.com${this.ctx.url}"</script>`;
+            this.ctx.body = this.generateClientLocationRedirectScript(`http://api.testfreelog.com${this.ctx.url}`);
             return;
         }
         const thirdPartyIdentityInfo = await this.thirdPartyIdentityService.setWeChatToken(code);
@@ -47,12 +50,12 @@ export class ThirdPartyController {
             if (!returnUrl) {
                 returnUrl = this.generateFreelogUrl('user');
             }
-            this.ctx.body = '<script>location.href="' + returnUrl + '"</script>';
+            this.ctx.body = this.generateClientLocationRedirectScript(returnUrl);
             return;
         }
         // 如果没绑定,则走绑定流程
         const query = `/bind?identityId=${thirdPartyIdentityInfo.id}&returnUrl=${encodeURIComponent(returnUrl)}`;
-        this.ctx.body = `<script>location.href="${this.generateFreelogUrl('user', query)}"</script>`;
+        this.ctx.body = this.generateClientLocationRedirectScript(this.generateFreelogUrl('user', query));
     }
 
     // 微信注册或绑定账号(非登录)
@@ -99,29 +102,64 @@ export class ThirdPartyController {
         this.ctx.validateParams();
 
         if (ctx.app.config.env !== 'prod' && ctx.host === 'api.freelog.com') {
-            this.ctx.body = `<script>location.href="http://api.testfreelog.com${this.ctx.url}"</script>`;
+            this.ctx.body = this.generateClientLocationRedirectScript(`http://api.testfreelog.com${this.ctx.url}`);
             return;
         }
         if (!ctx.isLoginUser()) {
-            const html = `<h1>未检测到登录用户,无法执行此操作,页面即将跳转</h1>
+            this.ctx.body = `<h1>未检测到登录用户,无法执行此操作,页面即将跳转</h1>
                           <script>setTimeout(function (){ location.href = "${this.generateFreelogUrl('user')}" },2000)</script>`;
-            this.ctx.body = html;
             return;
         }
         if (generateTempUserState(ctx.userId) !== state) {
-            this.ctx.body = `<script>location.href="${returnUrl}?type=wechat&status=2&msg=参数state校验失败"</script>`;
+            this.ctx.body = this.generateClientLocationRedirectScript(returnUrl + '?type=wechat&status=2&msg=参数state校验失败');
             return;
         }
         const thirdPartyIdentityInfo = await this.thirdPartyIdentityService.setWeChatToken(code);
         // 如果已经绑定用户ID,则报错提示已绑定,不能重复
         // 回调的状态值 1:绑定成功 2:绑定失败 3:微信号已被其他账号绑定
         if (thirdPartyIdentityInfo.userId) {
-            this.ctx.body = `<script>location.href="${returnUrl}?type=wechat&status=3"</script>`;
+            this.ctx.body = this.generateClientLocationRedirectScript(returnUrl + '?type=wechat&status=3');
             return;
         }
         await this.thirdPartyIdentityService.bindUserId(thirdPartyIdentityInfo, this.ctx.userId);
-        this.ctx.body = `<script>location.href="${returnUrl}?type=wechat&status=1"</script>`;
+        this.ctx.body = this.generateClientLocationRedirectScript(returnUrl + '?type=wechat&status=1');
         return;
+    }
+
+    /**
+     * 解绑第三方登录
+     */
+    @put('/unbind')
+    @visitorIdentityValidator(IdentityTypeEnum.LoginUser)
+    async unBind() {
+        const {ctx} = this;
+        const thirdPartyType = ctx.checkBody('thirdPartyType').exist().in(['weChat', 'weibo']).value;
+        const password = ctx.checkBody('password').exist().isLoginPassword(ctx.gettext('password_length') + ctx.gettext('password_include')).value;
+        ctx.validateParams();
+
+        const userInfo = await this.userService.findOne({userId: ctx.userId});
+        if (!userInfo || generatePassword(userInfo.salt, password) !== userInfo.password) {
+            throw new AuthenticationError(ctx.gettext('login-name-or-password-validate-failed'));
+        }
+
+        const thirdPartyIdentityInfo = await this.thirdPartyIdentityService.thirdPartyIdentityProvider.findOne({
+            thirdPartyType, userId: ctx.userId
+        });
+        if (!thirdPartyIdentityInfo) {
+            return ctx.success(false);
+        }
+        await this.thirdPartyIdentityService.thirdPartyIdentityProvider.deleteOne({_id: thirdPartyIdentityInfo.id}).then(x => ctx.success(true));
+    }
+
+    @get('/list')
+    @visitorIdentityValidator(IdentityTypeEnum.LoginUser)
+    async list() {
+        const thirdPartyIdentityList = await this.thirdPartyIdentityService.thirdPartyIdentityProvider.find({
+            userId: this.ctx.userId
+        });
+        this.ctx.success(thirdPartyIdentityList.map(x => {
+            return pick(x, ['userId', 'thirdPartyType']);
+        }));
     }
 
     /**
@@ -132,6 +170,15 @@ export class ThirdPartyController {
      */
     private generateFreelogUrl(domain: string, queryAndPath?: string): string {
         const isProd = this.ctx.app.config.env === 'prod';
-        return `http${isProd ? 's' : ''}://${domain}.${isProd ? 'freelog.com' : 'testfreelog.com'}${queryAndPath}`;
+        return `http${isProd ? 's' : ''}://${domain}.${isProd ? 'freelog.com' : 'testfreelog.com'}${queryAndPath?.length ? queryAndPath : ''}`;
+    }
+
+    /**
+     * 生成客户端浏览器跳转脚本
+     * @param url
+     * @private
+     */
+    private generateClientLocationRedirectScript(url: string) {
+        return `<script>location.href="${url}"</script>`;
     }
 }
