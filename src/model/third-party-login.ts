@@ -14,6 +14,7 @@ export class ThirdPartyIdentityInfoModel extends MongooseModelBase {
             thirdPartyType: {type: String, required: true, enum: ['weChat']},
             thirdPartyIdentityInfo: {}, // 第三方官方响应的信息
             openId: {type: String, required: true}, // 唯一标识ID
+            name: {type: String, required: false, default: ''}, // 第三方账号名称(非账号)
             unionId: {type: String, default: '', required: false}, // 微信标识ID(同一个账号下跨应用)
             userId: {type: Number, default: 0, required: false}, //用户ID
             status: {type: Number, default: 0, required: true} // 0:未绑定用户 1:已绑定用户

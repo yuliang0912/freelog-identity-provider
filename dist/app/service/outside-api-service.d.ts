@@ -8,4 +8,11 @@ export declare class OutsideApiService {
      * @param code
      */
     getWeChatAccessToken(code: string): Promise<WeChatTokenInfo>;
+    /**
+     * 获取微信个人信息
+     * https://developers.weixin.qq.com/doc/oplatform/Website_App/WeChat_Login/Authorized_Interface_Calling_UnionID.html
+     * @param token
+     * @param openId
+     */
+    getWeChatUserInfo(token: string, openId: string): Promise<any>;
 }

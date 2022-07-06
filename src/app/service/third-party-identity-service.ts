@@ -22,9 +22,14 @@ export class ThirdPartyIdentityService {
         if (tokenInfo.errcode) {
             throw new ApplicationError(`微信接口调用失败,请重试,errcode:${tokenInfo.errcode}`);
         }
+        const wechatUserInfo = await this.outsideApiService.getWeChatUserInfo(tokenInfo.access_token, tokenInfo.openid);
+        if (wechatUserInfo.errcode) {
+            throw new ApplicationError(`微信接口调用失败,errcode:${wechatUserInfo.errcode}`);
+        }
         const thirdPartyIdentityModel: ThirdPartyIdentityInfo = {
             thirdPartyType: 'weChat',
             openId: tokenInfo.openid,
+            name: wechatUserInfo.nickname,
             thirdPartyIdentityInfo: tokenInfo
         };
         if (tokenInfo.unionid) {

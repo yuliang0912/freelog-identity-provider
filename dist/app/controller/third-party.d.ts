@@ -14,6 +14,9 @@ export declare class ThirdPartyController {
      * 解绑第三方登录
      */
     unBind(): Promise<FreelogContext>;
+    /**
+     * 查询第三方绑定信息列表
+     */
     list(): Promise<void>;
     /**
      * 根据环境生成不同域名url

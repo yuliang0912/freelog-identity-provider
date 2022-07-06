@@ -271,6 +271,7 @@ export interface ThirdPartyIdentityInfo {
     thirdPartyType: 'weChat' | 'weibo',
     thirdPartyIdentityInfo: WeChatTokenInfo | any;
     openId: string;
+    name: string;
     unionId?: string;
     userId?: number;
     status?: number;

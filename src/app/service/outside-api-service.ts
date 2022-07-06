@@ -23,4 +23,17 @@ export class OutsideApiService {
             return JSON.parse(response.data.toString());
         });
     }
+
+    /**
+     * 获取微信个人信息
+     * https://developers.weixin.qq.com/doc/oplatform/Website_App/WeChat_Login/Authorized_Interface_Calling_UnionID.html
+     * @param token
+     * @param openId
+     */
+    async getWeChatUserInfo(token: string, openId: string): Promise<any> {
+        const url = `https://api.weixin.qq.com/sns/userinfo?access_token=${token}&openid=${openId}`;
+        return this.ctx.app.curl(url).then(response => {
+            return JSON.parse(response.data.toString());
+        });
+    }
 }

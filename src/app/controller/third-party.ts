@@ -34,7 +34,7 @@ export class ThirdPartyController {
     async getWeChatToken() {
         const {ctx} = this;
         const code = ctx.checkQuery('code').exist().notBlank().value;
-        let returnUrl = ctx.checkQuery('returnUrl').optional().emptyStringAsNothingness().value;
+        const returnUrl = ctx.checkQuery('returnUrl').exist().emptyStringAsNothingness().value;
         this.ctx.validateParams();
         // 微信开放平台只申请了一个网站应用,所以需要网关根据前缀区分不同的环境,然后跳转到不同的域名.
         // 不能直接使用ctx.redirect,需要浏览器通过脚本发起一次跳转,而非302跳转
@@ -47,9 +47,6 @@ export class ThirdPartyController {
         if (thirdPartyIdentityInfo.userId) {
             const userInfo = await this.userService.findOne({userId: thirdPartyIdentityInfo.userId});
             await this.passportService.setCookieAndLoginRecord(userInfo, 'cookie', true);
-            if (!returnUrl) {
-                returnUrl = this.generateFreelogUrl('user');
-            }
             this.ctx.body = this.generateClientLocationRedirectScript(returnUrl);
             return;
         }
@@ -123,7 +120,6 @@ export class ThirdPartyController {
         }
         await this.thirdPartyIdentityService.bindUserId(thirdPartyIdentityInfo, this.ctx.userId);
         this.ctx.body = this.generateClientLocationRedirectScript(returnUrl + '?type=wechat&status=1');
-        return;
     }
 
     /**
@@ -151,6 +147,9 @@ export class ThirdPartyController {
         await this.thirdPartyIdentityService.thirdPartyIdentityProvider.deleteOne({_id: thirdPartyIdentityInfo.id}).then(x => ctx.success(true));
     }
 
+    /**
+     * 查询第三方绑定信息列表
+     */
     @get('/list')
     @visitorIdentityValidator(IdentityTypeEnum.LoginUser)
     async list() {
