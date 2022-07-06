@@ -1,6 +1,6 @@
 import { OutsideApiService } from './outside-api-service';
 import { MongodbOperation } from 'egg-freelog-base';
-import { ThirdPartyIdentityInfo, UserInfo } from '../../interface';
+import { ThirdPartyIdentityInfo } from '../../interface';
 export declare class ThirdPartyIdentityService {
     outsideApiService: OutsideApiService;
     thirdPartyIdentityProvider: MongodbOperation<ThirdPartyIdentityInfo>;
@@ -13,9 +13,9 @@ export declare class ThirdPartyIdentityService {
     /**
      * 绑定第三方与freelog用户关系
      * @param thirdPartyIdentityInfo
-     * @param userInfo
+     * @param userId
      */
-    bindUserId(thirdPartyIdentityInfo: ThirdPartyIdentityInfo, userInfo: UserInfo): Promise<{
+    bindUserId(thirdPartyIdentityInfo: ThirdPartyIdentityInfo, userId: number): Promise<{
         n: number;
         nModified: number;
         ok: number;

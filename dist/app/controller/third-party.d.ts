@@ -10,4 +10,11 @@ export declare class ThirdPartyController {
     getWeChatToken(): Promise<void>;
     registerOrBindUser(): Promise<void>;
     bindWeChat(): Promise<void>;
+    /**
+     * 根据环境生成不同域名url
+     * @param domain
+     * @param queryAndPath
+     * @private
+     */
+    private generateFreelogUrl;
 }

@@ -1,7 +1,7 @@
 import {inject, provide} from 'midway';
 import {OutsideApiService} from './outside-api-service';
 import {ApplicationError, MongodbOperation} from 'egg-freelog-base';
-import {ThirdPartyIdentityInfo, UserInfo} from '../../interface';
+import {ThirdPartyIdentityInfo} from '../../interface';
 import {pick} from 'lodash';
 
 @provide()
@@ -38,12 +38,11 @@ export class ThirdPartyIdentityService {
     /**
      * 绑定第三方与freelog用户关系
      * @param thirdPartyIdentityInfo
-     * @param userInfo
+     * @param userId
      */
-    async bindUserId(thirdPartyIdentityInfo: ThirdPartyIdentityInfo, userInfo: UserInfo) {
+    async bindUserId(thirdPartyIdentityInfo: ThirdPartyIdentityInfo, userId: number) {
         return this.thirdPartyIdentityProvider.updateOne({_id: thirdPartyIdentityInfo.id}, {
-            userId: userInfo.userId,
-            status: 1
+            userId, status: 1
         });
     }
 
