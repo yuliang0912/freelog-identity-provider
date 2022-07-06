@@ -2,9 +2,8 @@ import {controller, get, inject, post, provide} from 'midway';
 import {
     ArgumentError,
     AuthenticationError,
-    FreelogContext, IdentityTypeEnum,
+    FreelogContext,
     LogicError,
-    visitorIdentityValidator
 } from 'egg-freelog-base';
 import {ThirdPartyIdentityService} from '../service/third-party-identity-service';
 import {IUserService} from '../../interface';
@@ -92,7 +91,6 @@ export class ThirdPartyController {
     // const loginUri = `https://open.weixin.qq.com/connect/qrconnect?appid=wx25a849d14dd44177&redirect_uri=${redirectUri}&response_type=code&scope=snsapi_login&state=${verifyLoginPassword_state}#wechat_redirect`;
     // 已登录用户绑定微信
     @get('/weChat/bindHandle')
-    @visitorIdentityValidator(IdentityTypeEnum.LoginUser)
     async bindWeChat() {
         const {ctx} = this;
         const code = ctx.checkQuery('code').exist().notBlank().value;
@@ -104,7 +102,13 @@ export class ThirdPartyController {
             this.ctx.body = `<script>location.href="http://api.testfreelog.com${this.ctx.url}"</script>`;
             return;
         }
-        if (generateTempUserState(this.ctx.userId) !== state) {
+        if (!ctx.isLoginUser()) {
+            const html = `<h1>未检测到登录用户,无法执行此操作,页面即将跳转</h1>
+                          <script>setTimeout(function (){ location.href = "${this.generateFreelogUrl('user')}" },2000)</script>`;
+            this.ctx.body = html;
+            return;
+        }
+        if (generateTempUserState(ctx.userId) !== state) {
             return ctx.redirect(`${returnUrl}?type=wechat&status=2&msg=参数state校验失败`);
         }
         const thirdPartyIdentityInfo = await this.thirdPartyIdentityService.setWeChatToken(code);
