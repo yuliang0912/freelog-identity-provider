@@ -36,7 +36,7 @@ export class ThirdPartyController {
         this.ctx.validateParams();
         // 微信开放平台只申请了一个网站应用,所以需要网关根据前缀区分不同的环境,然后跳转到不同的域名.
         // 不能直接使用ctx.redirect,需要浏览器通过脚本发起一次跳转,而非302跳转
-        if (ctx.app.config.env !== 'prod') {
+        if (ctx.app.config.env !== 'prod' && ctx.host === 'api.freelog.com') {
             this.ctx.body = `<script>location.href="http://api.testfreelog.com${this.ctx.url}"</script>`;
             return;
         }
@@ -100,8 +100,7 @@ export class ThirdPartyController {
         const returnUrl = ctx.checkQuery('returnUrl').exist().emptyStringAsNothingness().value;
         this.ctx.validateParams();
 
-        if (ctx.app.config.env !== 'prod') {
-            // 不能直接使用ctx.redirect,需要浏览器通过脚本发起一次跳转,而非302跳转
+        if (ctx.app.config.env !== 'prod' && ctx.host === 'api.freelog.com') {
             this.ctx.body = `<script>location.href="http://api.testfreelog.com${this.ctx.url}"</script>`;
             return;
         }
