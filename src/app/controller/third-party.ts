@@ -109,16 +109,19 @@ export class ThirdPartyController {
             return;
         }
         if (generateTempUserState(ctx.userId) !== state) {
-            return ctx.redirect(`${returnUrl}?type=wechat&status=2&msg=参数state校验失败`);
+            this.ctx.body = `<script>location.href="${returnUrl}?type=wechat&status=2&msg=参数state校验失败"</script>`;
+            return;
         }
         const thirdPartyIdentityInfo = await this.thirdPartyIdentityService.setWeChatToken(code);
         // 如果已经绑定用户ID,则报错提示已绑定,不能重复
         // 回调的状态值 1:绑定成功 2:绑定失败 3:微信号已被其他账号绑定
         if (thirdPartyIdentityInfo.userId) {
-            return ctx.redirect(`${returnUrl}?type=wechat&status=3`);
+            this.ctx.body = `<script>location.href="${returnUrl}?type=wechat&status=3"</script>`;
+            return;
         }
         await this.thirdPartyIdentityService.bindUserId(thirdPartyIdentityInfo, this.ctx.userId);
-        return ctx.redirect(`${returnUrl}?type=wechat&status=1`);
+        this.ctx.body = `<script>location.href="${returnUrl}?type=wechat&status=1"</script>`;
+        return;
     }
 
     /**
