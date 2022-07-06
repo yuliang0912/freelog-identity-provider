@@ -28,17 +28,15 @@ export class ThirdPartyController {
     // 测试扫码地址:https://open.weixin.qq.com/connect/qrconnect?appid=wx25a849d14dd44177&redirect_uri=https%3A%2F%2Fapi.freelog.com%2Ftest%2Fv2%2FthirdParty%2FweChat%2FcodeHandle%3FreturnUrl%3Dhttp%3A%2F%2Fconsole.testfreelog.com&response_type=code&scope=snsapi_login&state=STATE#wechat_redirect
     // const redirectUri = encodeURIComponent('https://api.freelog.com/test/v2/thirdParty/weChat/codeHandle?returnUrl=http://console.testfreelog.com');
     // const loginUri = `https://open.weixin.qq.com/connect/qrconnect?appid=wx25a849d14dd44177&redirect_uri=${redirectUri}&response_type=code&scope=snsapi_login&state=STATE#wechat_redirect`;
-    // console.log(loginUri);
     @get('/weChat/codeHandle')
     async getWeChatToken() {
         const {ctx} = this;
         const code = ctx.checkQuery('code').exist().notBlank().value;
-        // const state = ctx.checkQuery('state').exist().notBlank().value;
         let returnUrl = ctx.checkQuery('returnUrl').optional().emptyStringAsNothingness().value;
         this.ctx.validateParams();
         // 微信开放平台只申请了一个网站应用,所以需要网关根据前缀区分不同的环境,然后跳转到不同的域名.
+        // 不能直接使用ctx.redirect,需要浏览器通过脚本发起一次跳转,而非302跳转
         if (ctx.app.config.env !== 'prod' && ctx.host === 'api.freelog.com') {
-            // 不能直接使用ctx.redirect,需要浏览器通过脚本发起一次跳转,而非302跳转
             this.ctx.body = `<script>location.href="http://api.testfreelog.com${this.ctx.url}"</script>`;
             return;
         }
@@ -55,11 +53,10 @@ export class ThirdPartyController {
         }
         // 如果没绑定,则走绑定流程
         const query = `/bind?identityId=${thirdPartyIdentityInfo.id}&returnUrl=${encodeURIComponent(returnUrl)}`;
-        const callbackUrl = this.generateFreelogUrl('user', query);
-        this.ctx.body = '<script>location.href="' + callbackUrl + '?"</script>';
+        this.ctx.body = `<script>location.href="${this.generateFreelogUrl('user', query)}"</script>`;
     }
 
-    // 注册或绑定账号
+    // 微信注册或绑定账号(非登录)
     @post('/registerOrBind')
     async registerOrBindUser() {
         const {ctx} = this;
@@ -90,6 +87,9 @@ export class ThirdPartyController {
         ctx.success(true);
     }
 
+    // 测试扫码地址:https://open.weixin.qq.com/connect/qrconnect?appid=wx25a849d14dd44177&redirect_uri=https%3A%2F%2Fapi.freelog.com%2Ftest%2Fv2%2FthirdParty%2FweChat%2FcodeHandle%3FreturnUrl%3Dhttp%3A%2F%2Fconsole.testfreelog.com&response_type=code&scope=snsapi_login&state=STATE#wechat_redirect
+    // const redirectUri = encodeURIComponent('https://api.freelog.com/test/v2/thirdParty/weChat/bindHandle?returnUrl=http://user.testfreelog.com/logged/setting');
+    // const loginUri = `https://open.weixin.qq.com/connect/qrconnect?appid=wx25a849d14dd44177&redirect_uri=${redirectUri}&response_type=code&scope=snsapi_login&state=${verifyLoginPassword_state}#wechat_redirect`;
     // 已登录用户绑定微信
     @get('/weChat/bindHandle')
     @visitorIdentityValidator(IdentityTypeEnum.LoginUser)
@@ -97,7 +97,7 @@ export class ThirdPartyController {
         const {ctx} = this;
         const code = ctx.checkQuery('code').exist().notBlank().value;
         const state = ctx.checkQuery('state').exist().notBlank().value; // 此处是校验密码接口返回的
-        // let returnUrl = ctx.checkQuery('returnUrl').optional().emptyStringAsNothingness().value;
+        const returnUrl = ctx.checkQuery('returnUrl').exist().emptyStringAsNothingness().value;
         this.ctx.validateParams();
 
         if (ctx.app.config.env !== 'prod' && ctx.host === 'api.freelog.com') {
@@ -105,25 +105,17 @@ export class ThirdPartyController {
             this.ctx.body = `<script>location.href="http://api.testfreelog.com${this.ctx.url}"</script>`;
             return;
         }
-
-        // 微信开放平台只申请了一个网站应用,所以需要网关根据前缀区分不同的环境,然后跳转到不同的域名.
-        // if (ctx.app.env !== 'prod' && ctx.host === 'api.freelog.com') {
-        //     // 不能直接使用ctx.redirect,需要浏览器通过脚本发起一次跳转,而非302跳转
-        //     const secondJumpUrl = `http://api.testfreelog.com${this.ctx.url}`;
-        //     this.ctx.body = '<script>location.href="' + secondJumpUrl + '"</script>';
-        //     return;
-        // }
         if (generateTempUserState(this.ctx.userId) !== state) {
             throw new ArgumentError('参数state校验失败');
         }
         const thirdPartyIdentityInfo = await this.thirdPartyIdentityService.setWeChatToken(code);
         // 如果已经绑定用户ID,则报错提示已绑定,不能重复
+        // 回调的状态值 1:绑定成功 2:绑定失败 3:微信号已被其他账号绑定
         if (thirdPartyIdentityInfo.userId) {
-            // 1:绑定成功 2:绑定失败 3:微信号已被其他账号绑定
-            return ctx.redirect('http://user.testfreelog.com/logged/setting?type=wechat&status=3');
+            return ctx.redirect(`${returnUrl}?type=wechat&status=3`);
         }
         await this.thirdPartyIdentityService.bindUserId(thirdPartyIdentityInfo, this.ctx.userId);
-        return ctx.redirect('http://user.testfreelog.com/logged/setting?type=wechat&status=1');
+        return ctx.redirect(`${returnUrl}?type=wechat&status=1`);
     }
 
     /**

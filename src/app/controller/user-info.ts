@@ -136,7 +136,11 @@ export class UserInfoController {
         const userInfo = await this.userService.findOne({userId: ctx.userId});
         const isVerifySuccessful = generatePassword(userInfo.salt, password) === userInfo.password;
 
-        ctx.success({userId: userInfo.userId, state: generateTempUserState(userInfo.userId), isVerifySuccessful});
+        ctx.success({
+            userId: userInfo.userId,
+            state: isVerifySuccessful ? generateTempUserState(userInfo.userId) : '',
+            isVerifySuccessful
+        });
     }
 
     /**
