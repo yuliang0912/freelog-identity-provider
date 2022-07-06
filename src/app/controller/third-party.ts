@@ -157,7 +157,7 @@ export class ThirdPartyController {
             userId: this.ctx.userId
         });
         this.ctx.success(thirdPartyIdentityList.map(x => {
-            return pick(x, ['userId', 'thirdPartyType']);
+            return pick(x, ['userId', 'thirdPartyName', 'thirdPartyType']);
         }));
     }
 
