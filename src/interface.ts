@@ -1,4 +1,4 @@
-import {FreelogUserInfo, PageResult} from 'egg-freelog-base';
+import {FreelogUserInfo, IMongodbOperation, PageResult} from 'egg-freelog-base';
 import {
     ActivationCodeStatusEnum, AuditStatusEnum,
     AuthCodeTypeEnum,
@@ -434,6 +434,9 @@ export interface ICaptchaService {
 }
 
 export interface IActivationCodeService extends IBaseService<ActivationCodeInfo> {
+
+    activationCodeProvider: IMongodbOperation<ActivationCodeInfo>;
+
     /**
      * 批量创建
      * @param createQuantity
@@ -455,6 +458,12 @@ export interface IActivationCodeService extends IBaseService<ActivationCodeInfo>
      * @param code
      */
     activateAuthorizationCode(userInfo: UserInfo, code: string): Promise<boolean>;
+
+    /**
+     * 获取用户的邀请码(如果是已激活用户,且没有激活码,则自动生成一个3次有效机会的邀请码)
+     * @param userInfo
+     */
+    findOrCreateUserActivationCode(userInfo: UserInfo): Promise<ActivationCodeInfo>;
 
     /**
      * 查询激活码使用记录

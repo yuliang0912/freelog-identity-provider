@@ -118,6 +118,32 @@ export class activationCodeController {
         }).then(ctx.success);
     }
 
+    // 当前用户的邀请码
+    @get('/userActivateCode')
+    @visitorIdentityValidator(IdentityTypeEnum.LoginUser)
+    async userCode() {
+        const userInfo = await this.userService.findOne({userId: this.ctx.userId});
+        await this.activationCodeService.findOrCreateUserActivationCode(userInfo).then(this.ctx.success);
+    }
+
+    @put('/limitCount')
+    @visitorIdentityValidator(IdentityTypeEnum.InternalClient)
+    async updateUserCodeLimit() {
+        const {ctx} = this;
+        // 此处允许负数来实现减法操作.
+        const userId = ctx.checkBody('userId').isUserId().toInt().value;
+        const incrNumber = ctx.checkBody('incrNumber').toInt().value;
+        ctx.validateParams();
+        const userInfo = await this.userService.findOne({userId});
+        const userActivateCodeInfo = await this.activationCodeService.findOrCreateUserActivationCode(userInfo);
+        if (!userActivateCodeInfo) {
+            return ctx.success(false);
+        }
+        await this.activationCodeService.activationCodeProvider.updateOne({code: userActivateCodeInfo.code}, {
+            $inc: {limitCount: incrNumber}
+        }).then(x => ctx.success(Boolean(x.ok)));
+    }
+
     @get('/:code')
     @visitorIdentityValidator(IdentityTypeEnum.LoginUser)
     async show() {

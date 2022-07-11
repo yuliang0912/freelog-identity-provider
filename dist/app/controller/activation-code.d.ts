@@ -9,5 +9,7 @@ export declare class activationCodeController {
     batchUpdate(): Promise<void>;
     activateTestQualification(): Promise<void>;
     usedRecords(): Promise<void>;
+    userCode(): Promise<void>;
+    updateUserCodeLimit(): Promise<FreelogContext>;
     show(): Promise<void>;
 }

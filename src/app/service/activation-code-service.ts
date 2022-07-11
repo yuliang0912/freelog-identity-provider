@@ -3,13 +3,14 @@ import {
     ActivationCodeInfo,
     ActivationCodeUsedRecord,
     findOptions,
-    IActivationCodeService, IUserService,
+    IActivationCodeService,
+    IUserService,
     UserInfo
 } from '../../interface';
 import {ApplicationError, CryptoHelper, FreelogContext, IMongodbOperation, PageResult} from 'egg-freelog-base';
 import {v4} from 'uuid';
-import {ActivationCodeStatusEnum} from '../../enum';
-import {isDate} from 'lodash';
+import {ActivationCodeStatusEnum, UserStatusEnum} from '../../enum';
+import {first, isDate} from 'lodash';
 import {deleteUndefinedFields} from 'egg-freelog-base/lib/freelog-common-func';
 
 @provide()
@@ -54,6 +55,7 @@ export class ActivationCodeService implements IActivationCodeService {
             codes.push({
                 code, codeType: 'beta',
                 userId: options.userId ?? 0,
+                username: options.username ?? '',
                 limitCount: options.limitCount ?? 0,
                 endEffectiveDate: options?.endEffectiveDate ?? null,
                 startEffectiveDate: options?.startEffectiveDate ?? null,
@@ -99,6 +101,26 @@ export class ActivationCodeService implements IActivationCodeService {
         const task3 = this.userService.updateOne({userId: userInfo.userId}, {userType: userInfo.userType | 1});
 
         return Promise.all([task1, task2, task3]).then(() => true);
+    }
+
+    /**
+     * 获取用户的邀请码(如果是已激活用户,且没有激活码,则自动生成一个3次有效机会的邀请码)
+     * @param userInfo
+     */
+    async findOrCreateUserActivationCode(userInfo: UserInfo): Promise<ActivationCodeInfo> {
+        // 未激活或被冻结的用户无法获得激活码
+        if (userInfo?.status !== UserStatusEnum.Normal) {
+            return null;
+        }
+        const userCodeInfo = await this.activationCodeProvider.findOne({userId: userInfo.userId}, undefined, {sort: {createDate: -1}});
+        if (!userCodeInfo) {
+            return this.batchCreate(1, {
+                userId: userInfo.userId, username: userInfo.username, limitCount: 3,
+                startEffectiveDate: new Date(),
+                endEffectiveDate: new Date(2022, 12, 31)
+            }).then(first);
+        }
+        return userCodeInfo;
     }
 
     /**

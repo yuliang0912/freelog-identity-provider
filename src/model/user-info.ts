@@ -23,7 +23,7 @@ export class UserInfoModel extends MongooseModelBase {
             salt: {type: String, required: true},
             tokenSn: {type: String, required: true}, // 用户后期修改密码等操作,强制作废掉已保存的JWT信息
             userType: {type: Number, required: true, default: 0, enum: [0, 1]}, // 0:初始账户 1:内测用户
-            status: {type: Number, default: 0, required: true}
+            status: {type: Number, default: 0, required: true} // 0:正常 1:冻结 2:测试资格审核中 3:申请测试资格未通过
         }, {
             versionKey: false,
             timestamps: {createdAt: 'createDate', updatedAt: 'updateDate'},
@@ -40,7 +40,7 @@ export class UserInfoModel extends MongooseModelBase {
     static get toObjectOptions() {
         return {
             transform: function (doc, ret, options) {
-                return omit(ret, ['_id', 'password', 'salt', 'updateDate', 'userRole', 'userDetails'])
+                return omit(ret, ['_id', 'password', 'salt', 'updateDate', 'userRole', 'userDetails']);
             }
         };
     }

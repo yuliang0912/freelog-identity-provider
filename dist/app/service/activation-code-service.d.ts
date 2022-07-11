@@ -28,6 +28,11 @@ export declare class ActivationCodeService implements IActivationCodeService {
      */
     activateAuthorizationCode(userInfo: UserInfo, code: string): Promise<boolean>;
     /**
+     * 获取用户的邀请码(如果是已激活用户,且没有激活码,则自动生成一个3次有效机会的邀请码)
+     * @param userInfo
+     */
+    findOrCreateUserActivationCode(userInfo: UserInfo): Promise<ActivationCodeInfo>;
+    /**
      * 查询激活码使用记录
      * @param condition
      * @param options
