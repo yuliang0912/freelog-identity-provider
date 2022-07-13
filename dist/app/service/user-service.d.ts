@@ -1,11 +1,13 @@
 import AutoIncrementRecordProvider from '../data-provider/auto-increment-record-provider';
 import { FreelogContext, MongodbOperation, PageResult } from 'egg-freelog-base';
 import { findOptions, ITageService, IUserService, TagInfo, UserDetailInfo, UserInfo } from '../../interface';
+import { OutsideApiService } from './outside-api-service';
 export declare class UserService implements IUserService {
     ctx: FreelogContext;
     tagService: ITageService;
     userInfoProvider: MongodbOperation<UserInfo>;
     userDetailProvider: MongodbOperation<UserDetailInfo>;
+    outsideApiService: OutsideApiService;
     autoIncrementRecordProvider: AutoIncrementRecordProvider;
     findUserByLoginName(loginName: string): Promise<UserInfo>;
     count(condition: object): Promise<number>;

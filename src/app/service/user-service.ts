@@ -6,6 +6,7 @@ import {ArgumentError, CommonRegex, FreelogContext, MongodbOperation, PageResult
 import {findOptions, ITageService, IUserService, TagInfo, UserDetailInfo, UserInfo} from '../../interface';
 import {UserRoleEnum, UserStatusEnum} from '../../enum';
 import {difference, intersection} from 'lodash';
+import {OutsideApiService} from './outside-api-service';
 
 @provide()
 export class UserService implements IUserService {
@@ -18,6 +19,8 @@ export class UserService implements IUserService {
     userInfoProvider: MongodbOperation<UserInfo>;
     @inject()
     userDetailProvider: MongodbOperation<UserDetailInfo>;
+    @inject()
+    outsideApiService: OutsideApiService;
     @inject()
     autoIncrementRecordProvider: AutoIncrementRecordProvider;
 
@@ -214,9 +217,11 @@ export class UserService implements IUserService {
      * @param model
      */
     async updateOneUserDetail(condition: object, model: Partial<UserDetailInfo>): Promise<boolean> {
-        return this.userDetailProvider.findOneAndUpdate(condition, model, {new: true}).then(data => {
+        await this.userDetailProvider.findOneAndUpdate(condition, model, {new: true}).then(data => {
             return data || this.userDetailProvider.create(Object.assign(condition, model));
-        }).then(() => true);
+        });
+        this.outsideApiService.sendActivityEvent('TS000012', condition['userId']).catch(console.error);
+        return true;
     }
 
     async findUserDetails(condition: object): Promise<UserDetailInfo[]> {

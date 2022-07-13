@@ -1,8 +1,10 @@
 import { ActivationCodeInfo, ActivationCodeUsedRecord, findOptions, IActivationCodeService, IUserService, UserInfo } from '../../interface';
 import { FreelogContext, IMongodbOperation, PageResult } from 'egg-freelog-base';
+import { OutsideApiService } from './outside-api-service';
 export declare class ActivationCodeService implements IActivationCodeService {
     ctx: FreelogContext;
     userService: IUserService;
+    outsideApiService: OutsideApiService;
     activationCodeProvider: IMongodbOperation<ActivationCodeInfo>;
     activationCodeUsedRecordProvider: IMongodbOperation<ActivationCodeUsedRecord>;
     count(condition: object): Promise<number>;

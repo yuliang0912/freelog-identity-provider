@@ -15,4 +15,10 @@ export declare class OutsideApiService {
      * @param openId
      */
     getWeChatUserInfo(token: string, openId: string): Promise<any>;
+    /**
+     * 发送运营活动事件
+     * @param taskConfigCode
+     * @param userId
+     */
+    sendActivityEvent(taskConfigCode: string, userId: number): Promise<any>;
 }

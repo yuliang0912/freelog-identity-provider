@@ -36,4 +36,20 @@ export class OutsideApiService {
             return JSON.parse(response.data.toString());
         });
     }
+
+    /**
+     * 发送运营活动事件
+     * @param taskConfigCode
+     * @param userId
+     */
+    async sendActivityEvent(taskConfigCode: string, userId: number) {
+        return this.ctx.curlIntranetApi(`${this.ctx.webApi.baseUrl}/v2/activities/task/records/complete4TaskConfigCode`, {
+            method: 'post', contentType: 'json', data: {
+                taskConfigCode, userId
+            }
+        }).catch(error => {
+            console.error(`运营活动调用失败,taskCode:${taskConfigCode}, userId:${userId}`);
+            throw error;
+        });
+    }
 }

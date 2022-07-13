@@ -12,6 +12,7 @@ import {v4} from 'uuid';
 import {ActivationCodeStatusEnum, UserStatusEnum} from '../../enum';
 import {first, isDate} from 'lodash';
 import {deleteUndefinedFields} from 'egg-freelog-base/lib/freelog-common-func';
+import {OutsideApiService} from './outside-api-service';
 
 @provide()
 export class ActivationCodeService implements IActivationCodeService {
@@ -20,6 +21,8 @@ export class ActivationCodeService implements IActivationCodeService {
     ctx: FreelogContext;
     @inject()
     userService: IUserService;
+    @inject()
+    outsideApiService: OutsideApiService;
     @inject()
     activationCodeProvider: IMongodbOperation<ActivationCodeInfo>;
     @inject()
@@ -100,7 +103,13 @@ export class ActivationCodeService implements IActivationCodeService {
         });
         const task3 = this.userService.updateOne({userId: userInfo.userId}, {userType: userInfo.userType | 1});
 
-        return Promise.all([task1, task2, task3]).then(() => true);
+        await Promise.all([task1, task2, task3]);
+
+        if (activationCodeInfo.userId) {
+            this.outsideApiService.sendActivityEvent('TS000015', activationCodeInfo.userId).catch(console.error);
+        }
+
+        return true;
     }
 
     /**
