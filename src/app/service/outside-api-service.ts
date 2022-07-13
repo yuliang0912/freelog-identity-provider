@@ -43,7 +43,7 @@ export class OutsideApiService {
      * @param userId
      */
     async sendActivityEvent(taskConfigCode: string, userId: number) {
-        return this.ctx.curlIntranetApi(`${this.ctx.webApi.baseUrl}/v2/activities/task/records/complete4TaskConfigCode`, {
+        return this.ctx.curlIntranetApi(`${this.ctx.webApi.baseUrl}/client/v2/activities/task/records/complete4TaskConfigCode`, {
             method: 'post', contentType: 'json', data: {
                 taskConfigCode, userId
             }
