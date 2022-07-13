@@ -1,5 +1,5 @@
 import {config, inject, provide} from 'midway';
-import {FreelogContext} from 'egg-freelog-base';
+import {CurlResFormatEnum, FreelogContext} from 'egg-freelog-base';
 import {base64Decode} from 'egg-freelog-base/lib/crypto-helper';
 import {WeChatTokenInfo} from '../../interface';
 
@@ -47,9 +47,10 @@ export class OutsideApiService {
             method: 'post', contentType: 'json', data: {
                 taskConfigCode, userId
             }
-        }).catch(error => {
-            console.error(`运营活动调用失败,taskCode:${taskConfigCode}, userId:${userId}`);
-            throw error;
+        }, CurlResFormatEnum.Original).then(response => {
+            if (response.status >= 400) {
+                console.error(`运营活动调用失败,taskCode:${taskConfigCode}, userId:${userId}`);
+            }
         });
     }
 }

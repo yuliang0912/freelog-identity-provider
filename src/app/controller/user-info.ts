@@ -8,6 +8,7 @@ import {isString, isArray, first, omit, isDate, pick, isNumber, differenceWith} 
 import {AuthCodeTypeEnum, UserStatusEnum} from '../../enum';
 import {generatePassword, generateTempUserState, getAreaName} from '../../extend/common-helper';
 import {deleteUndefinedFields} from 'egg-freelog-base/lib/freelog-common-func';
+import {OutsideApiService} from '../service/outside-api-service';
 
 @provide()
 @controller('/v2/users')
@@ -23,6 +24,8 @@ export class UserInfoController {
     tagService: ITageService;
     @inject()
     headImageGenerator: headImageGenerator;
+    @inject()
+    outsideApiService: OutsideApiService;
 
     /**
      * 获取用户列表
@@ -30,7 +33,6 @@ export class UserInfoController {
     @get('/')
     @visitorIdentityValidator(IdentityTypeEnum.InternalClient | IdentityTypeEnum.LoginUser)
     async index() {
-
         const {ctx} = this;
         const skip = ctx.checkQuery('skip').optional().toInt().default(0).ge(0).value;
         const limit = ctx.checkQuery('limit').optional().toInt().default(10).gt(0).lt(101).value;

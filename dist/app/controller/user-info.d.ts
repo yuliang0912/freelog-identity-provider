@@ -1,12 +1,14 @@
 import { IMessageService, ITageService, IUserService } from '../../interface';
 import { FreelogContext } from 'egg-freelog-base';
 import headImageGenerator from '../../extend/head-image-generator';
+import { OutsideApiService } from '../service/outside-api-service';
 export declare class UserInfoController {
     ctx: FreelogContext;
     userService: IUserService;
     messageService: IMessageService;
     tagService: ITageService;
     headImageGenerator: headImageGenerator;
+    outsideApiService: OutsideApiService;
     /**
      * 获取用户列表
      */

@@ -20,5 +20,5 @@ export declare class OutsideApiService {
      * @param taskConfigCode
      * @param userId
      */
-    sendActivityEvent(taskConfigCode: string, userId: number): Promise<any>;
+    sendActivityEvent(taskConfigCode: string, userId: number): Promise<void>;
 }
