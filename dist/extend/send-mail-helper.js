@@ -81,7 +81,7 @@ let SendMailHelper = class SendMailHelper {
                     <body>
                         <div style="font-size: 14px;">
                             <div>Hi ${username}，</div><br>
-                            <div>感谢您的支持！很遗憾，您的内测申请未通过。重新提交申请，请点击<a style="color: inherit;" href="https://console.freelog.com/alpha-test/apply">https://console.freelog.com/alpha-test/apply</a>。</div><br>
+                            <div>感谢您的支持！很遗憾，您的内测申请未通过。重新提交申请，请点击<a style="color: inherit;" href="https://console.freelog.com/invitation">https://console.freelog.com/invitation</a>。</div><br>
                             <div>您真诚的，<br>Freelog团队</div>
                         </div>
                     </body>

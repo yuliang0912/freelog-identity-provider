@@ -201,7 +201,7 @@ export class TestQualificationApplyAuditService implements ITestQualificationApp
             return this.sendSmsHelper.sendSMS(mobile, this.sendSmsHelper.getTemplate(templateCodeType), {
                 username,
                 phone: mobile.substr(mobile.length - 4),
-                path: auditStatus === 1 ? '' : 'alpha-test/apply'
+                path: auditStatus === 1 ? '' : 'invitation'
             });
         } else if (email) {
             const emailSubject = templateCodeType === AuthCodeTypeEnum.AuditPass ? '【Freelog】内测申请通过' : '【Freelog】内测申请未通过';
