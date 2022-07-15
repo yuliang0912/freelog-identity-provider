@@ -52,16 +52,6 @@ export declare enum UserStatusEnum {
 /**
  * 授权码状态
  */
-export declare enum ActivationCodeStatusEnum {
-    /**
-     * 禁用
-     */
-    disabled = 0,
-    /**
-     * 已启用
-     */
-    enabled = 1
-}
 /**
  * 消息记录状态
  */

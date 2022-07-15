@@ -1,6 +1,6 @@
 import {FreelogUserInfo, IMongodbOperation, PageResult} from 'egg-freelog-base';
 import {
-    ActivationCodeStatusEnum, AuditStatusEnum,
+    AuditStatusEnum,
     AuthCodeTypeEnum,
     MessageRecordStatusEnum, UserRoleEnum, UserStatusEnum, UserTypeEnum
 } from './enum';
@@ -128,7 +128,7 @@ export interface ActivationCodeInfo {
     /**
      * 状态
      */
-    status: ActivationCodeStatusEnum;
+    status: number;
 
     /**
      * 开始生效日期

@@ -15,7 +15,7 @@ export class ActivationCodeUsedRecord extends MongooseModelBase {
         const activationCodeSchema = new this.mongoose.Schema({
             code: {type: String, required: true},
             userId: {type: Number, required: true}, // 使用者ID
-            username: {type: String, required: true}, // 邀请码所属人用户名
+            username: {type: String, required: true}, // 使用者用户名
             status: {type: Number, default: 0, required: true}, // 0:正常
         }, {
             versionKey: false,

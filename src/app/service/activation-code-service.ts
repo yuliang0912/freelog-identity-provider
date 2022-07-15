@@ -9,7 +9,7 @@ import {
 } from '../../interface';
 import {ApplicationError, CryptoHelper, FreelogContext, IMongodbOperation, PageResult} from 'egg-freelog-base';
 import {v4} from 'uuid';
-import {ActivationCodeStatusEnum, UserStatusEnum} from '../../enum';
+import {UserStatusEnum} from '../../enum';
 import {first, isDate} from 'lodash';
 import {deleteUndefinedFields} from 'egg-freelog-base/lib/freelog-common-func';
 import {OutsideApiService} from './outside-api-service';
@@ -86,7 +86,7 @@ export class ActivationCodeService implements IActivationCodeService {
     async activateAuthorizationCode(userInfo: UserInfo, code: string): Promise<boolean> {
 
         const activationCodeInfo = await this.activationCodeProvider.findOne({code, codeType: 'beta'});
-        if (!activationCodeInfo || activationCodeInfo.status === ActivationCodeStatusEnum.disabled
+        if (!activationCodeInfo || activationCodeInfo.status === 1
             || (activationCodeInfo.limitCount > 0 && activationCodeInfo.usedCount >= activationCodeInfo.limitCount)) {
             throw new ApplicationError(this.ctx.gettext('test-qualification-activation-code-invalid'));
         }
@@ -101,7 +101,10 @@ export class ActivationCodeService implements IActivationCodeService {
         const task2 = this.activationCodeUsedRecordProvider.create({
             code, userId: userInfo.userId, username: userInfo.username, loginIp: this.ctx.ip
         });
-        const task3 = this.userService.updateOne({userId: userInfo.userId}, {userType: userInfo.userType | 1});
+        const task3 = this.userService.updateOne({userId: userInfo.userId}, {
+            userType: userInfo.userType | 1,
+            status: 0
+        });
 
         await Promise.all([task1, task2, task3]);
 
@@ -124,7 +127,9 @@ export class ActivationCodeService implements IActivationCodeService {
         const userCodeInfo = await this.activationCodeProvider.findOne({userId: userInfo.userId}, undefined, {sort: {createDate: -1}});
         if (!userCodeInfo) {
             return this.batchCreate(1, {
-                userId: userInfo.userId, username: userInfo.username, limitCount: 3,
+                userId: userInfo.userId,
+                username: userInfo.username, limitCount: 3,
+                status: 0,
                 startEffectiveDate: new Date(),
                 endEffectiveDate: new Date(2022, 12, 31)
             }).then(first);

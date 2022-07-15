@@ -64,18 +64,18 @@ export enum UserStatusEnum {
 /**
  * 授权码状态
  */
-export enum ActivationCodeStatusEnum {
-
-    /**
-     * 禁用
-     */
-    disabled = 0,
-
-    /**
-     * 已启用
-     */
-    enabled = 1
-}
+// export enum ActivationCodeStatusEnum {
+//
+//     /**
+//      * 禁用
+//      */
+//     disabled = 0,
+//
+//     /**
+//      * 已启用
+//      */
+//     enabled = 1
+// }
 
 /**
  * 消息记录状态
