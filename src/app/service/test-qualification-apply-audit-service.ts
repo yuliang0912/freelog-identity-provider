@@ -204,7 +204,8 @@ export class TestQualificationApplyAuditService implements ITestQualificationApp
                 path: auditStatus === 1 ? '' : 'alpha-test/apply'
             });
         } else if (email) {
-            return this.sendMailHelper.sendMail(email, this.sendMailHelper.getTemplate(templateCodeType, userInfo.username));
+            const emailSubject = templateCodeType === AuthCodeTypeEnum.AuditPass ? '【Freelog】内测申请通过' : '【Freelog】内测申请未通过';
+            return this.sendMailHelper.sendMail(email, this.sendMailHelper.getTemplate(templateCodeType, userInfo.username), emailSubject);
         }
     }
 }
