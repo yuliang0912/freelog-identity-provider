@@ -32,7 +32,7 @@ export class UserInfoController {
      */
     @get('/')
     @visitorIdentityValidator(IdentityTypeEnum.InternalClient | IdentityTypeEnum.LoginUser)
-    async index() {
+    async indexForAdmin() {
         const {ctx} = this;
         const skip = ctx.checkQuery('skip').optional().toInt().default(0).ge(0).value;
         const limit = ctx.checkQuery('limit').optional().toInt().default(10).gt(0).lt(101).value;
@@ -97,6 +97,33 @@ export class UserInfoController {
         return ctx.success(pageResult);
     }
 
+    @get('/search')
+    @visitorIdentityValidator(IdentityTypeEnum.LoginUser)
+    async index() {
+        const {ctx} = this;
+        const skip = ctx.checkQuery('skip').optional().toInt().default(0).ge(0).value;
+        const limit = ctx.checkQuery('limit').optional().toInt().default(10).gt(0).lt(101).value;
+        const sort = ctx.checkQuery('sort').optional().value;
+        const keywords = ctx.checkQuery('keywords').ignoreParamWhenEmpty().trim().value;
+        ctx.validateParams();
+
+        const condition: any = {};
+        if (CommonRegex.mobile86.test(keywords)) {
+            condition.mobile = keywords;
+        } else if (CommonRegex.email.test(keywords)) {
+            condition.email = new RegExp(`^${keywords}`, 'i');
+        } else if (isString(keywords) && CommonRegex.username.test(keywords)) {
+            condition.username = new RegExp(`^${keywords}`, 'i');
+        } else if (/^[0-9]{5,12}$/.test(keywords)) {
+            condition.userId = parseInt(keywords);
+        } else if (isString(keywords)) {
+            return ctx.success({skip, limit, totalItem: 0, dataList: []});
+        }
+        await this.userService.findIntervalList(condition, {
+            skip, limit, sort: sort ?? {userId: -1}, projection: 'userId username headImage'
+        }).then(ctx.success);
+    }
+
     /**
      * 批量获取用户
      */
@@ -157,7 +184,7 @@ export class UserInfoController {
         const username = ctx.checkBody('username').exist().isUsername().is(function (vale) {
             return !CommonRegex.mobile86.test(vale);
         }).value;
-        const authCode = ctx.checkBody('authCode').exist().toInt().value;
+        const authCode = ctx.checkBody('authCode').exist().toInt('验证码必须是6位数字').value;
         ctx.validateParams();
 
         const isVerify = await this.messageService.verify(AuthCodeTypeEnum.Register, loginName, authCode);

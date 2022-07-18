@@ -12,6 +12,7 @@ export declare class UserInfoController {
     /**
      * 获取用户列表
      */
+    indexForAdmin(): Promise<FreelogContext>;
     index(): Promise<FreelogContext>;
     /**
      * 批量获取用户
