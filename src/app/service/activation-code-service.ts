@@ -10,7 +10,7 @@ import {
 import {ApplicationError, CryptoHelper, FreelogContext, IMongodbOperation, PageResult} from 'egg-freelog-base';
 import {v4} from 'uuid';
 import {UserStatusEnum} from '../../enum';
-import {first, isDate} from 'lodash';
+import {first, isDate, pick} from 'lodash';
 import {deleteUndefinedFields} from 'egg-freelog-base/lib/freelog-common-func';
 import {OutsideApiService} from './outside-api-service';
 
@@ -76,6 +76,22 @@ export class ActivationCodeService implements IActivationCodeService {
     batchUpdate(codes: string[], status: 0 | 1, remark?: string): Promise<boolean> {
         const updateModel = deleteUndefinedFields({status, remark});
         return this.activationCodeProvider.updateMany({code: {$in: codes}}, updateModel).then(t => Boolean(t.nModified));
+    }
+
+    /**
+     * 根据被邀请人查询邀请者信息
+     * @param inviteeUserId
+     */
+    async getInviterInfo(inviteeUserId: number) {
+        const activationCodeUsedRecord = await this.activationCodeUsedRecordProvider.findOne({userId: inviteeUserId});
+        if (!activationCodeUsedRecord) {
+            return null;
+        }
+        const codeInfo = await this.activationCodeProvider.findOne({code: activationCodeUsedRecord.code});
+        if (!codeInfo.userId) {
+            return null;
+        }
+        return pick(codeInfo, ['userId', 'username']);
     }
 
     /**

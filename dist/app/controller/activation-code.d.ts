@@ -11,5 +11,6 @@ export declare class activationCodeController {
     usedRecords(): Promise<void>;
     userCode(): Promise<void>;
     updateUserCodeLimit(): Promise<FreelogContext>;
+    getInviterInfo(): Promise<void>;
     show(): Promise<void>;
 }

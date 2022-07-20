@@ -367,6 +367,11 @@ export interface IActivationCodeService extends IBaseService<ActivationCodeInfo>
      * @param options
      */
     findUsedRecordIntervalList(condition: object, options?: findOptions<ActivationCodeUsedRecord>): Promise<PageResult<ActivationCodeUsedRecord>>;
+    /**
+     * 根据被邀请人获取邀请人信息
+     * @param inviteeUserId
+     */
+    getInviterInfo(inviteeUserId: number): Promise<any>;
 }
 export interface ITestQualificationApplyAuditService {
     findSearchIntervalList(condition: Partial<UserInfo>, status?: number, options?: findOptions<UserInfo>): Promise<PageResult<TestQualificationApplyAuditRecordInfo>>;

@@ -144,6 +144,14 @@ export class activationCodeController {
         }).then(x => ctx.success(Boolean(x.ok)));
     }
 
+    @get('/inviterInfo')
+    async getInviterInfo() {
+        const {ctx} = this;
+        const userId = ctx.checkQuery('userId').exist().isUserId().toInt().value;
+        ctx.validateParams();
+        await this.activationCodeService.getInviterInfo(userId).then(ctx.success);
+    }
+
     @get('/:code')
     @visitorIdentityValidator(IdentityTypeEnum.LoginUser)
     async show() {
@@ -153,4 +161,5 @@ export class activationCodeController {
 
         await this.activationCodeService.findOne({code}).then(ctx.success);
     }
+
 }

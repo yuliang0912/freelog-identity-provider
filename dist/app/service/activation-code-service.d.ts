@@ -24,6 +24,11 @@ export declare class ActivationCodeService implements IActivationCodeService {
      */
     batchUpdate(codes: string[], status: 0 | 1, remark?: string): Promise<boolean>;
     /**
+     * 根据被邀请人查询邀请者信息
+     * @param inviteeUserId
+     */
+    getInviterInfo(inviteeUserId: number): Promise<Pick<ActivationCodeInfo, "userId" | "username">>;
+    /**
      * 使用授权码激活测试资格
      * @param userInfo
      * @param code
