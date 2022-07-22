@@ -9,7 +9,7 @@
     "bluebird": "^3.7.2",
     "egg-freelog-base": "^3.1.28",
     "egg-scripts": "^2.15.1",
-    "file-type": "^11.1.0",
+    "file-type": "^16.5.4",
     "identicon.js": "^2.3.3",
     "jsonschema": "^1.4.0",
     "midway": "^1.20.3",
