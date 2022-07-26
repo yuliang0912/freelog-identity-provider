@@ -193,9 +193,9 @@ export class UserInfoController {
         }
 
         await this.userService.findUserByLoginName(loginName).then(data => {
-            if (data?.mobile === loginName) {
+            if (data?.mobile.toLowerCase() === loginName.toLowerCase()) {
                 throw new ArgumentError(ctx.gettext('mobile-register-validate-failed'));
-            } else if (data?.email.toLowerCase() === loginName.toLowerCase) {
+            } else if (data?.email.toLowerCase() === loginName.toLowerCase()) {
                 throw new ArgumentError(ctx.gettext('email-register-validate-failed'));
             } else if (data) {
                 throw new ArgumentError(ctx.gettext('username-register-validate-failed'));
@@ -372,7 +372,6 @@ export class UserInfoController {
         const mobile = ctx.checkQuery('mobile').optional().match(CommonRegex.mobile86).value;
         const email = ctx.checkQuery('email').optional().isEmail().value;
         ctx.validateParams();
-
         const condition: any = {};
         if (mobile) {
             condition.mobile = mobile;
@@ -381,7 +380,7 @@ export class UserInfoController {
             condition.userId = userId;
         }
         if (username) {
-            condition.username = username;
+            condition.username = new RegExp(`^${username}$`, 'i');
         }
         if (email) {
             condition.email = email;
