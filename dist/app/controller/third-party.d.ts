@@ -19,6 +19,10 @@ export declare class ThirdPartyController {
      */
     list(): Promise<void>;
     /**
+     * 查询用户是否绑定第三方登录
+     */
+    isBind(): Promise<FreelogContext>;
+    /**
      * 根据环境生成不同域名url
      * @param domain
      * @param queryAndPath

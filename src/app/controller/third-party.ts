@@ -162,6 +162,24 @@ export class ThirdPartyController {
     }
 
     /**
+     * 查询用户是否绑定第三方登录
+     */
+    @get('/isBind')
+    async isBind() {
+        const {ctx} = this;
+        const username = ctx.checkQuery('username').exist().isUsername().value;
+        const thirdPartyType = ctx.checkQuery('thirdPartyType').exist().in(['weChat', 'weibo']).value;
+        ctx.validateParams();
+        const userInfo = await this.userService.findUserByLoginName(username);
+        if (!userInfo) {
+            return ctx.success(false);
+        }
+        await this.thirdPartyIdentityService.thirdPartyIdentityProvider.findOne({
+            userId: userInfo.userId, thirdPartyType, status: 1
+        }, '_id').then(x => ctx.success(Boolean(x)));
+    }
+
+    /**
      * 根据环境生成不同域名url
      * @param domain
      * @param queryAndPath
