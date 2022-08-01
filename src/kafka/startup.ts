@@ -2,6 +2,7 @@ import {config, init, inject, provide, scope, ScopeEnum} from 'midway';
 import {KafkaClient} from './client';
 
 import {UserRegisterEventHandler} from './user-register-event-handler';
+import {UserChangePasswordEventHandler} from './user-change-password-event-handler';
 
 @provide()
 @scope(ScopeEnum.Singleton)
@@ -13,6 +14,8 @@ export class KafkaStartup {
     kafkaClient: KafkaClient;
     @inject()
     userRegisterEventHandler: UserRegisterEventHandler;
+    @inject()
+    userChangePasswordEventHandler: UserChangePasswordEventHandler;
 
     /**
      * 启动,连接kafka-producer,订阅topic
@@ -36,7 +39,7 @@ export class KafkaStartup {
      * 订阅
      */
     async subscribeTopics() {
-        const topics = [this.userRegisterEventHandler];
+        const topics = [this.userRegisterEventHandler, this.userChangePasswordEventHandler];
         return this.kafkaClient.subscribes(topics);
     }
 }
