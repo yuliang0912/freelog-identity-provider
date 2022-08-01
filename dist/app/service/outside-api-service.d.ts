@@ -26,6 +26,6 @@ export declare class OutsideApiService {
      * 注册用户到论坛
      * @param userInfo
      */
-    registerUserToForum(userInfo: Partial<UserInfo>): Promise<import("urllib").HttpClientResponse<any>>;
-    changeForumPassword(userInfo: Partial<UserInfo>): Promise<import("urllib").HttpClientResponse<any>>;
+    registerUserToForum(userInfo: Partial<UserInfo>): Promise<any>;
+    changeForumPassword(userInfo: Partial<UserInfo>): Promise<any>;
 }
