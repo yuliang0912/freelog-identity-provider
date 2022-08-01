@@ -1,16 +1,17 @@
 import {config, inject, provide} from 'midway';
 import {CurlResFormatEnum, FreelogContext} from 'egg-freelog-base';
 import {base64Decode} from 'egg-freelog-base/lib/crypto-helper';
-import {WeChatTokenInfo} from '../../interface';
+import {UserInfo, WeChatTokenInfo} from '../../interface';
 
 @provide()
 export class OutsideApiService {
 
     @config()
     thirdPartyInfo: any;
-
     @inject()
     ctx: FreelogContext;
+    @config()
+    forum: string;
 
     /**
      * 根据code获取accessToken, 注意微信一般有调用次数限制.
@@ -50,6 +51,44 @@ export class OutsideApiService {
         }, CurlResFormatEnum.Original).then(response => {
             if (response.status >= 400) {
                 console.error(`运营活动调用失败,taskCode:${taskConfigCode}, userId:${userId}`);
+            }
+        });
+    }
+
+    /**
+     * 注册用户到论坛
+     * @param userInfo
+     */
+    async registerUserToForum(userInfo: Partial<UserInfo>) {
+        if (!this.forum) {
+            console.log('没有论坛地址,暂不处理');
+        }
+        return this.ctx.curl(`${this.forum}/api/freelog/v1/user`, {
+            method: 'POST', contentType: 'json',
+            headers: {
+                authorization: 'freelog-forum'
+            },
+            data: {
+                username: userInfo.username,
+                uid: userInfo.userId,
+                password: userInfo.password,
+                email: userInfo.email ?? ''
+            }
+        });
+    }
+
+    async changeForumPassword(userInfo: Partial<UserInfo>) {
+        if (!this.forum) {
+            console.log('没有论坛地址,暂不处理');
+        }
+        console.log(userInfo);
+        return this.ctx.curl(`${this.forum}/api/freelog/v1/user/${userInfo.userId}/password`, {
+            method: 'PUT', contentType: 'json',
+            headers: {
+                authorization: 'freelog-forum'
+            },
+            data: {
+                newPassword: userInfo.password
             }
         });
     }

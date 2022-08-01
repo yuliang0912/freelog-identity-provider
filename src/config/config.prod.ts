@@ -19,5 +19,7 @@ export default () => {
         }
     };
 
+    config.forum = 'https://forum.freelog.com';
+
     return config;
 };

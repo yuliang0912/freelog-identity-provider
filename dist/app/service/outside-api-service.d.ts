@@ -1,8 +1,9 @@
 import { FreelogContext } from 'egg-freelog-base';
-import { WeChatTokenInfo } from '../../interface';
+import { UserInfo, WeChatTokenInfo } from '../../interface';
 export declare class OutsideApiService {
     thirdPartyInfo: any;
     ctx: FreelogContext;
+    forum: string;
     /**
      * 根据code获取accessToken, 注意微信一般有调用次数限制.
      * @param code
@@ -21,4 +22,10 @@ export declare class OutsideApiService {
      * @param userId
      */
     sendActivityEvent(taskConfigCode: string, userId: number): Promise<void>;
+    /**
+     * 注册用户到论坛
+     * @param userInfo
+     */
+    registerUserToForum(userInfo: Partial<UserInfo>): Promise<import("urllib").HttpClientResponse<any>>;
+    changeForumPassword(userInfo: Partial<UserInfo>): Promise<import("urllib").HttpClientResponse<any>>;
 }
