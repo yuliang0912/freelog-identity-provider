@@ -8,6 +8,8 @@ export default class AppBootHook {
     }
 
     async willReady() {
-        return mongoose(this.app);
+        return mongoose(this.app).then(() => {
+            return this.app.applicationContext.getAsync('kafkaStartup');
+        });
     }
 }
