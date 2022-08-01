@@ -41,5 +41,13 @@ export default () => {
         email: 'support@freelog.com'
     };
 
+    config.kafka = {
+        enable: false,
+        clientId: 'freelog-identity-service',
+        logLevel: 1,
+        brokers: ['kafka-0.production:9092', 'kafka-1.production:9092', 'kafka-2.production:9092'], // 'kafka-hs.production.svc.cluster.local:9092'
+        connectionTimeout: 3000
+    };
+
     return config;
 };

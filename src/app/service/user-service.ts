@@ -24,7 +24,7 @@ export class UserService implements IUserService {
     @config()
     jwtAuth;
     @inject()
-    kafka: KafkaClient;
+    kafkaClient: KafkaClient;
     @inject()
     rsaHelper: RsaHelper;
     @inject()
@@ -91,7 +91,7 @@ export class UserService implements IUserService {
                 mobile: user.mobile,
                 password: ras.privateKeyEncrypt(userInfo.password)
             };
-            this.kafka.send({
+            this.kafkaClient.send({
                 topic: 'user-register-event-topic',
                 messages: [{
                     value: JSON.stringify(eventBody)
@@ -125,7 +125,7 @@ export class UserService implements IUserService {
             username: userInfo.username,
             password: ras.privateKeyEncrypt(newPassword)
         };
-        this.kafka.send({
+        this.kafkaClient.send({
             topic: 'user-change-password-event-topic',
             messages: [{
                 value: JSON.stringify(eventBody)

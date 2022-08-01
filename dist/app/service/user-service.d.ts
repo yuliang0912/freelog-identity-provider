@@ -6,7 +6,7 @@ import { KafkaClient } from '../../kafka/client';
 import { RsaHelper } from '../../extend/rsa-helper';
 export declare class UserService implements IUserService {
     jwtAuth: any;
-    kafka: KafkaClient;
+    kafkaClient: KafkaClient;
     rsaHelper: RsaHelper;
     ctx: FreelogContext;
     tagService: ITageService;
