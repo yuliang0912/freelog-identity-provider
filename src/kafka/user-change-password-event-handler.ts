@@ -30,6 +30,6 @@ export class UserChangePasswordEventHandler implements IKafkaSubscribeMessageHan
             userId: eventBody.userId,
             username: eventBody.username,
             password: this.rsaClient.publicKeyDecrypt(eventBody.password)
-        }).then(x => console.log(JSON.stringify(x)));
+        }).then(x => console.log(x.data.data.toString()));
     }
 }
