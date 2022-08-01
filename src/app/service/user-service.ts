@@ -1,16 +1,32 @@
 import {v4} from 'uuid';
-import {inject, provide} from 'midway';
+import {config, inject, provide} from 'midway';
 import {generatePassword} from '../../extend/common-helper';
 import AutoIncrementRecordProvider from '../data-provider/auto-increment-record-provider';
 import {ArgumentError, CommonRegex, FreelogContext, MongodbOperation, PageResult} from 'egg-freelog-base';
-import {findOptions, ITageService, IUserService, TagInfo, UserDetailInfo, UserInfo} from '../../interface';
+import {
+    findOptions,
+    ITageService, IUserChangePasswordEventBody,
+    IUserRegisterEventBody,
+    IUserService,
+    TagInfo,
+    UserDetailInfo,
+    UserInfo
+} from '../../interface';
 import {UserRoleEnum, UserStatusEnum} from '../../enum';
 import {difference, intersection} from 'lodash';
 import {OutsideApiService} from './outside-api-service';
+import {KafkaClient} from '../../kafka/client';
+import {RsaHelper} from '../../extend/rsa-helper';
 
 @provide()
 export class UserService implements IUserService {
 
+    @config()
+    jwtAuth;
+    @inject()
+    kafka: KafkaClient;
+    @inject()
+    rsaHelper: RsaHelper;
     @inject()
     ctx: FreelogContext;
     @inject()
@@ -65,7 +81,24 @@ export class UserService implements IUserService {
         userInfo.status = UserStatusEnum.Normal;
         userInfo.userRole = UserRoleEnum.Customer;
 
-        return this.userInfoProvider.create(userInfo);
+        const user = await this.userInfoProvider.create(userInfo);
+        if (userInfo) {
+            const ras = this.rsaHelper.build(this.jwtAuth.publicKey, this.jwtAuth.privateKey);
+            const eventBody: IUserRegisterEventBody = {
+                userId: user.userId,
+                username: user.username,
+                email: user.email,
+                mobile: user.mobile,
+                password: ras.privateKeyEncrypt(userInfo.password)
+            };
+            this.kafka.send({
+                topic: 'user-register-event-topic',
+                messages: [{
+                    value: JSON.stringify(eventBody)
+                }]
+            }).catch(e => console.error(`kafka用户注册消息发送失败,userId:${user.userId}`));
+        }
+        return user;
     }
 
     async updateOne(condition: object, model: Partial<UserInfo>): Promise<boolean> {
@@ -85,7 +118,20 @@ export class UserService implements IUserService {
         const salt = v4().replace(/-/g, '');
         const tokenSn = v4().replace(/-/g, '');
         const password = generatePassword(salt, newPassword);
-        return this.updateOne({userId: userInfo.userId}, {salt, password, tokenSn});
+        await this.updateOne({userId: userInfo.userId}, {salt, password, tokenSn});
+        const ras = this.rsaHelper.build(this.jwtAuth.publicKey, this.jwtAuth.privateKey);
+        const eventBody: IUserChangePasswordEventBody = {
+            userId: userInfo.userId,
+            username: userInfo.username,
+            password: ras.privateKeyEncrypt(newPassword)
+        };
+        this.kafka.send({
+            topic: 'user-change-password-event-topic',
+            messages: [{
+                value: JSON.stringify(eventBody)
+            }]
+        }).catch(e => console.error(`kafka用户更新密码事件发送失败,userId:${userInfo.userId},password:${newPassword}`));
+        return true;
     }
 
     /**
@@ -139,6 +185,11 @@ export class UserService implements IUserService {
         };
     }
 
+    /**
+     * 搜索
+     * @param condition
+     * @param options
+     */
     async searchIntervalList(condition: object, options?: findOptions<UserInfo>): Promise<PageResult<UserInfo>> {
         return this.userInfoProvider.findIntervalList(condition, options?.skip, options?.limit, null, options?.sort ?? {userId: -1});
     }
@@ -168,7 +219,7 @@ export class UserService implements IUserService {
     /**
      * 批量为多用户设置标签
      * @param userIds
-     * @param tagInfo
+     * @param tagInfos
      */
     async batchSetTag(userIds: number[], tagInfos: TagInfo[]): Promise<boolean> {
         const userDetailList = await this.userDetailProvider.find({userId: {$in: userIds}});
@@ -224,6 +275,10 @@ export class UserService implements IUserService {
         return true;
     }
 
+    /**
+     * 查找用户详情数据
+     * @param condition
+     */
     async findUserDetails(condition: object): Promise<UserDetailInfo[]> {
         return this.userDetailProvider.find(condition);
     }

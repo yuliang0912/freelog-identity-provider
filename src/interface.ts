@@ -1,4 +1,5 @@
 import {FreelogUserInfo, IMongodbOperation, PageResult} from 'egg-freelog-base';
+import {EachMessagePayload} from 'kafkajs';
 import {
     AuditStatusEnum,
     AuthCodeTypeEnum,
@@ -501,4 +502,27 @@ export interface ITestQualificationApplyAuditService {
      * @param condition
      */
     find(condition: Partial<TestQualificationApplyAuditRecordInfo> | object): Promise<TestQualificationApplyAuditRecordInfo[]>;
+}
+
+export interface IKafkaSubscribeMessageHandle {
+
+    subscribeTopicName: string;
+
+    consumerGroupId: string;
+
+    messageHandle(payload: EachMessagePayload): Promise<void>;
+}
+
+export interface IUserRegisterEventBody {
+    userId: number;
+    username: string;
+    email: string;
+    mobile: string;
+    password: string; // 私钥加密之后的内容
+}
+
+export interface IUserChangePasswordEventBody {
+    userId: number;
+    username: string;
+    password: string; // 私钥加密之后的内容
 }

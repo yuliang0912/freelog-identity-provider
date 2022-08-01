@@ -2,7 +2,12 @@ import AutoIncrementRecordProvider from '../data-provider/auto-increment-record-
 import { FreelogContext, MongodbOperation, PageResult } from 'egg-freelog-base';
 import { findOptions, ITageService, IUserService, TagInfo, UserDetailInfo, UserInfo } from '../../interface';
 import { OutsideApiService } from './outside-api-service';
+import { KafkaClient } from '../../kafka/client';
+import { RsaHelper } from '../../extend/rsa-helper';
 export declare class UserService implements IUserService {
+    jwtAuth: any;
+    kafka: KafkaClient;
+    rsaHelper: RsaHelper;
     ctx: FreelogContext;
     tagService: ITageService;
     userInfoProvider: MongodbOperation<UserInfo>;
@@ -37,6 +42,11 @@ export declare class UserService implements IUserService {
      * @param options
      */
     searchIntervalListByTags(condition: object, tagIds?: number[], options?: findOptions<UserInfo>): Promise<PageResult<UserInfo>>;
+    /**
+     * 搜索
+     * @param condition
+     * @param options
+     */
     searchIntervalList(condition: object, options?: findOptions<UserInfo>): Promise<PageResult<UserInfo>>;
     /**
      * 设置标签
@@ -47,7 +57,7 @@ export declare class UserService implements IUserService {
     /**
      * 批量为多用户设置标签
      * @param userIds
-     * @param tagInfo
+     * @param tagInfos
      */
     batchSetTag(userIds: number[], tagInfos: TagInfo[]): Promise<boolean>;
     /**
@@ -62,5 +72,9 @@ export declare class UserService implements IUserService {
      * @param model
      */
     updateOneUserDetail(condition: object, model: Partial<UserDetailInfo>): Promise<boolean>;
+    /**
+     * 查找用户详情数据
+     * @param condition
+     */
     findUserDetails(condition: object): Promise<UserDetailInfo[]>;
 }
