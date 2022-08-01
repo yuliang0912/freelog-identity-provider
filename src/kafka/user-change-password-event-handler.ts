@@ -8,8 +8,6 @@ import {RsaHelper} from '../extend/rsa-helper';
 @scope(ScopeEnum.Singleton)
 export class UserChangePasswordEventHandler implements IKafkaSubscribeMessageHandle {
 
-    @config()
-    jwtAuth;
     @inject()
     outsideApiService: OutsideApiService;
 
@@ -17,8 +15,8 @@ export class UserChangePasswordEventHandler implements IKafkaSubscribeMessageHan
     consumerGroupId = 'freelog-identity-service#user-change-password-event-handle-group';
     subscribeTopicName = 'user-change-password-event-topic';
 
-    constructor() {
-        this.rsaClient = new RsaHelper().build(this.jwtAuth.publicKey);
+    constructor(@config('jwtAuth') jwtAuth) {
+        this.rsaClient = new RsaHelper().build(jwtAuth.publicKey);
         this.messageHandle = this.messageHandle.bind(this);
     }
 
