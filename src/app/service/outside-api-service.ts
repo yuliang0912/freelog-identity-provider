@@ -63,7 +63,7 @@ export class OutsideApiService {
         if (!this.forum) {
             console.log('没有论坛地址,暂不处理');
         }
-        const app = require('../app').app;
+        const app = require('../../app').app;
         return app.curl(`${this.forum}/api/freelog/v1/user`, {
             method: 'POST', contentType: 'json',
             headers: {
@@ -82,7 +82,7 @@ export class OutsideApiService {
         if (!this.forum) {
             console.log('没有论坛地址,暂不处理');
         }
-        const app = require('../app').app;
+        const app = require('../../app').app;
         return app.curl(`${this.forum}/api/freelog/v1/user/${userInfo.userId}/password`, {
             method: 'PUT', contentType: 'json',
             headers: {
