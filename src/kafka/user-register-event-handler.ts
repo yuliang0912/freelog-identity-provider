@@ -32,6 +32,6 @@ export class UserRegisterEventHandler implements IKafkaSubscribeMessageHandle {
             email: eventBody.email,
             mobile: eventBody.mobile,
             password: this.rsaClient.publicKeyDecrypt(eventBody.password)
-        }).then(x => console.log(x.data.toString()));
+        });
     }
 }

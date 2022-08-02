@@ -24,7 +24,7 @@ export default () => {
         brokers: ['kafka-0.development:9092'], // 'kafka-hs.production.svc.cluster.local:9092'
     };
 
-    config.forum = 'https://forum.freelog.com';
+    config.forum = 'http://forum.testfreelog.com';
 
     return config;
 };

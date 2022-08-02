@@ -2,6 +2,7 @@ import { IMessageService, ITageService, IUserService } from '../../interface';
 import { FreelogContext } from 'egg-freelog-base';
 import headImageGenerator from '../../extend/head-image-generator';
 import { OutsideApiService } from '../service/outside-api-service';
+import { ForumDataService } from '../service/forum-data-service';
 export declare class UserInfoController {
     ctx: FreelogContext;
     userService: IUserService;
@@ -9,6 +10,8 @@ export declare class UserInfoController {
     tagService: ITageService;
     headImageGenerator: headImageGenerator;
     outsideApiService: OutsideApiService;
+    forumDataService: ForumDataService;
+    registerAllUserToForum(): Promise<void>;
     /**
      * 获取用户列表
      */

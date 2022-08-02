@@ -9,6 +9,7 @@ import {AuthCodeTypeEnum, UserStatusEnum} from '../../enum';
 import {generatePassword, generateTempUserState, getAreaName} from '../../extend/common-helper';
 import {deleteUndefinedFields} from 'egg-freelog-base/lib/freelog-common-func';
 import {OutsideApiService} from '../service/outside-api-service';
+import {ForumDataService} from '../service/forum-data-service';
 
 @provide()
 @controller('/v2/users')
@@ -26,6 +27,14 @@ export class UserInfoController {
     headImageGenerator: headImageGenerator;
     @inject()
     outsideApiService: OutsideApiService;
+    @inject()
+    forumDataService: ForumDataService;
+
+    @put('/registerAllUserToForum')
+    async registerAllUserToForum() {
+        await this.forumDataService.registerAllUserToForum();
+        this.ctx.success(true);
+    }
 
     /**
      * 获取用户列表
@@ -326,9 +335,9 @@ export class UserInfoController {
     @visitorIdentityValidator(IdentityTypeEnum.LoginUser)
     async updateMobileOrEmail() {
         const {ctx} = this;
-        const oldAuthCode = ctx.checkBody('oldAuthCode').ignoreParamWhenEmpty().toInt().value;
-        const newAuthCode = ctx.checkBody('newAuthCode').exist().toInt().value;
-        const newLoginName = ctx.checkBody('newLoginName').exist().isEmailOrMobile86().value;
+        const oldAuthCode = ctx.checkBody('oldAuthCode').ignoreParamWhenEmpty().toInt('验证码不正确').value;
+        const newAuthCode = ctx.checkBody('newAuthCode').exist().toInt('验证码不正确').value;
+        const newLoginName = ctx.checkBody('newLoginName').exist().isEmailOrMobile86('邮箱或手机号不正确').value;
         ctx.validateParams();
 
         const isEmail = CommonRegex.email.test(newLoginName);
