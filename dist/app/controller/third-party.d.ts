@@ -18,6 +18,7 @@ export declare class ThirdPartyController {
      * 查询第三方绑定信息列表
      */
     list(): Promise<void>;
+    getWechatInfo(): Promise<void>;
     /**
      * 查询用户是否绑定第三方登录
      */

@@ -161,6 +161,17 @@ export class ThirdPartyController {
         }));
     }
 
+    @get("/getWechatInfo")
+    @visitorIdentityValidator(IdentityTypeEnum.InternalClient)
+    async getWechatInfo() {
+        let userId = this.ctx.checkQuery("userId").exist().value;
+
+        this.ctx.success(await this.thirdPartyIdentityService.thirdPartyIdentityProvider.findOne({
+            userId: userId,
+            thirdPartyType: "weChat"
+        }));
+    }
+
     /**
      * 查询用户是否绑定第三方登录
      */
