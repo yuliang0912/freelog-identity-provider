@@ -172,6 +172,17 @@ export class ThirdPartyController {
         }));
     }
 
+    @get("/getWechatInfoByUnionId")
+    @visitorIdentityValidator(IdentityTypeEnum.InternalClient)
+    async getWechatInfoByUnionId() {
+        let unionId = this.ctx.checkQuery("unionId").exist().value;
+
+        this.ctx.success(await this.thirdPartyIdentityService.thirdPartyIdentityProvider.findOne({
+            unionId: unionId,
+            thirdPartyType: "weChat"
+        }));
+    }
+
     /**
      * 查询用户是否绑定第三方登录
      */

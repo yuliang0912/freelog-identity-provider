@@ -19,6 +19,7 @@ export declare class ThirdPartyController {
      */
     list(): Promise<void>;
     getWechatInfo(): Promise<void>;
+    getWechatInfoByUnionId(): Promise<void>;
     /**
      * 查询用户是否绑定第三方登录
      */
