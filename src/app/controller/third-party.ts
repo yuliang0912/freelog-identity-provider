@@ -170,6 +170,28 @@ export class ThirdPartyController {
         }));
     }
 
+    @get("/getWechatInfo")
+    @visitorIdentityValidator(IdentityTypeEnum.InternalClient)
+    async getWechatInfo() {
+        let userId = this.ctx.checkQuery("userId").exist().value;
+
+        this.ctx.success(await this.thirdPartyIdentityService.thirdPartyIdentityProvider.findOne({
+            userId: userId,
+            thirdPartyType: "weChat"
+        }));
+    }
+
+    @get("/getWechatInfoByUnionId")
+    @visitorIdentityValidator(IdentityTypeEnum.InternalClient)
+    async getWechatInfoByUnionId() {
+        let unionId = this.ctx.checkQuery("unionId").exist().value;
+
+        this.ctx.success(await this.thirdPartyIdentityService.thirdPartyIdentityProvider.findOne({
+            unionId: unionId,
+            thirdPartyType: "weChat"
+        }));
+    }
+
     /**
      * 查询用户是否绑定第三方登录
      */
