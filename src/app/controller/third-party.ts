@@ -13,6 +13,7 @@ import {IUserService} from '../../interface';
 import {PassportService} from '../service/passport-service';
 import {generatePassword, generateTempUserState} from '../../extend/common-helper';
 import {pick} from 'lodash';
+import headImageGenerator from '../../extend/head-image-generator';
 
 @provide()
 @controller('/v2/thirdParty')
@@ -22,6 +23,8 @@ export class ThirdPartyController {
     ctx: FreelogContext;
     @inject()
     thirdPartyIdentityService: ThirdPartyIdentityService;
+    @inject()
+    headImageGenerator: headImageGenerator;
     @inject()
     userService: IUserService;
     @inject()
@@ -79,7 +82,13 @@ export class ThirdPartyController {
             throw new ArgumentError(ctx.gettext('params-validate-failed', 'loginName'));
         }
         if (!userInfo) {
-            userInfo = await this.userService.create({username: loginName, password});
+            userInfo = await this.userService.create({
+                username: loginName,
+                password,
+                headImage: identityInfo.headImage
+            });
+            // const headImageUrl = await this.headImageGenerator.generateAndUploadHeadImage(userInfo.userId.toString());
+            // await this.userService.updateOne({userId: userInfo.userId}, {headImage: headImageUrl});
         }
         await this.thirdPartyIdentityService.bindUserId(identityInfo, userInfo.userId);
         await this.passportService.setCookieAndLoginRecord(userInfo, 'cookie', true);

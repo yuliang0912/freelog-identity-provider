@@ -30,6 +30,7 @@ export class ThirdPartyIdentityService {
             thirdPartyType: 'weChat',
             openId: tokenInfo.openid,
             name: wechatUserInfo.nickname,
+            headImage: wechatUserInfo.headimgurl,
             thirdPartyIdentityInfo: tokenInfo
         };
         if (tokenInfo.unionid) {

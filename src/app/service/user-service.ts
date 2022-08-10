@@ -5,8 +5,7 @@ import AutoIncrementRecordProvider from '../data-provider/auto-increment-record-
 import {ArgumentError, CommonRegex, FreelogContext, MongodbOperation, PageResult} from 'egg-freelog-base';
 import {
     findOptions,
-    ITageService, IUserChangePasswordEventBody,
-    IUserRegisterEventBody,
+    ITageService,
     IUserService,
     TagInfo,
     UserDetailInfo,
@@ -83,20 +82,20 @@ export class UserService implements IUserService {
 
         const user = await this.userInfoProvider.create(userInfo);
         if (userInfo) {
-            const ras = this.rsaHelper.build(this.jwtAuth.publicKey, this.jwtAuth.privateKey);
-            const eventBody: IUserRegisterEventBody = {
-                userId: user.userId,
-                username: user.username,
-                email: user.email,
-                mobile: user.mobile,
-                password: ras.privateKeyEncrypt(userInfo.password)
-            };
-            this.kafkaClient.send({
-                topic: 'user-register-event-topic',
-                messages: [{
-                    value: JSON.stringify(eventBody)
-                }]
-            }).catch(e => console.error(`kafka用户注册消息发送失败,userId:${user.userId}`));
+            // const ras = this.rsaHelper.build(this.jwtAuth.publicKey, this.jwtAuth.privateKey);
+            // const eventBody: IUserRegisterEventBody = {
+            //     userId: user.userId,
+            //     username: user.username,
+            //     email: user.email,
+            //     mobile: user.mobile,
+            //     password: ras.privateKeyEncrypt(userInfo.password)
+            // };
+            // this.kafkaClient.send({
+            //     topic: 'user-register-event-topic',
+            //     messages: [{
+            //         value: JSON.stringify(eventBody)
+            //     }]
+            // }).catch(e => console.error(`kafka用户注册消息发送失败,userId:${user.userId}`));
         }
         return user;
     }
@@ -119,18 +118,18 @@ export class UserService implements IUserService {
         const tokenSn = v4().replace(/-/g, '');
         const password = generatePassword(salt, newPassword);
         await this.updateOne({userId: userInfo.userId}, {salt, password, tokenSn});
-        const ras = this.rsaHelper.build(this.jwtAuth.publicKey, this.jwtAuth.privateKey);
-        const eventBody: IUserChangePasswordEventBody = {
-            userId: userInfo.userId,
-            username: userInfo.username,
-            password: ras.privateKeyEncrypt(newPassword)
-        };
-        this.kafkaClient.send({
-            topic: 'user-change-password-event-topic',
-            messages: [{
-                value: JSON.stringify(eventBody)
-            }]
-        }).catch(e => console.error(`kafka用户更新密码事件发送失败,userId:${userInfo.userId},password:${newPassword}`));
+        // const ras = this.rsaHelper.build(this.jwtAuth.publicKey, this.jwtAuth.privateKey);
+        // const eventBody: IUserChangePasswordEventBody = {
+        //     userId: userInfo.userId,
+        //     username: userInfo.username,
+        //     password: ras.privateKeyEncrypt(newPassword)
+        // };
+        // this.kafkaClient.send({
+        //     topic: 'user-change-password-event-topic',
+        //     messages: [{
+        //         value: JSON.stringify(eventBody)
+        //     }]
+        // }).catch(e => console.error(`kafka用户更新密码事件发送失败,userId:${userInfo.userId},password:${newPassword}`));
         return true;
     }
 

@@ -215,6 +215,7 @@ export interface ThirdPartyIdentityInfo {
     thirdPartyIdentityInfo: WeChatTokenInfo | any;
     openId: string;
     name: string;
+    headImage: string;
     unionId?: string;
     userId?: number;
     status?: number;

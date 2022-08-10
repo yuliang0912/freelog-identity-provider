@@ -1,6 +1,6 @@
 /// <reference types="node" />
 import { FreelogContext, IObjectStorageService } from 'egg-freelog-base';
-import * as Stream from "stream";
+import * as Stream from 'stream';
 export default class headImageGenerator {
     uploadConfig: any;
     aliOssClientFactory: (config: any) => IObjectStorageService;

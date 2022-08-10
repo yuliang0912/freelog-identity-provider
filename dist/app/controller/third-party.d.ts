@@ -2,9 +2,11 @@ import { FreelogContext } from 'egg-freelog-base';
 import { ThirdPartyIdentityService } from '../service/third-party-identity-service';
 import { IUserService } from '../../interface';
 import { PassportService } from '../service/passport-service';
+import headImageGenerator from '../../extend/head-image-generator';
 export declare class ThirdPartyController {
     ctx: FreelogContext;
     thirdPartyIdentityService: ThirdPartyIdentityService;
+    headImageGenerator: headImageGenerator;
     userService: IUserService;
     passportService: PassportService;
     getWeChatToken(): Promise<void>;

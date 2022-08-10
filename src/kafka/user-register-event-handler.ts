@@ -1,6 +1,6 @@
 import {EachMessagePayload} from 'kafkajs';
 import {config, inject, provide, scope, ScopeEnum} from 'midway';
-import {IKafkaSubscribeMessageHandle, IUserRegisterEventBody} from '../interface';
+import {IKafkaSubscribeMessageHandle} from '../interface';
 import {RsaHelper} from '../extend/rsa-helper';
 import {OutsideApiService} from '../app/service/outside-api-service';
 
@@ -25,13 +25,13 @@ export class UserRegisterEventHandler implements IKafkaSubscribeMessageHandle {
      * @param payload
      */
     async messageHandle(payload: EachMessagePayload): Promise<void> {
-        const eventBody: IUserRegisterEventBody = JSON.parse(payload.message.value.toString());
-        await this.outsideApiService.changeForumPassword({
-            userId: eventBody.userId,
-            username: eventBody.username,
-            email: eventBody.email,
-            mobile: eventBody.mobile,
-            password: this.rsaClient.publicKeyDecrypt(eventBody.password)
-        });
+        // const eventBody: IUserRegisterEventBody = JSON.parse(payload.message.value.toString());
+        // await this.outsideApiService.changeForumPassword({
+        //     userId: eventBody.userId,
+        //     username: eventBody.username,
+        //     email: eventBody.email,
+        //     mobile: eventBody.mobile,
+        //     password: this.rsaClient.publicKeyDecrypt(eventBody.password)
+        // });
     }
 }
