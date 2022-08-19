@@ -118,8 +118,10 @@ export class ThirdPartyController {
             return;
         }
         const returnUrlHasQueryParams = new URL(returnUrl).search;
-        console.log(returnUrlHasQueryParams, returnUrl, returnUrl + returnUrlHasQueryParams ? '&' : '?' + 'type=wechat&status=3');
-        
+
+        console.log(JSON.stringify({returnUrlHasQueryParams, returnUrl}));
+        console.log(`${returnUrl}${returnUrlHasQueryParams ? '&' : '?type=wechat&status=3'}`);
+
         if (generateTempUserState(ctx.userId) !== state) {
             this.ctx.body = this.generateClientLocationRedirectScript(returnUrl + returnUrlHasQueryParams ? '&' : '?' + 'type=wechat&status=2&msg=参数state校验失败');
             return;
