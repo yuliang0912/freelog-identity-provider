@@ -14,6 +14,7 @@ import {PassportService} from '../service/passport-service';
 import {generatePassword, generateTempUserState} from '../../extend/common-helper';
 import {pick} from 'lodash';
 import headImageGenerator from '../../extend/head-image-generator';
+import {URL} from 'url';
 
 @provide()
 @controller('/v2/thirdParty')
@@ -116,19 +117,20 @@ export class ThirdPartyController {
                           <script>setTimeout(function (){ location.href = "${this.generateFreelogUrl('user')}" },2000)</script>`;
             return;
         }
+        const returnUrlHasQueryParams = new URL(returnUrl).search;
         if (generateTempUserState(ctx.userId) !== state) {
-            this.ctx.body = this.generateClientLocationRedirectScript(returnUrl + '?type=wechat&status=2&msg=参数state校验失败');
+            this.ctx.body = this.generateClientLocationRedirectScript(returnUrl + returnUrlHasQueryParams ? '&' : '?' + 'type=wechat&status=2&msg=参数state校验失败');
             return;
         }
         const thirdPartyIdentityInfo = await this.thirdPartyIdentityService.setWeChatToken(code);
         // 如果已经绑定用户ID,则报错提示已绑定,不能重复
         // 回调的状态值 1:绑定成功 2:绑定失败 3:微信号已被其他账号绑定
         if (thirdPartyIdentityInfo.userId) {
-            this.ctx.body = this.generateClientLocationRedirectScript(returnUrl + '?type=wechat&status=3');
+            this.ctx.body = this.generateClientLocationRedirectScript(returnUrl + returnUrlHasQueryParams ? '&' : '?' + 'type=wechat&status=3');
             return;
         }
         await this.thirdPartyIdentityService.bindUserId(thirdPartyIdentityInfo, this.ctx.userId);
-        this.ctx.body = this.generateClientLocationRedirectScript(returnUrl + '?type=wechat&status=1');
+        this.ctx.body = this.generateClientLocationRedirectScript(returnUrl + returnUrlHasQueryParams ? '&' : '?' + 'type=wechat&status=1');
     }
 
     /**
@@ -170,25 +172,25 @@ export class ThirdPartyController {
         }));
     }
 
-    @get("/getWechatInfo")
+    @get('/getWechatInfo')
     @visitorIdentityValidator(IdentityTypeEnum.InternalClient)
     async getWechatInfo() {
-        let userId = this.ctx.checkQuery("userId").exist().value;
+        let userId = this.ctx.checkQuery('userId').exist().value;
 
         this.ctx.success(await this.thirdPartyIdentityService.thirdPartyIdentityProvider.findOne({
             userId: userId,
-            thirdPartyType: "weChat"
+            thirdPartyType: 'weChat'
         }));
     }
 
-    @get("/getWechatInfoByUnionId")
+    @get('/getWechatInfoByUnionId')
     @visitorIdentityValidator(IdentityTypeEnum.InternalClient)
     async getWechatInfoByUnionId() {
-        let unionId = this.ctx.checkQuery("unionId").exist().value;
+        let unionId = this.ctx.checkQuery('unionId').exist().value;
 
         this.ctx.success(await this.thirdPartyIdentityService.thirdPartyIdentityProvider.findOne({
             unionId: unionId,
-            thirdPartyType: "weChat"
+            thirdPartyType: 'weChat'
         }));
     }
 
