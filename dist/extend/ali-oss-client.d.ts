@@ -1,4 +1,5 @@
 /// <reference types="node" />
+/// <reference types="node" />
 import { Stream } from 'stream';
 import { IObjectStorageService } from 'egg-freelog-base';
 import { IApplicationContext } from 'midway';

@@ -298,6 +298,9 @@ export class UserInfoController {
         if (!Object.keys(model).length) {
             throw new ArgumentError(ctx.gettext('params-required-validate-failed'));
         }
+        if ([areaCode, occupation, birthday, sex, intro].every(x => x !== undefined)) {
+            this.outsideApiService.sendActivityEvent('TS000012', ctx.userId).catch(console.error);
+        }
 
         await this.userService.updateOneUserDetail({userId: ctx.userId}, model).then(ctx.success);
     }

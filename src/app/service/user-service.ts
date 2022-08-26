@@ -13,7 +13,6 @@ import {
 } from '../../interface';
 import {UserRoleEnum, UserStatusEnum} from '../../enum';
 import {difference, intersection} from 'lodash';
-import {OutsideApiService} from './outside-api-service';
 import {KafkaClient} from '../../kafka/client';
 import {RsaHelper} from '../../extend/rsa-helper';
 
@@ -34,8 +33,6 @@ export class UserService implements IUserService {
     userInfoProvider: MongodbOperation<UserInfo>;
     @inject()
     userDetailProvider: MongodbOperation<UserDetailInfo>;
-    @inject()
-    outsideApiService: OutsideApiService;
     @inject()
     autoIncrementRecordProvider: AutoIncrementRecordProvider;
 
@@ -270,7 +267,6 @@ export class UserService implements IUserService {
         await this.userDetailProvider.findOneAndUpdate(condition, model, {new: true}).then(data => {
             return data || this.userDetailProvider.create(Object.assign(condition, model));
         });
-        this.outsideApiService.sendActivityEvent('TS000012', condition['userId']).catch(console.error);
         return true;
     }
 
