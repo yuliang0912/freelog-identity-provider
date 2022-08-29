@@ -26,7 +26,7 @@ export class ActivationCodeUsedRecord extends MongooseModelBase {
 
         activationCodeSchema.index({code: 1});
 
-        return this.mongoose.model('activation-code-used-record', activationCodeSchema);
+        return this.mongoose.model('activation-code-used-records', activationCodeSchema);
     }
 
     static get toObjectOptions() {

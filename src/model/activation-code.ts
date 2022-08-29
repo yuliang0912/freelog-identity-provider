@@ -33,7 +33,7 @@ export class ActivationCodeModel extends MongooseModelBase {
         activationCodeSchema.index({username: 1});
         activationCodeSchema.index({code: 1}, {unique: true});
 
-        return this.mongoose.model('activation-code', activationCodeSchema);
+        return this.mongoose.model('activation-codes', activationCodeSchema);
     }
 
     static get toObjectOptions() {

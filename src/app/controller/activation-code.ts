@@ -1,7 +1,7 @@
 import {controller, get, put, inject, post, provide} from 'midway';
 import {FreelogContext, visitorIdentityValidator, IdentityTypeEnum, ApplicationError} from 'egg-freelog-base';
 import {IActivationCodeService, IUserService} from '../../interface';
-import {isDate, isString} from 'lodash';
+import {isDate, isString, omit} from 'lodash';
 
 @provide()
 @controller('/v2/testQualifications/beta/codes')
@@ -144,12 +144,24 @@ export class activationCodeController {
         }).then(x => ctx.success(Boolean(x.ok)));
     }
 
+    // 根据被邀请人查询邀请者信息
     @get('/inviterInfo')
     async getInviterInfo() {
         const {ctx} = this;
         const userId = ctx.checkQuery('userId').exist().isUserId().toInt().value;
         ctx.validateParams();
         await this.activationCodeService.getInviterInfo(userId).then(ctx.success);
+    }
+
+    // 根据邀请人ID查询被邀请人.
+    @get('/invitees')
+    async getInvitees() {
+        const {ctx} = this;
+        const userId = ctx.checkQuery('userId').exist().isUserId().toInt().value;
+        ctx.validateParams();
+        await this.activationCodeService.getInvitees(userId).then(list => {
+            ctx.success(list.map(x => omit(x, ['_id'])));
+        });
     }
 
     @get('/:code')

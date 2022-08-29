@@ -29,6 +29,14 @@ export declare class ActivationCodeService implements IActivationCodeService {
      */
     getInviterInfo(inviteeUserId: number): Promise<Pick<ActivationCodeInfo, "userId" | "username">>;
     /**
+     * 根据邀请人ID获取被邀请人信息
+     * @param inviterUserId
+     */
+    getInvitees(inviterUserId: number): Promise<Array<{
+        userId: number;
+        username: string;
+    }>>;
+    /**
      * 使用授权码激活测试资格
      * @param userInfo
      * @param code

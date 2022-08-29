@@ -95,6 +95,37 @@ export class ActivationCodeService implements IActivationCodeService {
     }
 
     /**
+     * 根据邀请人ID获取被邀请人信息
+     * @param inviterUserId
+     */
+    async getInvitees(inviterUserId: number): Promise<Array<{ userId: number, username: string }>> {
+        const pipeline = [
+            {
+                $match: {userId: inviterUserId}
+            },
+            {
+                $lookup: {
+                    from: 'activation-code-used-records',
+                    localField: 'code',
+                    foreignField: 'code',
+                    as: 'record'
+                }
+            },
+            {
+                $unwind: '$record'
+            },
+            {
+                $project: {
+                    userId: '$record.userId',
+                    username: '$record.username',
+                    createDate: '$record.createDate'
+                }
+            }
+        ];
+        return this.activationCodeProvider.aggregate(pipeline);
+    }
+
+    /**
      * 使用授权码激活测试资格
      * @param userInfo
      * @param code

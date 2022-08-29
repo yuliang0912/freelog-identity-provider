@@ -479,6 +479,12 @@ export interface IActivationCodeService extends IBaseService<ActivationCodeInfo>
      * @param inviteeUserId
      */
     getInviterInfo(inviteeUserId: number): Promise<any>;
+
+    /**
+     * 根据邀请人ID查询被邀请人.
+     * @param inviterUserId
+     */
+    getInvitees(inviterUserId: number): Promise<Array<{ userId: number, username: string }>>;
 }
 
 export interface ITestQualificationApplyAuditService {
