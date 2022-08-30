@@ -12,3 +12,8 @@ export declare const generateTempUserState: (userId: number) => string;
  * @param areaCode
  */
 export declare function getAreaName(areaCode: string): any;
+/**
+ * 手机号或邮箱脱敏
+ * @param emailOrMobile
+ */
+export declare function emailOrMobileDesensitization(emailOrMobile: string): string;

@@ -1,7 +1,8 @@
 import {controller, get, put, inject, post, provide} from 'midway';
 import {FreelogContext, visitorIdentityValidator, IdentityTypeEnum, ApplicationError} from 'egg-freelog-base';
 import {IActivationCodeService, IUserService} from '../../interface';
-import {isDate, isString, omit} from 'lodash';
+import {isDate, isString} from 'lodash';
+import {emailOrMobileDesensitization} from '../../extend/common-helper';
 
 @provide()
 @controller('/v2/testQualifications/beta/codes')
@@ -159,9 +160,22 @@ export class activationCodeController {
         const {ctx} = this;
         const userId = ctx.checkQuery('userId').exist().isUserId().toInt().value;
         ctx.validateParams();
-        await this.activationCodeService.getInvitees(userId).then(list => {
-            ctx.success(list.map(x => omit(x, ['_id'])));
+        const invitees = await this.activationCodeService.getInvitees(userId);
+        if (!invitees.length) {
+            return ctx.success([]);
+        }
+        const userMap = await this.userService.find({userId: {$in: invitees.map(x => x.userId)}}).then(list => {
+            return new Map(list.map(x => [x.userId, x]));
         });
+        ctx.success(invitees.map(inviteeInfo => {
+            const userInfo = userMap.get(inviteeInfo.userId);
+            return {
+                userId: userInfo.userId,
+                username: userInfo.username,
+                email: emailOrMobileDesensitization(userInfo.email),
+                mobile: emailOrMobileDesensitization(userInfo.mobile)
+            };
+        }));
     }
 
     @get('/:code')
@@ -173,5 +187,4 @@ export class activationCodeController {
 
         await this.activationCodeService.findOne({code}).then(ctx.success);
     }
-
 }

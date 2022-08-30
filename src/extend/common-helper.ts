@@ -1,4 +1,4 @@
-import {CryptoHelper} from 'egg-freelog-base';
+import {CommonRegex, CryptoHelper} from 'egg-freelog-base';
 
 const areaCodeInfos = require('../../pcas-code.json');
 
@@ -43,4 +43,26 @@ export function getAreaName(areaCode: string) {
         }
         return previousValue;
     }, {list: areaCodeInfos, name: ''}).name;
+}
+
+/**
+ * 手机号或邮箱脱敏
+ * @param emailOrMobile
+ */
+export function emailOrMobileDesensitization(emailOrMobile: string) {
+    let result = '';
+    if (CommonRegex.mobile86.test(emailOrMobile)) {
+        for (let i = 0; i < emailOrMobile.length; i++) {
+            result += [0, 1, 2, emailOrMobile.length - 1, emailOrMobile.length - 2, emailOrMobile.length - 3, emailOrMobile.length - 4].includes(i) ? emailOrMobile.charAt(i) : '*';
+        }
+    } else if (CommonRegex.email.test(emailOrMobile)) {
+        const address = emailOrMobile.substring(0, emailOrMobile.lastIndexOf('@'));
+        for (let i = 0; i < address.length; i++) {
+            result += [0, address.length - 1].includes(i) ? emailOrMobile.charAt(i) : '*';
+        }
+        result += emailOrMobile.substring(emailOrMobile.lastIndexOf('@'));
+    } else {
+        return emailOrMobile;
+    }
+    return result;
 }
